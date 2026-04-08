@@ -18,8 +18,18 @@ const prisma = new PrismaClient();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// Middleware - CORS configuration
+app.use(cors({
+  origin: [
+    'https://careerdream.in',
+    'http://careerdream.in',
+    'https://www.careerdream.in',
+    'http://www.careerdream.in',
+    'http://localhost:5173',
+    'http://localhost:3000'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Load Routers

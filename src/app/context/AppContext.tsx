@@ -109,10 +109,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchAPI = async () => {
       try {
+        // Determine API base URL for production vs development
+        const apiBase = import.meta.env.PROD 
+          ? 'https://api.careerdream.in'
+          : '/api';
+        
         const [jobsRes, coursesRes, assessmentsRes] = await Promise.all([
-          fetch('/api/jobs'),
-          fetch('/api/courses'),
-          fetch('/api/assessments')
+          fetch(`${apiBase}/jobs`),
+          fetch(`${apiBase}/courses`),
+          fetch(`${apiBase}/assessments`)
         ]);
         
         const [jobsData, coursesData, assessmentsData] = await Promise.all([
