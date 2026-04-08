@@ -1,0 +1,102 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  name              String
+  email             String   @unique
+  password          String
+  title             String?  @default("IT Professional")
+  location          String?
+  avatar            String?
+  profileCompletion Int      @default(30)
+  skills            Json?
+  resumeUploaded    Boolean  @default(false)
+
+  savedJobs       Job[]    @relation("SavedJobs")
+  appliedJobs     Job[]    @relation("AppliedJobs")
+  enrolledCourses Course[] @relation("EnrolledCourses")
+
+  courseProgress  Json?
+  testResults     Json?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Job {
+  id               Int      @id @default(autoincrement())
+  title            String
+  company          String
+  location         String
+  salary           String
+  type             String
+  experience       String
+  logo             String
+  description      String   @db.Text
+  aboutCompany     String   @db.Text
+  skills           Json?
+  responsibilities Json?
+  requirements     Json?
+  niceToHave       Json?
+  benefits         Json?
+  posted           String
+  applicants       Int      @default(0)
+  featured         Boolean  @default(false)
+  urgent           Boolean  @default(false)
+  category         String
+
+  savedBy          User[]   @relation("SavedJobs")
+  appliedBy        User[]   @relation("AppliedJobs")
+}
+
+model Course {
+  id               Int      @id @default(autoincrement())
+  title            String
+  instructor       String
+  instructorBio    String   @db.Text
+  instructorAvatar String?
+  rating           Float
+  reviews          Int
+  students         Int
+  duration         String
+  level            String
+  image            String
+  price            String
+  originalPrice    String?
+  bestseller       Boolean  @default(false)
+  category         String
+  language         String
+  lastUpdated      String
+  certificate      Boolean  @default(false)
+  color            String
+  description      String   @db.Text
+  skills           Json?
+  whatYouLearn     Json?
+  prerequisites    Json?
+  modules          Json?
+
+  enrolledUsers    User[]   @relation("EnrolledCourses")
+}
+
+model Assessment {
+  id          Int      @id @default(autoincrement())
+  title       String
+  category    String
+  difficulty  String
+  duration    Int
+  badge       String
+  color       String
+  skills      Json?
+  questions   Json?    
+  avgScore    Float    @default(0)
+  attempts    Int      @default(0)
+  description String   @db.Text
+}

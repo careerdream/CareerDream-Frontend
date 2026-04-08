@@ -109,10 +109,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchAPI = async () => {
       try {
-        // Determine API base URL for production vs development
+        // Determine API base URL based on environment
         const apiBase = import.meta.env.PROD 
-          ? 'https://api.careerdream.in'
-          : '/api';
+          ? 'http://careerdream.in:3000/api'  // Backend on Hostinger same domain, port 3000
+          : '/api';  // Dev: proxied to localhost:5000
         
         const [jobsRes, coursesRes, assessmentsRes] = await Promise.all([
           fetch(`${apiBase}/jobs`),
