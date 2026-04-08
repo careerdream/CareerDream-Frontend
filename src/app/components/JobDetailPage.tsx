@@ -1,17 +1,28 @@
 import { useParams, Link } from 'react-router';
-import { MapPin, Briefcase, DollarSign, Clock, Building, Users, TrendingUp, Bookmark, Share2, ArrowLeft, CheckCircle, Plus, ExternalLink } from 'lucide-react';
+import { MapPin, Briefcase, DollarSign, Clock, Building, Users, TrendingUp, Bookmark, Share2, ArrowLeft, CheckCircle, Plus, ExternalLink, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { jobs } from '../data/jobs';
 import { useApp } from '../context/AppContext';
 
 export function JobDetailPage() {
   const { id } = useParams();
-  const { savedJobIds, toggleSaveJob, applyToJob, appliedJobIds } = useApp();
+  const { savedJobIds, toggleSaveJob, applyToJob, appliedJobIds, jobs, isLoading } = useApp();
   const [showApply, setShowApply] = useState(false);
   const [applied, setApplied] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
 
-  const job = jobs.find(j => j.id === Number(id)) ?? jobs[0];
+  if (isLoading || jobs.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+      </div>
+    );
+  }
+
+  const job = jobs.find(j => j.id === Number(id));
+  
+  if (!job) {
+    return <div className="min-h-screen flex items-center justify-center text-xl font-bold">Job Not Found</div>;
+  }
   const isSaved = savedJobIds.includes(job.id);
   const isApplied = appliedJobIds.includes(job.id) || applied;
   const related = jobs.filter(j => j.id !== job.id && (j.category === job.category || j.type === job.type)).slice(0, 3);

@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
+import { Job } from '../data/jobs';
+import { Course } from '../data/courses';
+import { Assessment } from '../data/assessments';
 export interface User {
   id: string;
   name: string;
@@ -32,6 +34,10 @@ export interface AppState {
   courseProgress: Record<number, number>;
   testResults: TestResult[];
   resumeSkills: string[];
+  jobs: Job[];
+  courses: Course[];
+  assessments: Assessment[];
+  isLoading: boolean;
 }
 
 interface AppContextType extends AppState {
@@ -77,6 +83,10 @@ const DEFAULT_STATE: AppState = {
     { assessmentId: 5, title: 'JavaScript Mastery', score: 78, date: '3 weeks ago', timeTaken: 41 },
   ],
   resumeSkills: [],
+  jobs: [],
+  courses: [],
+  assessments: [],
+  isLoading: true,
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -90,8 +100,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    localStorage.setItem('careerdream-state', JSON.stringify(state));
-  }, [state]);
+    localStorage.setItem('careerdream-state', JSON.stringify({
+      ...state,
+      jobs: [], courses: [], assessments: [], isLoading: true // don't cache massive api payloads heavily here
+    }));
+  }, [state.user, state.savedJobIds, state.appliedJobIds, state.enrolledCourseIds, state.courseProgress, state.testResults, state.resumeSkills]);
+
+  useEffect(() => {
+    const fetchAPI = async () => {
+      try {
+        const [jobsRes, coursesRes, assessmentsRes] = await Promise.all([
+          fetch('/api/jobs'),
+          fetch('/api/courses'),
+          fetch('/api/assessments')
+        ]);
+        
+        const [jobsData, coursesData, assessmentsData] = await Promise.all([
+          jobsRes.json(),
+          coursesRes.json(),
+          assessmentsRes.json()
+        ]);
+
+        setState(prev => ({ 
+          ...prev, 
+          jobs: jobsData, 
+          courses: coursesData, 
+          assessments: assessmentsData,
+          isLoading: false
+        }));
+      } catch (error) {
+        console.error('Failed to fetch from backend', error);
+        setState(prev => ({ ...prev, isLoading: false }));
+      }
+    };
+    fetchAPI();
+  }, []);
 
   const login = async (email: string, _password: string): Promise<boolean> => {
     await new Promise(r => setTimeout(r, 800)); // simulate API call

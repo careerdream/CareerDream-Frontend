@@ -1,9 +1,6 @@
 import { Link } from 'react-router';
-import { Briefcase, BookOpen, Award, TrendingUp, Clock, Target, ChevronRight, Calendar, Star, Brain, Upload, Users, CheckCircle } from 'lucide-react';
+import { Briefcase, BookOpen, Award, TrendingUp, Clock, Target, ChevronRight, Calendar, Star, Brain, Upload, Users, CheckCircle, Loader2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
-import { jobs } from '../data/jobs';
-import { courses } from '../data/courses';
-import { assessments } from '../data/assessments';
 import { useApp } from '../context/AppContext';
 
 const activityData = [
@@ -26,7 +23,7 @@ const skillRadar = [
 ];
 
 export function Dashboard() {
-  const { user, isLoggedIn, savedJobIds, appliedJobIds, enrolledCourseIds, courseProgress, testResults } = useApp();
+  const { user, isLoggedIn, savedJobIds, appliedJobIds, enrolledCourseIds, courseProgress, testResults, jobs, courses, assessments, isLoading } = useApp();
 
   const savedJobs = jobs.filter(j => savedJobIds.includes(j.id)).slice(0, 3);
   const appliedJobs = jobs.filter(j => appliedJobIds.includes(j.id));
@@ -55,6 +52,14 @@ export function Dashboard() {
             Go to Home →
           </Link>
         </div>
+      </div>
+    );
+  }
+
+  if (isLoading || jobs.length === 0 || courses.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
       </div>
     );
   }

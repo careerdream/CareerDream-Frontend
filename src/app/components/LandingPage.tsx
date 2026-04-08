@@ -1,8 +1,7 @@
 import { Link } from 'react-router';
-import { Search, ArrowRight, TrendingUp, Users, Award, Briefcase, BookOpen, Target, ChevronRight, Zap, Shield, Globe, Star, Play, CheckCircle } from 'lucide-react';
+import { Search, ArrowRight, TrendingUp, Users, Award, Briefcase, BookOpen, Target, ChevronRight, Zap, Shield, Globe, Star, Play, CheckCircle, Loader2 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
-import { jobs } from '../data/jobs';
-import { courses } from '../data/courses';
+import { useApp } from '../context/AppContext';
 
 const categories = [
   { name: 'AI/ML', icon: '🤖', count: 890, color: 'from-violet-500 to-purple-600', query: 'AI/ML' },
@@ -62,6 +61,16 @@ function AnimatedCounter({ end, duration = 2000 }: { end: number; duration?: num
 
 export function LandingPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const { jobs, courses, isLoading } = useApp();
+
+  if (isLoading || jobs.length === 0 || courses.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
+
   const featuredJobs = jobs.filter(j => j.featured).slice(0, 3);
   const featuredCourses = courses.filter(c => c.bestseller || c.rating >= 4.8).slice(0, 3);
 

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Search, Star, Clock, Award, TrendingUp, BookOpen, Play, ChevronRight, Filter, Users } from 'lucide-react';
-import { courses } from '../data/courses';
+import { Search, Star, Clock, Award, TrendingUp, BookOpen, Play, ChevronRight, Filter, Users, Loader2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 const CATEGORIES = ['All', 'AI/ML', 'Cloud', 'Full Stack', 'Data Science', 'DevOps', 'Cybersecurity', 'Data Engineering', 'Mobile'];
@@ -18,7 +17,7 @@ export function LearningHub() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [level, setLevel] = useState('All');
-  const { enrolledCourseIds, enrollInCourse, courseProgress } = useApp();
+  const { enrolledCourseIds, enrollInCourse, courseProgress, courses, isLoading } = useApp();
 
   const filtered = courses.filter(c => {
     const matchSearch = !search || c.title.toLowerCase().includes(search.toLowerCase()) || c.instructor.toLowerCase().includes(search.toLowerCase());
@@ -28,6 +27,14 @@ export function LearningHub() {
   });
 
   const levelBadge = { Beginner: 'bg-green-500/20 text-green-600 dark:text-green-400', Intermediate: 'bg-yellow-500/20 text-yellow-600', Advanced: 'bg-red-500/20 text-red-500' };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

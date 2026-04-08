@@ -1,13 +1,25 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router';
-import { ArrowLeft, Play, CheckCircle, Lock, Star, Users, Clock, Award, BookOpen, ChevronDown, ChevronUp, Download } from 'lucide-react';
-import { courses } from '../data/courses';
+import { ArrowLeft, Play, CheckCircle, Lock, Star, Users, Clock, Award, BookOpen, ChevronDown, ChevronUp, Download, Loader2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export function CoursePage() {
   const { id } = useParams();
-  const course = courses.find(c => c.id === Number(id)) ?? courses[0];
-  const { enrolledCourseIds, enrollInCourse, courseProgress, updateCourseProgress } = useApp();
+  const { enrolledCourseIds, enrollInCourse, courseProgress, updateCourseProgress, courses, isLoading } = useApp();
+
+  if (isLoading || courses.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  const course = courses.find(c => c.id === Number(id));
+  
+  if (!course) {
+    return <div className="min-h-screen flex items-center justify-center text-xl font-bold">Course Not Found</div>;
+  }
 
   const isEnrolled = enrolledCourseIds.includes(course.id);
   const progress = courseProgress[course.id] ?? 0;

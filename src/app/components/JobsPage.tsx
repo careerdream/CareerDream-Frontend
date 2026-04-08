@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router';
-import { Filter, MapPin, DollarSign, Briefcase, Clock, Bookmark, Search, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
-import { jobs, JobType, ExperienceLevel } from '../data/jobs';
+import { Filter, MapPin, DollarSign, Briefcase, Clock, Bookmark, Search, ChevronDown, X, SlidersHorizontal, Loader2 } from 'lucide-react';
+import { JobType, ExperienceLevel } from '../data/jobs';
 import { useApp } from '../context/AppContext';
 
 const JOB_TYPES: JobType[] = ['Remote', 'Full-time', 'Contract', 'Government', 'Abroad', 'Internship'];
@@ -19,7 +19,7 @@ const difficultyColor: Record<string, string> = {
 };
 
 export function JobsPage() {
-  const { savedJobIds, toggleSaveJob } = useApp();
+  const { savedJobIds, toggleSaveJob, jobs, isLoading } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [selectedLevels, setSelectedLevels] = useState<Set<string>>(new Set());
@@ -72,6 +72,14 @@ export function JobsPage() {
   };
 
   const activeFilterCount = selectedTypes.size + selectedLevels.size + (selectedCategory !== 'All' ? 1 : 0);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
