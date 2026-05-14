@@ -123,6 +123,76 @@ app.get('/api/setup-db', async (req, res) => {
   }
 });
 
+// Sync Production Data (Safe: Updates courses/jobs without deleting users)
+app.get('/api/sync-production', async (req, res) => {
+  try {
+    const courses = [
+      { 
+        title: 'Advanced Machine Learning with Python', 
+        videoUrl: 'https://www.youtube.com/embed/7eh4d6sabA0',
+        instructor: 'Programming with Mosh',
+        category: 'AI/ML'
+      },
+      { 
+        title: 'Natural Language Processing Masterclass', 
+        videoUrl: 'https://www.youtube.com/embed/CMrHM8a3hqw',
+        instructor: 'Simplilearn',
+        category: 'AI/ML'
+      },
+      { 
+        title: 'AWS Solutions Architect Professional (SAP-C02)', 
+        videoUrl: 'https://www.youtube.com/embed/hyEw7dQ9-JE',
+        instructor: 'Andrew Brown (freeCodeCamp.org)',
+        category: 'Cloud'
+      },
+      { 
+        title: 'Kubernetes for DevOps Engineers', 
+        videoUrl: 'https://www.youtube.com/embed/VnvRFRk_51k',
+        instructor: 'TechWorld with Nana',
+        category: 'DevOps'
+      },
+      { 
+        title: 'React: Build Modern Web Apps', 
+        videoUrl: 'https://www.youtube.com/embed/bMknfKXIFA8',
+        instructor: 'freeCodeCamp.org',
+        category: 'Frontend'
+      },
+      { 
+        title: 'Full Stack Development with MERN', 
+        videoUrl: 'https://www.youtube.com/embed/7CqJlxBYj-M',
+        instructor: 'freeCodeCamp.org',
+        category: 'Backend'
+      },
+      { 
+        title: 'Data Science with Python', 
+        videoUrl: 'https://www.youtube.com/embed/ua-CiDNNj30',
+        instructor: 'freeCodeCamp.org',
+        category: 'Data Science'
+      },
+      { 
+        title: 'SQL for Data Analysis', 
+        videoUrl: 'https://www.youtube.com/embed/HXV3zeQKqGY',
+        instructor: 'freeCodeCamp.org',
+        category: 'Databases'
+      }
+    ];
+
+    for (const course of courses) {
+      const existing = await prisma.course.findFirst({ where: { title: course.title } });
+      if (existing) {
+        await prisma.course.update({
+          where: { id: existing.id },
+          data: { videoUrl: course.videoUrl, instructor: course.instructor, category: course.category }
+        });
+      }
+    }
+
+    res.json({ success: true, message: 'Production data synced successfully! Videos are now restored.' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Serve React Frontend Production Build
 app.use(express.static(path.join(__dirname, '../dist')));
 
