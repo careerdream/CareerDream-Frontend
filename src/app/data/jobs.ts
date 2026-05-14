@@ -1,6 +1,26 @@
 export type JobType = 'Remote' | 'Full-time' | 'Contract' | 'Government' | 'Abroad' | 'Internship' | 'Part-time';
 export type ExperienceLevel = 'Entry Level' | 'Mid Level' | 'Senior' | 'Lead' | 'Executive';
 
+export interface Employer {
+  id: number;
+  company_name: string;
+  industry?: string;
+  website?: string;
+  logo?: string;
+  description?: string;
+}
+
+export interface JobStats {
+  applicants_count: number;
+  views_count: number;
+  last_updated: string;
+}
+
+export interface JobSkill {
+  skill_name: string;
+  importance_level: number;
+}
+
 export interface Job {
   id: number;
   title: string;
@@ -14,8 +34,11 @@ export interface Job {
   salaryMax: number;
   posted: string;
   postedDays: number;
+  posted_at?: string;
+  expires_at?: string;
   logo: string;
   skills: string[];
+  detailedSkills?: JobSkill[];
   experience: ExperienceLevel;
   description: string;
   responsibilities: string[];
@@ -23,6 +46,8 @@ export interface Job {
   niceToHave: string[];
   benefits: string[];
   applicants: number;
+  stats?: JobStats;
+  employer?: Employer;
   aboutCompany: string;
   featured?: boolean;
   urgent?: boolean;

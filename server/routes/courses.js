@@ -1,8 +1,6 @@
 import express from 'express';
-import pkg from '@prisma/client';
+import prisma from '../lib/prisma.js';
 
-const { PrismaClient } = pkg;
-const prisma = new PrismaClient();
 const router = express.Router();
 
 // @route   GET /api/courses

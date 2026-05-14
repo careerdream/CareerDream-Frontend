@@ -13,17 +13,44 @@ model User {
   name              String
   email             String   @unique
   password          String
+  role              String   @default("user")
   title             String?  @default("IT Professional")
   location          String?
+  phone             String?
+  bio               String?  @db.Text
+  socials           Json?
   avatar            String?
+  language          String?  @default("English")
+  timezone          String?  @default("IST")
   profileCompletion Int      @default(30)
-  skills            Json?
+  skills            Json?    // Keep as JSON for quick access
   resumeUploaded    Boolean  @default(false)
+  status            String   @default("active") // active, suspended, banned, inactive
 
-  savedJobs       Job[]    @relation("SavedJobs")
-  appliedJobs     Job[]    @relation("AppliedJobs")
-  enrolledCourses Course[] @relation("EnrolledCourses")
+  resetToken        String?
+  resetTokenExpiry  DateTime?
 
+  // Relations
+  savedJobs        SavedJob[]
+  appliedJobs      JobApplication[]
+  enrolledCourses  UserCourse[]
+  blogPosts        BlogPost[]       @relation("AuthorBlogPosts")
+  comments         Comment[]
+  likes            ArticleLike[]
+  testAssessments  UserAssessment[]
+  resumeAnalyses   ResumeAnalysis[]
+  settings         UserSetting[]
+  certificates     UserCertificate[]
+  rank             UserRank?
+  growthTrajectory UserGrowthTrajectory[]
+  detailedSkills   UserSkill[]
+  jobMatches       PrecisionJobMatch[]
+  loginHistory     LoginHistory[]
+  activities       UserActivity[]
+
+  employerId       Int?
+  employer         Employer? @relation(fields: [employerId], references: [id])
+  
   courseProgress  Json?
   testResults     Json?
 
@@ -31,10 +58,46 @@ model User {
   updatedAt       DateTime @updatedAt
 }
 
+model LoginHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ip        String?
+  userAgent String?  @db.Text
+  timestamp DateTime @default(now())
+}
+
+model UserActivity {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  details   String?  @db.Text
+  timestamp DateTime @default(now())
+}
+
+model Employer {
+  id           Int      @id @default(autoincrement())
+  company_name String
+  industry     String?
+  website      String?
+  logo         String?
+  description  String?  @db.Text
+  created_at   DateTime @default(now())
+  verificationStatus String? @default("pending")
+  verificationData   Json?
+  verifiedAt         DateTime?
+  
+  jobs         Job[]
+  recruiters   User[]
+}
+
 model Job {
   id               Int      @id @default(autoincrement())
+  employerId       Int?
+  employer         Employer? @relation(fields: [employerId], references: [id])
   title            String
-  company          String
+  company          String   // Keep for backward compatibility or direct entry
   location         String
   salary           String
   type             String
@@ -42,19 +105,65 @@ model Job {
   logo             String
   description      String   @db.Text
   aboutCompany     String   @db.Text
-  skills           Json?
+  skills           Json?    // Legacy JSON field
+  detailedSkills   JobSkill[]
   responsibilities Json?
   requirements     Json?
   niceToHave       Json?
   benefits         Json?
-  posted           String
-  applicants       Int      @default(0)
+  posted           String   // Legacy text date
+  posted_at        DateTime @default(now())
+  expires_at       DateTime?
   featured         Boolean  @default(false)
   urgent           Boolean  @default(false)
   category         String
+  status           String   @default("active") // active, expired, draft
 
-  savedBy          User[]   @relation("SavedJobs")
-  appliedBy        User[]   @relation("AppliedJobs")
+  stats            JobStats?
+  savedBy          SavedJob[]
+  appliedBy        JobApplication[]
+  matchedTo        PrecisionJobMatch[]
+}
+
+model JobStats {
+  id               Int      @id @default(autoincrement())
+  jobId            Int      @unique
+  job              Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applicants_count Int      @default(0)
+  views_count      Int      @default(0)
+  last_updated     DateTime @default(now()) @updatedAt
+}
+
+model JobSkill {
+  id               Int      @id @default(autoincrement())
+  jobId            Int
+  job              Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill_name       String
+  importance_level Int      @default(5) // 1-10 scale
+}
+
+model JobApplication {
+  id                Int      @id @default(autoincrement())
+  userId            Int
+  jobId             Int
+  applied_at        DateTime @default(now())
+  status            String   @default("Applied") // Applied, Interview, Offer, Rejected
+  resume_version_id Int      @default(1)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job               Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+}
+
+model SavedJob {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  jobId     Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  saved_at  DateTime @default(now())
+
+  @@unique([userId, jobId])
 }
 
 model Course {
@@ -76,14 +185,79 @@ model Course {
   language         String
   lastUpdated      String
   certificate      Boolean  @default(false)
+  status           String   @default("published") // published, draft, archived
   color            String
   description      String   @db.Text
+  videoUrl         String?  // YouTube embed URL
   skills           Json?
   whatYouLearn     Json?
   prerequisites    Json?
   modules          Json?
 
-  enrolledUsers    User[]   @relation("EnrolledCourses")
+  enrolledUsers    UserCourse[]
+}
+
+model UserCourse {
+  id           Int       @id @default(autoincrement())
+  userId       Int
+  courseId     Int
+  status       String    @default("Enrolled") // Enrolled, In Progress, Completed
+  completed_at DateTime?
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course       Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  timestamp    DateTime  @default(now())
+
+  @@unique([userId, courseId])
+}
+
+model UserCertificate {
+  id                Int      @id @default(autoincrement())
+  userId            Int
+  certificate_name  String
+  issuing_authority String
+  issued_at         DateTime @default(now())
+  expiry_date       DateTime?
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserRank {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  global_rank   Int
+  calculated_at DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserGrowthTrajectory {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  metric      String   // e.g., Jobs Applied, Courses Completed
+  value       Int
+  recorded_at DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserSkill {
+  id                Int      @id @default(autoincrement())
+  userId            Int
+  skill_name        String
+  proficiency_level Int      @default(1) // 1-10 scale
+  updated_at        DateTime @default(now()) @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skill_name])
+}
+
+model PrecisionJobMatch {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  jobId          Int
+  match_score    Decimal  @db.Decimal(5, 2)
+  recommended_at DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job            Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
 }
 
 model Assessment {
@@ -99,4 +273,148 @@ model Assessment {
   avgScore    Float    @default(0)
   attempts    Int      @default(0)
   description String   @db.Text
+  status      String   @default("published")
+
+  userAttempts UserAssessment[]
+}
+
+model UserAssessment {
+  id            Int        @id @default(autoincrement())
+  userId        Int
+  assessmentId  Int
+  score         Decimal    @db.Decimal(5, 2)
+  progress      String     @default("started")
+  completed_at  DateTime?
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessment    Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  timestamp     DateTime   @default(now())
+}
+
+model BlogPost {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String   @db.LongText
+  excerpt     String   @db.Text
+  image       String?  @db.LongText
+  author      User     @relation("AuthorBlogPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId    Int
+  category    String   @default("IT Career")
+  slug        String   @unique
+  featured    Boolean  @default(false)
+  status      String   @default("published") // published, draft, archived
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  comments    Comment[]
+  likes       ArticleLike[]
+}
+
+model Comment {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  articleId    Int
+  comment_text String   @db.Text
+  status       String   @default("approved") // approved, pending, spam
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article      BlogPost @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  created_at   DateTime @default(now())
+}
+
+model ArticleLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  articleId Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article   BlogPost @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, articleId])
+}
+
+model ResumeAnalysis {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  match_score     Decimal  @db.Decimal(5, 2)
+  analysis_report String   @db.Text
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  created_at      DateTime @default(now())
+}
+
+model UserSetting {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  preference_key   String
+  preference_value String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updated_at       DateTime @default(now()) @updatedAt
+
+  @@unique([userId, preference_key])
+}
+
+model Issue {
+  id                Int      @id @default(autoincrement())
+  name              String
+  email             String
+  issue_title       String
+  issue_description String   @db.Text
+  screenshot_path   String?
+  status            String   @default("pending")
+  timestamp         DateTime @default(now())
+}
+
+model SystemSetting {
+  id          Int      @id @default(autoincrement())
+  category    String
+  settingKey  String   @unique
+  value       Json
+  updatedAt   DateTime @default(now()) @updatedAt
+  updatedBy   Int?
+}
+
+model SystemAuditLog {
+  id          Int      @id @default(autoincrement())
+  adminId     Int?
+  action      String
+  category    String
+  details     String?  @db.Text
+  beforeValue Json?
+  afterValue  Json?
+  ipAddress   String?
+  timestamp   DateTime @default(now())
+}
+
+model AdminRole {
+  id          Int      @id @default(autoincrement())
+  roleName    String   @unique
+  description String?
+  permissions Json
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  admins      AdminProfile[]
+}
+
+model AdminProfile {
+  id            Int        @id @default(autoincrement())
+  userId        Int        @unique
+  roleId        Int
+  role          AdminRole  @relation(fields: [roleId], references: [id])
+  customPerms   Json?
+  isActive      Boolean    @default(true)
+  invitedAt     DateTime   @default(now())
+  lastActiveAt  DateTime?
+}
+
+model AdminAuditLog {
+  id            Int      @id @default(autoincrement())
+  adminId       Int?
+  adminEmail    String?
+  action        String
+  resourceType  String
+  resourceId    String?
+  changesBefore Json?
+  changesAfter  Json?
+  ipAddress     String?
+  userAgent     String?  @db.Text
+  timestamp     DateTime @default(now())
 }

@@ -214,4 +214,13 @@
     transition-duration: 200ms;
     transition-timing-function: ease;
   }
+
+  /* Global Shadow Effect for all Tiles/Cards */
+  .bg-card:not([class*='shadow-']) {
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  }
+  .dark .bg-card:not([class*='shadow-']) {
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+  }
 }

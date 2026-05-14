@@ -3,6 +3,9 @@ import { useEffect } from "react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { AppProvider } from "../context/AppContext";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -25,8 +28,10 @@ function AppShell() {
 
 export function Root() {
   return (
-    <AppProvider>
-      <AppShell />
-    </AppProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AppProvider>
+        <AppShell />
+      </AppProvider>
+    </GoogleOAuthProvider>
   );
 }

@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
-import { Briefcase, BookOpen, ClipboardCheck, Brain, Twitter, Linkedin, Github, Mail, ArrowRight, MapPin } from 'lucide-react';
+import { Briefcase, BookOpen, ClipboardCheck, Brain, ArrowRight, MapPin, Mail } from 'lucide-react';
+import { SocialLinks } from './SocialLinks';
 
 const footerLinks = {
   Platform: [
@@ -17,17 +18,18 @@ const footerLinks = {
     { label: 'Cloud Courses', to: '/learn?category=Cloud' },
   ],
   Company: [
-    { label: 'About Us', to: '/' },
+    { label: 'About Us', to: '/about' },
     { label: 'Careers', to: '/' },
     { label: 'Blog', to: '/' },
-    { label: 'Press Kit', to: '/' },
+    { label: 'Report Issues', to: '/report-issue' },
     { label: 'Contact', to: '/' },
   ],
   Legal: [
-    { label: 'Privacy Policy', to: '/' },
-    { label: 'Terms of Service', to: '/' },
-    { label: 'Cookie Policy', to: '/' },
-    { label: 'Security', to: '/' },
+    { label: 'Privacy Policy', to: '/privacy-policy' },
+    { label: 'Terms of Service', to: '/terms-of-service' },
+    { label: 'Cookie Policy', to: '/cookie-policy' },
+    { label: 'Security', to: '/security' },
+    { label: 'Fraud Alert', to: '/fraud-alert' },
   ],
 };
 
@@ -123,22 +125,7 @@ export function Footer() {
             © {new Date().getFullYear()} CareerDream. All rights reserved. Built for IT professionals worldwide.
           </p>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 text-muted-foreground">
-              {[
-                { Icon: Twitter, href: '#', label: 'Twitter' },
-                { Icon: Linkedin, href: '#', label: 'LinkedIn' },
-                { Icon: Github, href: '#', label: 'GitHub' },
-              ].map(({ Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="w-8 h-8 rounded-lg border border-border hover:border-primary hover:text-primary transition-all flex items-center justify-center"
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
+            <SocialLinks variant="icon" size="md" />
           </div>
         </div>
       </div>

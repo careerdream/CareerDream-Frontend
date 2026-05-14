@@ -17,15 +17,69 @@ const IT_SKILLS = [
   'React Native', 'Flutter', 'iOS', 'Android', 'SwiftUI', 'UIKit',
   'HTML', 'CSS', 'Tailwind CSS', 'SASS', 'Bootstrap',
   'Statistics', 'Mathematics', 'Pandas', 'NumPy', 'R',
-  'Leadership', 'Project Management', 'Communication', 'Mentoring',
+  'Leadership', 'Project Management', 'Communication', 'Mentoring', 'Problem Solving',
+  'Teamwork', 'Critical Thinking', 'Adaptability', 'Time Management', 'Conflict Resolution',
   'PMP', 'PRINCE2', 'CISSP', 'CEH', 'OSCP', 'AWS Certified',
 ];
+
+export interface ResumeDetails {
+  skills: string[];
+  education: string[];
+  experience: string[];
+  achievements: string[];
+  summary: string;
+}
 
 export function extractSkillsFromText(text: string): string[] {
   const normalized = text.toLowerCase();
   return IT_SKILLS.filter(skill => 
     normalized.includes(skill.toLowerCase())
   );
+}
+
+export function parseResumeDetails(text: string): ResumeDetails {
+  const lines = text.split('\n');
+  const details: ResumeDetails = {
+    skills: extractSkillsFromText(text),
+    education: [],
+    experience: [],
+    achievements: [],
+    summary: '',
+  };
+
+  let currentSection = '';
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+
+    if (trimmed.toLowerCase().includes('education:')) {
+      details.education.push(trimmed.replace(/education:/i, '').trim());
+      currentSection = 'education';
+    } else if (trimmed.toLowerCase().includes('experience:')) {
+      details.experience.push(trimmed.replace(/experience:/i, '').trim());
+      currentSection = 'experience';
+    } else if (trimmed.toLowerCase().includes('projects:') || trimmed.toLowerCase().includes('achievements:')) {
+      details.achievements.push(trimmed.replace(/(projects|achievements):/i, '').trim());
+      currentSection = 'achievements';
+    } else if (trimmed.toLowerCase().includes('summary:') || (currentSection === '' && trimmed.length > 50)) {
+      if (trimmed.toLowerCase().includes('summary:')) {
+        details.summary = trimmed.replace(/summary:/i, '').trim();
+      } else if (!details.summary) {
+        details.summary = trimmed;
+      }
+      currentSection = 'summary';
+    } else if (currentSection === 'education' && details.education.length > 0) {
+      // Potentially append more lines or handle multi-line
+    }
+  });
+
+  // Fallback summary if none found
+  if (!details.summary && lines.length > 0) {
+    details.summary = lines[0].trim();
+  }
+
+  return details;
 }
 
 export function computeMatchScore(resumeSkills: string[], jobSkills: string[]): number {
@@ -74,7 +128,20 @@ export async function simulateResumeParse(file: File): Promise<string> {
   
   // Simulate extracting text based on file name hints
   const randomSkills = shuffleArray([...IT_SKILLS]).slice(0, 8 + Math.floor(Math.random() * 6));
-  return randomSkills.join(' ') + ' REST API GitHub Agile 4 years experience';
+  const fileName = file.name.toLowerCase();
+  
+  let role = "Software Engineer";
+  if (fileName.includes("data")) role = "Data Scientist";
+  else if (fileName.includes("devops")) role = "DevOps Engineer";
+  else if (fileName.includes("frontend")) role = "Frontend Developer";
+
+  return `
+Summary: Experienced ${role} with a strong background in ${randomSkills[0]} and ${randomSkills[1]}.
+Skills: ${randomSkills.join(', ')}, REST API, GitHub, Agile
+Experience: 4 years of experience in developing scalable applications. Worked at TechFlow and CloudLink.
+Education: Bachelor of Science in Computer Science from Global University.
+Achievements: Optimized database performance by 40%. Led a team of 5 developers for a major project launch.
+  `;
 }
 
 function shuffleArray<T>(arr: T[]): T[] {

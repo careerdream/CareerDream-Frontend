@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
-import { Trophy, Target, Clock, TrendingUp, Star, Users, CheckCircle, Lock } from 'lucide-react';
+import { Trophy, Target, Clock, TrendingUp, Star, Users, CheckCircle, Lock, Loader2 } from 'lucide-react';
+
 import { assessments } from '../data/assessments';
 import { useApp } from '../context/AppContext';
 
@@ -12,17 +13,32 @@ const leaderboard = [
 ];
 
 export function AssessmentsPage() {
-  const { testResults } = useApp();
+  const { testResults, assessments: apiAssessments, isLoading: isAppLoading } = useApp();
 
   const avgScore = testResults.length
     ? Math.round(testResults.reduce((s, r) => s + r.score, 0) / testResults.length)
     : 0;
 
-  const difficultyConfig = {
+  const difficultyConfig: Record<string, { cls: string, label: string }> = {
+    Easy: { cls: 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/20', label: 'Easy' },
+    Medium: { cls: 'bg-yellow-500/20 text-yellow-600 border-yellow-500/20', label: 'Medium' },
+    Hard: { cls: 'bg-red-500/20 text-red-500 border-red-500/20', label: 'Hard' },
     Beginner: { cls: 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/20', label: 'Beginner' },
     Intermediate: { cls: 'bg-yellow-500/20 text-yellow-600 border-yellow-500/20', label: 'Intermediate' },
     Advanced: { cls: 'bg-red-500/20 text-red-500 border-red-500/20', label: 'Advanced' },
+    'All Levels': { cls: 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/20', label: 'All Levels' },
   };
+
+  if (isAppLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  // Use API assessments if available, else fallback
+  const displayAssessments = apiAssessments.length > 0 ? apiAssessments : assessments;
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,8 +86,8 @@ export function AssessmentsPage() {
             <section>
               <h2 className="text-2xl font-bold mb-6">Available Assessments</h2>
               <div className="grid sm:grid-cols-2 gap-5">
-                {assessments.map(a => {
-                  const diff = difficultyConfig[a.difficulty];
+                {displayAssessments.map(a => {
+                  const diff = difficultyConfig[a.difficulty] || difficultyConfig['All Levels'];
                   const myResult = testResults.find(r => r.assessmentId === a.id);
                   return (
                     <Link
@@ -100,7 +116,7 @@ export function AssessmentsPage() {
                         <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">{a.title}</h3>
 
                         <div className="flex flex-wrap gap-1.5 mb-4">
-                          {a.skills.slice(0, 3).map(skill => (
+                          {((a.skills as string[]) || []).slice(0, 3).map(skill => (
                             <span key={skill} className="px-2 py-0.5 text-xs rounded-full bg-primary/10 text-primary">{skill}</span>
                           ))}
                         </div>
@@ -111,19 +127,20 @@ export function AssessmentsPage() {
                             <p className="font-semibold">{a.duration} min</p>
                           </div>
                           <div>
-                            <p className="text-muted-foreground text-xs flex items-center gap-1 mb-0.5"><Target className="w-3 h-3" /> Questions</p>
-                            <p className="font-semibold">{a.questions.length}</p>
+                             <p className="text-muted-foreground text-xs flex items-center gap-1 mb-0.5"><Target className="w-3 h-3" /> Questions</p>
+                             <p className="font-semibold">{a.questionsCount || a.questions?.length || 0} Total</p>
+
                           </div>
                         </div>
 
                         <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <Users className="w-3 h-3" />
-                            {a.attempts.toLocaleString()} attempts
+                            {(a.attempts || 0).toLocaleString()} attempts
                           </div>
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                            Avg: {a.avgScore}%
+                            Avg: {a.avgScore || 0}%
                           </div>
                         </div>
                       </div>
@@ -187,9 +204,10 @@ export function AssessmentsPage() {
                   </div>
                 ))}
               </div>
-              <Link to="/assessments/1" className="block w-full py-3 text-center bg-white text-primary rounded-xl hover:bg-white/90 transition-all font-bold shadow-lg">
+              <Link to={`/assessments/${displayAssessments[0]?.id || 1}`} className="block w-full py-3 text-center bg-white text-primary rounded-xl hover:bg-white/90 transition-all font-bold shadow-lg">
                 Start a Test Now
               </Link>
+
             </div>
 
             {/* Leaderboard */}

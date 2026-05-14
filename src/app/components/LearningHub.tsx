@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Search, Star, Clock, Award, TrendingUp, BookOpen, Play, ChevronRight, Filter, Users, Loader2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-const CATEGORIES = ['All', 'AI/ML', 'Cloud', 'Full Stack', 'Data Science', 'DevOps', 'Cybersecurity', 'Data Engineering', 'Mobile'];
+const CATEGORIES = ['All', 'AI/ML', 'Cloud', 'Full Stack', 'Data Science', 'DevOps', 'Cybersecurity', 'Data Engineering', 'Mobile', 'UI/UX', 'Backend', 'Frontend'];
 const LEVELS = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
 const learningPaths = [
@@ -11,6 +11,13 @@ const learningPaths = [
   { name: 'Cloud Architect', courses: 6, duration: '4 months', icon: '☁️', color: 'from-orange-400 to-yellow-400', skills: ['AWS', 'Azure', 'K8s', 'Terraform'] },
   { name: 'Full Stack Engineer', courses: 10, duration: '8 months', icon: '💻', color: 'from-green-500 to-teal-500', skills: ['React', 'Node', 'DBs', 'DevOps'] },
   { name: 'ML Engineer', courses: 7, duration: '5 months', icon: '🤖', color: 'from-violet-500 to-purple-600', skills: ['Python', 'PyTorch', 'MLOps', 'AWS'] },
+  { name: 'DevOps Engineer', courses: 9, duration: '6 months', icon: '⚙️', color: 'from-red-500 to-rose-600', skills: ['Docker', 'Jenkins', 'CI/CD', 'Ansible'] },
+  { name: 'Cybersecurity Analyst', courses: 12, duration: '7 months', icon: '🔒', color: 'from-slate-700 to-slate-900', skills: ['Ethical Hacking', 'Networking', 'SIEM', 'Compliance'] },
+  { name: 'Data Engineer', courses: 8, duration: '5 months', icon: '💾', color: 'from-amber-500 to-orange-600', skills: ['Spark', 'Airflow', 'Kafka', 'BigQuery'] },
+  { name: 'Mobile Developer', courses: 7, duration: '5 months', icon: '📱', color: 'from-indigo-500 to-blue-700', skills: ['React Native', 'Flutter', 'Swift', 'Kotlin'] },
+  { name: 'UI/UX Designer', courses: 6, duration: '4 months', icon: '🎨', color: 'from-pink-500 to-rose-500', skills: ['Figma', 'User Research', 'Prototyping', 'Design Systems'] },
+  { name: 'Backend Developer', courses: 9, duration: '6 months', icon: '🖥️', color: 'from-emerald-500 to-green-700', skills: ['Go', 'Java', 'Microservices', 'PostgreSQL'] },
+  { name: 'Frontend Developer', courses: 10, duration: '6 months', icon: '✨', color: 'from-sky-400 to-blue-600', skills: ['React', 'TypeScript', 'Tailwind', 'Next.js'] },
 ];
 
 export function LearningHub() {
@@ -97,9 +104,9 @@ export function LearningHub() {
                     <span key={s} className="px-2 py-0.5 text-xs rounded-full bg-primary/10 text-primary">{s}</span>
                   ))}
                 </div>
-                <button className="w-full py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all text-sm font-medium flex items-center justify-center gap-1">
+                <Link to={`/learn-path/${path.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="w-full py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all text-sm font-medium flex items-center justify-center gap-1 group-hover:shadow-lg">
                   View Path <ChevronRight className="w-4 h-4" />
-                </button>
+                </Link>
               </div>
             ))}
           </div>
@@ -203,7 +210,7 @@ export function LearningHub() {
                       </div>
 
                       <div className="flex flex-wrap gap-1.5">
-                        {course.skills.slice(0, 3).map(s => (
+                        {(course.skills || []).slice(0, 3).map((s: string) => (
                           <span key={s} className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground">{s}</span>
                         ))}
                       </div>
@@ -225,13 +232,16 @@ export function LearningHub() {
                           <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{course.duration}</span>
                           {course.certificate && <span className="flex items-center gap-1"><Award className="w-3 h-3" />Certificate</span>}
                         </div>
-                        <div className="text-right">
-                          {isEnrolled ? (
-                            <span className="text-sm font-bold text-green-500">Enrolled ✓</span>
-                          ) : (
-                            <span className="text-lg font-bold text-primary">{course.price}</span>
-                          )}
-                        </div>
+                          <div className="flex flex-col items-end">
+                            {isEnrolled ? (
+                              <span className="text-sm font-bold text-green-500">Enrolled ✓</span>
+                            ) : (
+                              <>
+                                <span className="text-[10px] font-black text-muted-foreground line-through opacity-50">$199.99</span>
+                                <span className="text-lg font-black bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">FREE</span>
+                              </>
+                            )}
+                          </div>
                       </div>
                     </div>
                   </Link>

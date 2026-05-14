@@ -1,116 +1,604 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import pkg from '@prisma/client';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+import prisma from '../lib/prisma.js';
+import { verifyToken } from '../middleware/auth.js';
+import axios from 'axios';
 
-const { PrismaClient } = pkg;
-const prisma = new PrismaClient();
 const router = express.Router();
 
-// @route   POST /api/auth/register
-// @desc    Register a new user
+// Email transporter (configure in .env)
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+  port: parseInt(process.env.SMTP_PORT || '465'),
+  secure: true,
+  auth: {
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+  },
+});
+
+// Helper: generate JWT with optional remember-me duration
+function generateToken(userId, rememberMe = false) {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: rememberMe ? '90d' : '7d',
+  });
+}
+
+// ──────────────────────────────────────────────
+// REGISTER
+// ──────────────────────────────────────────────
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    
-    // Check if user exists
-    const userExists = await prisma.user.findUnique({ where: { email } });
-    if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'name_email_password_required', message: 'Please provide name, email, and password.' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'password_too_short', message: 'Password must be at least 6 characters.' });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return res.status(409).json({ error: 'email_exists', message: 'This email is already registered. Try logging in instead.' });
+    }
 
-    // Create user
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      }
+      data: { name, email, password: hashedPassword },
     });
 
-    // Create JWT Token
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    const token = generateToken(user.id);
 
     res.status(201).json({
       id: user.id,
       name: user.name,
       email: user.email,
+      avatar: user.avatar,
+      role: user.role,
       token,
     });
   } catch (error) {
     console.error('Registration Error:', error);
-    res.status(500).json({ message: 'Server configuration error or database failed.' });
+    res.status(500).json({ error: 'server_error', message: 'Unable to create account. Please try again later.' });
   }
 });
 
-// @route   POST /api/auth/login
-// @desc    Authenticate User & get token
+// ──────────────────────────────────────────────
+// LOGIN
+// ──────────────────────────────────────────────
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
-    // Retrieve user by email
+    if (!email || !password) {
+      return res.status(400).json({ error: 'email_password_required', message: 'Please provide email and password.' });
+    }
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ error: 'invalid_credentials', message: 'Invalid email or password.' });
     }
 
-    // Verify Password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ error: 'invalid_credentials', message: 'Invalid email or password.' });
     }
 
-    // Generate JWT Token
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { updatedAt: new Date() },
+    });
+
+    // Record Login History
+    try {
+      await prisma.loginHistory.create({
+        data: {
+          userId: user.id,
+          ip: req.ip || req.headers['x-forwarded-for'] || 'unknown',
+          userAgent: req.headers['user-agent'] || 'unknown',
+        },
+      });
+    } catch (historyError) {
+      console.error('Failed to record login history:', historyError);
+    }
+
+    const token = generateToken(user.id, !!rememberMe);
 
     res.json({
       id: user.id,
       name: user.name,
       email: user.email,
+      avatar: user.avatar,
+      role: user.role,
       token,
     });
   } catch (error) {
     console.error('Login Error:', error);
-    res.status(500).json({ message: 'Server configuration error or database failed.' });
+    res.status(500).json({ error: 'server_error', message: 'Unable to log in. Please try again later.' });
   }
 });
 
-// @route   GET /api/auth/me
-// @desc    Get user profile data (Requires Token)
-router.get('/me', async (req, res) => {
+// ──────────────────────────────────────────────
+// RECRUITER REGISTER
+// ──────────────────────────────────────────────
+router.post('/recruiter/register', async (req, res) => {
   try {
-    // Basic auth header check (We will improve this heavily later)
-    const token = req.header('Authorization')?.split(' ')[1];
-    if (!token) return res.status(401).json({ message: 'No token provided, authorization denied' });
+    const { name, email, password, companyName, industry } = req.body;
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // Fetch user without password
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        title: true,
-        location: true,
-        avatar: true,
-        profileCompletion: true,
-        skills: true,
-        resumeUploaded: true,
-      }
+    if (!name || !email || !password || !companyName) {
+      return res.status(400).json({ error: 'missing_fields', message: 'All fields are required.' });
+    }
+
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return res.status(409).json({ error: 'email_exists', message: 'Email already registered.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create Employer first
+    const employer = await prisma.employer.create({
+      data: {
+        company_name: companyName,
+        industry: industry || 'Technology',
+      },
     });
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    
-    res.json(user);
+    // Create User linked to Employer
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: 'recruiter',
+        employerId: employer.id,
+      },
+    });
+
+    const token = generateToken(user.id);
+
+    res.status(201).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      employer,
+      token,
+    });
   } catch (error) {
-    res.status(401).json({ message: 'Invalid token' });
+    console.error('Recruiter Reg Error:', error);
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+
+// ──────────────────────────────────────────────
+// RECRUITER LOGIN
+// ──────────────────────────────────────────────
+router.post('/recruiter/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { employer: true },
+    });
+
+    if (!user || user.role !== 'recruiter') {
+      return res.status(401).json({ error: 'invalid_credentials', message: 'Invalid recruiter credentials.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'invalid_credentials' });
+    }
+
+    const token = generateToken(user.id);
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      employer: user.employer,
+      token,
+    });
+  } catch (error) {
+    console.error('Recruiter Login Error:', error);
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'email_required', message: 'Please provide your email address.' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    // Always return success to prevent email enumeration attacks
+    if (!user) {
+      return res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+    }
+
+    // Generate secure reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { resetToken, resetTokenExpiry },
+    });
+
+    // Build reset URL
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+
+    // Send email
+    try {
+      await transporter.sendMail({
+        from: `"CareerDream" <${process.env.SMTP_USER || 'noreply@careerdream.in'}>`,
+        to: email,
+        subject: 'Reset Your CareerDream Password',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; border: 1px solid #e2e8f0; border-radius: 12px;">
+            <h2 style="color: #1e293b; margin-bottom: 16px;">Reset Your Password</h2>
+            <p style="color: #475569; line-height: 1.6;">
+              We received a request to reset your password. Click the button below to set a new password.
+              This link will expire in <strong>15 minutes</strong>.
+            </p>
+            <a href="${resetUrl}" style="display: inline-block; margin: 24px 0; padding: 12px 32px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+              Reset Password
+            </a>
+            <p style="color: #94a3b8; font-size: 13px;">
+              If you didn't request this, you can safely ignore this email.
+            </p>
+          </div>
+        `,
+      });
+    } catch (emailError) {
+      console.error('Email send error:', emailError);
+      // Don't fail the request — token is saved in DB, user can retry
+    }
+
+    res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+  } catch (error) {
+    console.error('Forgot Password Error:', error);
+    res.status(500).json({ error: 'server_error', message: 'Unable to process request. Please try again later.' });
+  }
+});
+
+// ──────────────────────────────────────────────
+// RESET PASSWORD
+// ──────────────────────────────────────────────
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({ error: 'missing_fields', message: 'Token and new password are required.' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'password_too_short', message: 'Password must be at least 6 characters.' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: { gt: new Date() },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'invalid_token', message: 'This reset link is invalid or has expired. Please request a new one.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    });
+
+    res.json({ message: 'Password has been reset successfully. You can now log in.' });
+  } catch (error) {
+    console.error('Reset Password Error:', error);
+    res.status(500).json({ error: 'server_error', message: 'Unable to reset password. Please try again later.' });
+  }
+});
+
+// ──────────────────────────────────────────────
+// GOOGLE OAUTH
+// ──────────────────────────────────────────────
+router.post('/google', async (req, res) => {
+  try {
+    const { tokenId: accessToken } = req.body;
+    if (!accessToken) return res.status(400).json({ error: 'missing_token', message: 'Google login failed: missing token.' });
+
+    const googleResponse = await axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`);
+    const { email, name, picture: avatar } = googleResponse.data;
+
+    if (!email) return res.status(400).json({ error: 'no_email', message: 'Google account is missing an email address.' });
+
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          name: name || email.split('@')[0],
+          email,
+          password: await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12),
+          avatar,
+          role: 'user',
+        },
+      });
+    } else {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { avatar: user.avatar || avatar, updatedAt: new Date() },
+      });
+    }
+
+    // Record Login History
+    try {
+      await prisma.loginHistory.create({
+        data: {
+          userId: user.id,
+          ip: req.ip || req.headers['x-forwarded-for'] || 'unknown',
+          userAgent: req.headers['user-agent'] || 'unknown',
+        },
+      });
+    } catch (historyError) {
+      console.error('Failed to record login history (Google):', historyError);
+    }
+
+    const token = generateToken(user.id);
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
+      token,
+    });
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.status(500).json({ error: 'google_failed', message: 'Google authentication failed. Please try again.' });
+  }
+});
+
+// ──────────────────────────────────────────────
+// GITHUB OAUTH
+// ──────────────────────────────────────────────
+router.post('/github', async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ error: 'missing_code', message: 'GitHub login failed: missing authorization code.' });
+
+    // Exchange code for access token
+    const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code,
+    }, { headers: { Accept: 'application/json' } });
+
+    const accessToken = tokenResponse.data.access_token;
+    if (!accessToken) throw new Error('Failed to get GitHub access token');
+
+    // Fetch user profile
+    const userResponse = await axios.get('https://api.github.com/user', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const { login: githubUsername, name, avatar_url: avatar } = userResponse.data;
+
+    // Fetch primary email
+    const emailsResponse = await axios.get('https://api.github.com/user/emails', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const primaryEmailObj = emailsResponse.data.find(e => e.primary);
+    const primaryEmail = primaryEmailObj?.email;
+
+    if (!primaryEmail) throw new Error('Primary email not found on GitHub');
+
+    let user = await prisma.user.findUnique({ where: { email: primaryEmail } });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          name: name || githubUsername || primaryEmail.split('@')[0],
+          email: primaryEmail,
+          password: await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12),
+          avatar,
+          role: 'user',
+        },
+      });
+    } else {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          avatar: user.avatar || avatar,
+          name: user.name || name || githubUsername,
+          updatedAt: new Date(),
+        },
+      });
+    }
+
+    // Record Login History
+    try {
+      await prisma.loginHistory.create({
+        data: {
+          userId: user.id,
+          ip: req.ip || req.headers['x-forwarded-for'] || 'unknown',
+          userAgent: req.headers['user-agent'] || 'unknown',
+        },
+      });
+    } catch (historyError) {
+      console.error('Failed to record login history (GitHub):', historyError);
+    }
+
+    const token = generateToken(user.id);
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
+      token,
+    });
+  } catch (error) {
+    console.error('GitHub Auth Error:', error);
+    res.status(500).json({ error: 'github_failed', message: 'GitHub authentication failed. Please try again.' });
+  }
+});
+
+// ──────────────────────────────────────────────
+// GET CURRENT USER
+// ──────────────────────────────────────────────
+router.get('/me', verifyToken, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(req.user.id) },
+      include: {
+        settings: true,
+        savedJobs: { include: { job: true } },
+        appliedJobs: { include: { job: true } },
+        enrolledCourses: { include: { course: true } },
+        certificates: true,
+        rank: true,
+        detailedSkills: true,
+        growthTrajectory: { orderBy: { recorded_at: 'desc' }, take: 12 },
+        testAssessments: { include: { assessment: true } },
+        resumeAnalyses: { orderBy: { created_at: 'desc' }, take: 5 },
+      },
+    });
+
+    if (!user) return res.status(404).json({ error: 'not_found', message: 'User not found.' });
+
+    // Format settings as a simple object
+    const settingsObj = user.settings.reduce((acc, s) => ({ ...acc, [s.preference_key]: s.preference_value }), {});
+    
+    // Cleanup internal fields
+    const { password, resetToken, resetTokenExpiry, ...safeUser } = user;
+
+    res.json({
+      ...safeUser,
+      settings: settingsObj
+    });
+  } catch (error) {
+    console.error('Get Me Error:', error);
+    res.status(500).json({ error: 'server_error', message: 'Server error.' });
+  }
+});
+
+// ──────────────────────────────────────────────
+// UPDATE PROFILE (Now includes results & progress)
+// ──────────────────────────────────────────────
+router.put('/profile', verifyToken, async (req, res) => {
+  try {
+    const { name, title, location, phone, bio, avatar, skills, socials, testResults, courseProgress, savedJobIds, appliedJobIds, language, timezone } = req.body;
+
+    let completion = 30;
+    if (title) completion += 10;
+    if (location) completion += 10;
+    if (avatar) completion += 10;
+    if (skills && Array.isArray(skills) && skills.length > 0) completion += 20;
+    if (bio) completion += 5;
+    if (socials && Object.values(socials).some(v => v)) completion += 5;
+    if (testResults && Array.isArray(testResults) && testResults.length > 0) completion += 5;
+    if (courseProgress && Object.keys(courseProgress).length > 0) completion += 5;
+    if (completion > 100) completion = 100;
+
+    const data = {
+      name, title, location, avatar, skills, language, timezone,
+      profileCompletion: completion,
+      updatedAt: new Date(),
+    };
+
+    if (bio !== undefined) data.bio = bio;
+    if (phone !== undefined) data.phone = phone;
+    if (socials !== undefined) data.socials = socials;
+    if (testResults) data.testResults = testResults;
+    if (courseProgress) data.courseProgress = courseProgress;
+    // NOTE: savedJobIds and appliedJobIds are managed by /api/jobs/:id/save
+    // and /api/jobs/:id/apply endpoints respectively — do NOT set them here.
+
+    const updatedUser = await prisma.user.update({
+      where: { id: parseInt(req.user.id) },
+      data,
+      select: {
+        id: true, name: true, email: true, role: true, title: true,
+        location: true, avatar: true, profileCompletion: true,
+        skills: true, resumeUploaded: true, testResults: true, courseProgress: true,
+        language: true, timezone: true, phone: true, bio: true, socials: true,
+      },
+    });
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error('Profile Update Error:', error);
+    res.status(500).json({ error: 'server_error', message: 'Failed to update profile.' });
+  }
+});
+
+// ──────────────────────────────────────────────
+// CHANGE PASSWORD
+// ──────────────────────────────────────────────
+router.put('/change-password', verifyToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'missing_fields', message: 'Current and new password are required.' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'password_too_short', message: 'New password must be at least 6 characters.' });
+    }
+    const user = await prisma.user.findUnique({ where: { id: parseInt(req.user.id) } });
+    if (!user) return res.status(404).json({ error: 'not_found', message: 'User not found.' });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'wrong_password', message: 'Current password is incorrect.' });
+    }
+    const hashed = await bcrypt.hash(newPassword, 12);
+    await prisma.user.update({ where: { id: user.id }, data: { password: hashed } });
+    res.json({ message: 'Password changed successfully.' });
+  } catch (error) {
+    console.error('Change Password Error:', error);
+    res.status(500).json({ error: 'server_error', message: 'Failed to change password.' });
+  }
+});
+
+// ──────────────────────────────────────────────
+// RECORD ACTIVITY
+// ──────────────────────────────────────────────
+router.post('/activity', verifyToken, async (req, res) => {
+  try {
+    const { action, details } = req.body;
+    if (!action) return res.status(400).json({ error: 'missing_action' });
+
+    await prisma.userActivity.create({
+      data: {
+        userId: parseInt(req.user.id),
+        action,
+        details: typeof details === 'object' ? JSON.stringify(details) : details,
+      },
+    });
+
+    res.json({ success: true, message: 'Activity recorded' });
+  } catch (error) {
+    console.error('Activity Recording Error:', error);
+    res.status(500).json({ error: 'server_error' });
   }
 });
 

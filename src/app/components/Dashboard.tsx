@@ -1,17 +1,38 @@
 import { Link } from 'react-router';
-import { Briefcase, BookOpen, Award, TrendingUp, Clock, Target, ChevronRight, Calendar, Star, Brain, Upload, Users, CheckCircle, Loader2 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
+import { 
+  Briefcase, BookOpen, Award, Target, ChevronRight, 
+  Clock, Brain, CheckCircle, Loader2, 
+  Sparkles, Zap, ArrowUpRight, LayoutDashboard,
+  Search, GraduationCap, Trophy
+} from 'lucide-react';
+import { 
+  BarChart, Bar, XAxis, YAxis, Tooltip, 
+  ResponsiveContainer, RadarChart, PolarGrid, 
+  PolarAngleAxis, Radar, CartesianGrid
+} from 'recharts';
+import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { computeMatchScore } from '../utils/resumeUtils';
 
-const activityData = [
-  { day: 'Mon', jobs: 3, courses: 2 },
-  { day: 'Tue', jobs: 1, courses: 4 },
-  { day: 'Wed', jobs: 5, courses: 1 },
-  { day: 'Thu', jobs: 2, courses: 3 },
-  { day: 'Fri', jobs: 4, courses: 2 },
-  { day: 'Sat', jobs: 1, courses: 5 },
-  { day: 'Sun', jobs: 2, courses: 3 },
-];
+// Types for better safety
+interface Job {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  logo: string;
+  posted: string;
+  type: string;
+  skills: string[];
+}
+
+interface Course {
+  id: number;
+  title: string;
+  instructor: string;
+  image: string;
+  color: string;
+}
 
 const skillRadar = [
   { skill: 'Python', score: 85 },
@@ -22,36 +43,100 @@ const skillRadar = [
   { skill: 'JS', score: 75 },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15
+    }
+  }
+};
+
 export function Dashboard() {
-  const { user, isLoggedIn, savedJobIds, appliedJobIds, enrolledCourseIds, courseProgress, testResults, jobs, courses, assessments, isLoading } = useApp();
+  const { 
+    user, isLoggedIn, isAdmin, appliedJobIds, 
+    enrolledCourseIds, courseProgress, testResults, 
+    jobs, courses, isLoading, resumeSkills,
+    getGlobalRanking, getSkillScores
+  } = useApp();
 
-  const savedJobs = jobs.filter(j => savedJobIds.includes(j.id)).slice(0, 3);
-  const appliedJobs = jobs.filter(j => appliedJobIds.includes(j.id));
-  const enrolledCourses = courses.filter(c => enrolledCourseIds.includes(c.id));
-  const recommendedJobs = jobs.filter(j => !appliedJobIds.includes(j.id)).slice(0, 4);
+  const ranking = getGlobalRanking();
+  const skillScores = getSkillScores();
+  const dynamicSkillRadar = Object.entries(skillScores).map(([skill, score]) => ({ skill: skill.split(' ')[0].substring(0, 8), score })).slice(0, 6);
+  const radarData = dynamicSkillRadar.length >= 3 ? dynamicSkillRadar : skillRadar;
 
-  const avgScore = testResults.length
-    ? Math.round(testResults.reduce((s, r) => s + r.score, 0) / testResults.length)
-    : 0;
+  // Real Match scores for recommended jobs
+  const recommendedJobs = jobs
+    .filter(j => !appliedJobIds.includes(j.id))
+    .map(j => ({
+      ...j,
+      matchScore: computeMatchScore(resumeSkills.length > 0 ? resumeSkills : (user?.skills || []), j.skills)
+    }))
+    .sort((a, b) => b.matchScore - a.matchScore)
+    .slice(0, 4) as (Job & { matchScore: number })[];
+
+  const enrolledCourses = courses.filter(c => enrolledCourseIds.includes(c.id)) as Course[];
+
+  // Build real activity data from actual user state — no Math.random()
+  const todayIdx = new Date().getDay();
+  const yesterdayIdx = (todayIdx - 1 + 7) % 7;
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const activityData = days.map((day, dayIdx) => {
+    // Count tests taken on this day of week (parse timestamp if available)
+    const testsCount = testResults.filter(r => {
+      if (!r.date) return false;
+      if (r.date.toLowerCase().includes('now')) return dayIdx === todayIdx;
+      if (r.date.toLowerCase().includes('week')) return dayIdx === todayIdx || dayIdx === yesterdayIdx;
+      try { return new Date(r.date).getDay() === dayIdx; } catch { return false; }
+    }).length;
+
+    return {
+      day,
+      // Show job applications on today only
+      jobs: dayIdx === todayIdx ? appliedJobIds.length : 0,
+      // Show course activity on today + yesterday if enrolled
+      courses: enrolledCourseIds.length > 0 && (dayIdx === todayIdx || dayIdx === yesterdayIdx) ? 1 : 0,
+      tests: testsCount,
+    };
+  });
 
   const statCards = [
-    { icon: Briefcase, label: 'Jobs Applied', value: appliedJobIds.length, trend: '+2', color: 'text-primary', bg: 'bg-primary/10' },
-    { icon: BookOpen, label: 'Courses Enrolled', value: enrolledCourseIds.length, trend: '+1', color: 'text-accent', bg: 'bg-accent/10' },
-    { icon: Award, label: 'Certifications', value: testResults.filter(r => r.score >= 70).length, trend: '+1', color: 'text-primary', bg: 'bg-primary/10' },
-    { icon: Target, label: 'Avg Test Score', value: avgScore ? `${avgScore}%` : '—', trend: '+5%', color: 'text-accent', bg: 'bg-accent/10' },
+    { icon: Briefcase, label: 'Applications', value: appliedJobIds.length, trend: '+2 this week', color: 'primary' },
+    { icon: BookOpen, label: 'Courses', value: enrolledCourseIds.length, trend: 'Active learning', color: 'accent' },
+    { icon: Award, label: 'Certificates', value: testResults.filter(r => r.score >= 70).length, trend: 'Achieved', color: 'primary' },
+    { icon: Target, label: 'Global Rank', value: testResults.length > 0 ? `#${ranking.rank.toLocaleString()}` : '—', trend: testResults.length > 0 ? `Top ${ranking.percentile}%` : 'No tests taken', color: 'accent' },
   ];
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center p-10 max-w-md">
-          <div className="text-6xl mb-6">🔐</div>
-          <h1 className="text-3xl font-bold mb-3">Sign In to Continue</h1>
-          <p className="text-muted-foreground mb-8">Access your personalized dashboard, track progress, and get AI-powered recommendations.</p>
-          <Link to="/" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-bold hover:opacity-90 transition-all shadow-lg">
-            Go to Home →
+      <div className="min-h-screen flex items-center justify-center bg-[#030213] text-white">
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center p-10 max-w-md bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl"
+        >
+          <div className="text-6xl mb-6 drop-shadow-lg">✨</div>
+          <h1 className="text-4xl font-black mb-4 tracking-tight">Unlock Your Potential</h1>
+          <p className="text-gray-400 mb-8 leading-relaxed">Sign in to access your AI-powered career dashboard, track skill growth, and connect with top IT employers.</p>
+          <Link to="/" className="group relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(79,70,229,0.4)]">
+            Explore Opportunities
+            <Zap className="w-4 h-4 group-hover:animate-pulse" />
           </Link>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -59,281 +144,334 @@ export function Dashboard() {
   if (isLoading || jobs.length === 0 || courses.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+        <div className="relative">
+            <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-primary animate-pulse" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-primary/10 to-accent/10 border-b border-border">
-        <div className="container mx-auto px-4 py-10">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-2xl shadow-lg">
-                  {user?.avatar}
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#030213] transition-colors duration-500">
+      {/* Dynamic Header */}
+      <div className="relative overflow-hidden bg-white dark:bg-[#030213] border-b border-border/50">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -mr-64 -mt-64" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[80px] -ml-32 -mb-32" />
+        
+        <div className="container mx-auto px-6 py-12 relative z-10">
+          <motion.div 
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="flex flex-col lg:flex-row lg:items-center gap-8 justify-between"
+          >
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200" />
+                <div className="w-20 h-20 rounded-[1.5rem] bg-white dark:bg-card border border-border flex items-center justify-center text-4xl shadow-xl relative transition-transform group-hover:scale-105">
+                  <div className="w-full h-full rounded-[1.5rem] flex items-center justify-center overflow-hidden">
+                    {user?.avatar && (user.avatar.startsWith('http') || user.avatar.startsWith('data:')) ? (
+                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      user?.avatar || '👤'
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-3xl font-bold">Welcome back, {user?.name.split(' ')[0]}! 👋</h1>
-                  <p className="text-muted-foreground">{user?.title} • {user?.location}</p>
+              </div>
+              <div>
+                <motion.h1 
+                  initial={{ x: -20 }}
+                  animate={{ x: 0 }}
+                  className="text-4xl font-black tracking-tight mb-1"
+                >
+                  Hi, {user?.name.split(' ')[0]} <span className="text-primary italic font-serif">!</span>
+                </motion.h1>
+                <div className="flex items-center gap-3 text-muted-foreground font-medium">
+                  <LayoutDashboard className="w-4 h-4 text-primary" />
+                  <span>{user?.title}</span>
+                  <span className="w-1 h-1 rounded-full bg-border" />
+                  <span>{user?.location}</span>
                 </div>
               </div>
             </div>
-            <div className="flex gap-3">
-              <Link to="/ai-match" className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary to-accent text-white font-medium hover:opacity-90 transition-all shadow-md text-sm">
-                <Brain className="w-4 h-4" /> AI Resume Match
+            
+            <div className="flex flex-wrap gap-4">
+              {isAdmin && (
+                <Link to="/admin/dashboard" className="group flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-orange-500 text-white font-bold hover:shadow-[0_8px_30px_rgba(244,63,94,0.3)] transition-all hover:-translate-y-1">
+                  <LayoutDashboard className="w-5 h-5 transition-transform group-hover:rotate-12" /> 
+                  Go to Admin Dashboard
+                </Link>
+              )}
+              <Link to="/ai-match" className="group flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-[#4F46E5] text-white font-bold hover:shadow-[0_8px_30px_rgba(79,70,229,0.3)] transition-all hover:-translate-y-1">
+                <Brain className="w-5 h-5 transition-transform group-hover:rotate-12" /> 
+                AI Match Finder
               </Link>
-              <Link to="/jobs" className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border hover:border-primary transition-colors text-sm font-medium">
-                <Briefcase className="w-4 h-4" /> Browse Jobs
+              <Link to="/jobs" className="flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-card border border-border font-bold hover:bg-muted/50 transition-all">
+                <Search className="w-5 h-5 text-primary" /> 
+                Explore Jobs
               </Link>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Profile Completion */}
-          {(user?.profileCompletion ?? 0) < 100 && (
-            <div className="mt-6 p-4 rounded-xl bg-card border border-border flex items-center gap-4">
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-sm font-semibold">Profile Completion</p>
-                  <span className="text-sm text-primary font-bold">{user?.profileCompletion}%</span>
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-primary to-accent rounded-full" style={{ width: `${user?.profileCompletion}%` }} />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">Add skills and work experience to improve your profile</p>
+          {/* Premium Profile Progress */}
+          {((user?.profileCompletion ?? 0) < 100) && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-10 p-6 rounded-[2rem] bg-gradient-to-r from-white/80 to-muted/30 dark:from-white/5 dark:to-transparent backdrop-blur-md border border-white/20 shadow-xl flex flex-col md:flex-row items-center gap-6"
+            >
+              <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary flex items-center justify-center font-bold text-lg text-primary shadow-[0_0_15px_rgba(79,70,229,0.2)]">
+                {user?.profileCompletion}%
               </div>
-              <Link to="/profile" className="px-4 py-2 rounded-xl bg-primary/10 text-primary font-medium text-sm hover:bg-primary/20 transition-colors shrink-0">
-                Complete Profile →
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-lg font-bold mb-1">Elite Profile Status Pending</h3>
+                <p className="text-sm text-muted-foreground">Complete your profiles to get noticed by <span className="text-foreground font-semibold">Tier-1 IT companies</span>. You're almost there!</p>
+              </div>
+              <Link to="/profile" className="px-8 py-3 bg-white dark:bg-card rounded-xl text-primary font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 text-sm">
+                Optimize Profile →
               </Link>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Stat Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {statCards.map(({ icon: Icon, label, value, trend, color, bg }) => (
-            <div key={label} className="p-5 rounded-2xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all cursor-pointer">
-              <div className="flex items-start justify-between mb-3">
-                <div className={`w-10 h-10 rounded-xl ${bg} ${color} flex items-center justify-center`}>
-                  <Icon className="w-5 h-5" />
+      <div className="container mx-auto px-6 py-12">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-12"
+        >
+          {/* Executive Stats */}
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {statCards.map(({ icon: Icon, label, value, trend, color }) => (
+              <motion.div 
+                key={label}
+                variants={itemVariants}
+                whileHover={{ y: -5 }}
+                className="group p-6 rounded-[2.5rem] bg-white dark:bg-card border border-border/50 hover:border-primary/50 transition-all shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] cursor-pointer overflow-hidden relative"
+              >
+                <div className={`absolute -right-4 -top-4 w-24 h-24 bg-${color}/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700`} />
+                <div className="flex items-center justify-between mb-6">
+                  <div className={`w-14 h-14 rounded-2xl bg-${color}/10 flex items-center justify-center text-${color} group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-7 h-7" />
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-lg flex items-center gap-1">
+                      <ArrowUpRight className="w-3 h-3" /> {trend}
+                    </span>
+                  </div>
                 </div>
-                <span className="text-xs text-green-500 font-medium">{trend}</span>
-              </div>
-              <div className="text-2xl font-bold mb-1">{value}</div>
-              <div className="text-xs text-muted-foreground">{label}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Activity Chart */}
-            <div className="p-6 rounded-2xl border border-border bg-card">
-              <h2 className="text-xl font-bold mb-5">Weekly Activity</h2>
-              <ResponsiveContainer width="100%" height={180}>
-                <BarChart data={activityData} barGap={4}>
-                  <XAxis dataKey="day" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                  <YAxis hide />
-                  <Tooltip
-                    contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: '12px' }}
-                    labelStyle={{ fontWeight: 'bold' }}
-                  />
-                  <Bar dataKey="jobs" name="Jobs" fill="var(--color-primary)" radius={[6, 6, 0, 0]} />
-                  <Bar dataKey="courses" name="Courses" fill="var(--color-accent)" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-              <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-primary" /> Jobs viewed</span>
-                <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-accent" /> Lessons completed</span>
-              </div>
-            </div>
-
-            {/* Enrolled Courses Progress */}
-            {enrolledCourses.length > 0 && (
-              <section>
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-xl font-bold">Learning Progress</h2>
-                  <Link to="/learn" className="text-primary hover:text-primary/80 flex items-center gap-1 text-sm">
-                    View all <ChevronRight className="w-4 h-4" />
-                  </Link>
+                <div>
+                  <div className="text-4xl font-black mb-1">{value}</div>
+                  <div className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">{label}</div>
                 </div>
-                <div className="space-y-4">
-                  {enrolledCourses.map(course => {
-                    const prog = courseProgress[course.id] ?? 0;
-                    return (
-                      <Link key={course.id} to={`/learn/${course.id}`}
-                        className="group flex items-center gap-5 p-5 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all">
-                        <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform`}>
-                          {course.image}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-bold truncate group-hover:text-primary transition-colors">{course.title}</h3>
-                          <p className="text-sm text-muted-foreground mb-2">{course.instructor}</p>
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                              <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${prog}%` }} />
+              </motion.div>
+            ))}
+          </section>
+
+          <div className="grid lg:grid-cols-3 gap-10">
+            {/* Main Insights */}
+            <div className="lg:col-span-2 space-y-12">
+              {/* Activity Vision */}
+              <motion.div variants={itemVariants} className="p-8 rounded-[2.5rem] bg-white dark:bg-card border border-border shadow-sm">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-primary rounded-full" />
+                    <h2 className="text-2xl font-black tracking-tight">Growth Trajectory</h2>
+                  </div>
+                  <div className="flex items-center gap-3 bg-muted/50 p-1.5 rounded-xl text-xs font-bold uppercase tracking-tighter">
+                    <button className="px-3 py-1.5 bg-white dark:bg-black rounded-lg shadow-sm">Week</button>
+                    <button className="px-3 py-1.5 text-muted-foreground hover:text-foreground">Month</button>
+                  </div>
+                </div>
+                <div className="h-[280px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={activityData} barGap={8}>
+                      <defs>
+                        <linearGradient id="colorJobs" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#4F46E5" stopOpacity={0.1}/>
+                        </linearGradient>
+                        <linearGradient id="colorCourses" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#06B6D4" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#06B6D4" stopOpacity={0.1}/>
+                        </linearGradient>
+                        <linearGradient id="colorTests" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#10B981" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
+                      <XAxis dataKey="day" tick={{ fontSize: 12, fontWeight: 600 }} axisLine={false} tickLine={false} dy={10} />
+                      <YAxis hide />
+                      <Tooltip
+                        cursor={{ fill: 'transparent' }}
+                        contentStyle={{ 
+                          background: 'rgba(255, 255, 255, 0.9)', 
+                          backdropBlur: '12px',
+                          border: '1px solid var(--border)', 
+                          borderRadius: '20px',
+                          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                          padding: '12px'
+                        }}
+                        labelStyle={{ fontWeight: 'bold', color: '#030213', marginBottom: '4px' }}
+                      />
+                      <Bar dataKey="jobs" radius={[8, 8, 0, 0]} fill="url(#colorJobs)" barSize={30} />
+                      <Bar dataKey="courses" radius={[8, 8, 0, 0]} fill="url(#colorCourses)" barSize={30} />
+                      <Bar dataKey="tests" radius={[8, 8, 0, 0]} fill="url(#colorTests)" barSize={30} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex items-center justify-center gap-8 mt-6">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#4F46E5]">
+                        <div className="w-3 h-3 rounded-full bg-[#4F46E5] shadow-[0_0_8px_rgba(79,70,229,0.5)]" /> Job Search
+                    </div>
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#06B6D4]">
+                        <div className="w-3 h-3 rounded-full bg-[#06B6D4] shadow-[0_0_8px_rgba(6,182,212,0.5)]" /> Skill Mastery
+                    </div>
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#10B981]">
+                        <div className="w-3 h-3 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.5)]" /> Test Performance
+                    </div>
+                </div>
+              </motion.div>
+
+              {/* Learning Hub */}
+              {enrolledCourses.length > 0 && (
+                <section>
+                  <div className="flex items-center justify-between mb-8 group">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+                        <GraduationCap className="w-6 h-6" />
+                      </div>
+                      <h2 className="text-3xl font-black tracking-tight">Focus Laboratory</h2>
+                    </div>
+                    <Link to="/learn" className="flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all">
+                      All Courses <ChevronRight className="w-5 h-5" />
+                    </Link>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {enrolledCourses.map(course => {
+                      const prog = courseProgress[course.id] ?? 0;
+                      return (
+                        <motion.div 
+                          key={course.id}
+                          whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                        >
+                          <Link to={`/learn/${course.id}`}
+                            className="group block p-6 rounded-[2.5rem] bg-white dark:bg-card border border-border hover:border-primary transition-all shadow-sm hover:shadow-2xl hover:shadow-primary/10">
+                            <div className="flex items-start gap-6 mb-6">
+                              <div className={`w-20 h-20 rounded-[1.5rem] bg-gradient-to-br ${course.color} flex items-center justify-center text-4xl shadow-inner group-hover:rotate-6 transition-transform`}>
+                                {course.image}
+                              </div>
+                              <div className="flex-1 min-w-0 pt-1">
+                                <h3 className="font-bold text-xl truncate mb-1 group-hover:text-primary transition-colors">{course.title}</h3>
+                                <p className="text-sm font-medium text-muted-foreground mb-4">By {course.instructor}</p>
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                  Advanced Tier
+                                </div>
+                              </div>
                             </div>
-                            <span className="text-sm font-bold text-primary shrink-0">{prog}%</span>
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                  <Link to="/learn" className="block p-4 rounded-2xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all text-center text-muted-foreground hover:text-primary text-sm font-medium">
-                    + Enroll in a new course
-                  </Link>
-                </div>
-              </section>
-            )}
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between text-xs font-black uppercase tracking-widest">
+                                <span>Mastery Progress</span>
+                                <span className="text-primary">{prog}%</span>
+                              </div>
+                              <div className="h-2.5 bg-muted rounded-full overflow-hidden p-0.5">
+                                <motion.div 
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${prog}%` }}
+                                    transition={{ duration: 1.5, ease: "easeOut" }}
+                                    className="h-full bg-gradient-to-r from-primary to-accent rounded-full shadow-[0_0_10px_rgba(79,70,229,0.3)]" 
+                                />
+                              </div>
+                            </div>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+            </div>
 
-            {/* Applied Jobs */}
-            {appliedJobs.length > 0 && (
-              <section>
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-xl font-bold">Applied Jobs</h2>
-                  <Link to="/jobs" className="text-primary hover:text-primary/80 flex items-center gap-1 text-sm">
-                    View all <ChevronRight className="w-4 h-4" />
-                  </Link>
+            {/* Premium Sidebar */}
+            <aside className="space-y-10">
+              {/* Skill Topology */}
+              <motion.div variants={itemVariants} className="p-8 rounded-[2.5rem] bg-[#030213] text-white border border-white/10 shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-[50px] -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
+                <h3 className="text-xl font-bold mb-8 flex items-center gap-3 relative z-10">
+                    <Trophy className="w-6 h-6 text-yellow-500" /> 
+                    Elite Skill Radar
+                </h3>
+                <div className="h-[220px] relative z-10">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={radarData}>
+                      <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                      <PolarAngleAxis dataKey="skill" tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: 600 }} />
+                      <Radar 
+                        name="Level" 
+                        dataKey="score" 
+                        stroke="#4F46E5" 
+                        fill="#4F46E5" 
+                        fillOpacity={0.4} 
+                        strokeWidth={3}
+                      />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+                <button className="w-full mt-6 py-4 rounded-2xl bg-white/10 border border-white/10 hover:bg-white/20 transition-all font-bold text-sm tracking-tight relative z-10">
+                    Advanced Tuning →
+                </button>
+              </motion.div>
+
+              {/* AI Recruitment matching */}
+              <motion.div variants={itemVariants} className="p-8 rounded-[2.5rem] bg-white dark:bg-card border-2 border-primary/20 shadow-xl shadow-primary/5">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary animate-pulse">
+                    <Brain className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-black tracking-tight">Precision Matches</h3>
                 </div>
                 <div className="space-y-4">
-                  {appliedJobs.slice(0, 3).map(job => (
+                  {recommendedJobs.map((job) => (
                     <Link key={job.id} to={`/jobs/${job.id}`}
-                      className="group flex items-center gap-4 p-5 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-2xl shrink-0">{job.logo}</div>
-                      <div className="flex-1">
-                        <h3 className="font-bold group-hover:text-primary transition-colors">{job.title}</h3>
-                        <p className="text-sm text-muted-foreground">{job.company} • {job.location}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Calendar className="w-3 h-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">Applied {job.posted}</span>
-                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">Under Review</span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Test Results */}
-            {testResults.length > 0 && (
-              <section>
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-xl font-bold">Test Performance</h2>
-                  <Link to="/assessments" className="text-primary hover:text-primary/80 flex items-center gap-1 text-sm">
-                    View all <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </div>
-                <div className="grid sm:grid-cols-3 gap-4">
-                  {testResults.slice(0, 3).map((r, i) => {
-                    const asmnt = assessments.find(a => a.id === r.assessmentId);
-                    return (
-                      <div key={i} className="p-5 rounded-2xl border border-border bg-card text-center">
-                        <div className="text-4xl mb-2">{asmnt?.badge ?? '📝'}</div>
-                        <p className="font-semibold text-sm mb-1">{r.title}</p>
-                        <p className={`text-3xl font-bold mb-1 ${r.score >= 80 ? 'text-green-500' : r.score >= 60 ? 'text-yellow-500' : 'text-red-500'}`}>{r.score}%</p>
-                        <p className="text-xs text-muted-foreground">{r.date}</p>
-                        {r.score >= 70 && (
-                          <div className="mt-2 flex items-center justify-center gap-1 text-xs text-green-500">
-                            <CheckCircle className="w-3 h-3" /> Certified
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-          </div>
-
-          {/* Right Sidebar */}
-          <div className="space-y-6">
-            {/* Skill Radar */}
-            <div className="p-6 rounded-2xl border border-border bg-card">
-              <h3 className="font-bold mb-4">Skill Map</h3>
-              <ResponsiveContainer width="100%" height={180}>
-                <RadarChart data={skillRadar}>
-                  <PolarGrid stroke="var(--border)" />
-                  <PolarAngleAxis dataKey="skill" tick={{ fontSize: 11 }} />
-                  <Radar name="Level" dataKey="score" stroke="var(--color-primary)" fill="var(--color-primary)" fillOpacity={0.2} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Recommended Jobs */}
-            <div className="p-6 rounded-2xl border border-border bg-card">
-              <div className="flex items-center gap-2 mb-5">
-                <Brain className="w-5 h-5 text-primary" />
-                <h3 className="font-bold">AI Recommended Jobs</h3>
-              </div>
-              <div className="space-y-3">
-                {recommendedJobs.map(job => {
-                  const matchScore = 70 + Math.floor(Math.random() * 25);
-                  return (
-                    <Link key={job.id} to={`/jobs/${job.id}`}
-                      className="block p-3 rounded-xl border border-border hover:border-primary hover:bg-primary/5 transition-all">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-lg">{job.logo}</div>
+                      className="group flex flex-col p-4 rounded-3xl border border-border hover:border-primary hover:bg-primary/5 transition-all">
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="w-12 h-12 rounded-2xl bg-white dark:bg-card shadow-md flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">{job.logo}</div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm truncate">{job.title}</p>
-                          <p className="text-xs text-muted-foreground truncate">{job.company}</p>
+                          <h4 className="font-bold text-base truncate group-hover:text-primary transition-colors">{job.title}</h4>
+                          <p className="text-xs font-semibold text-muted-foreground">{job.company}</p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-green-500 font-medium">{matchScore}% match</span>
-                        <span className="text-muted-foreground">{job.type}</span>
+                      <div className="flex items-center justify-between">
+                          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${job.matchScore >= 70 ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'} text-[10px] font-black uppercase tracking-widest`}>
+                              <Sparkles className="w-3 h-3" /> {job.matchScore}% {job.matchScore >= 90 ? 'Elite' : 'Targeted'} Match
+                          </div>
+                          <span className="text-[10px] font-bold text-muted-foreground">{job.type}</span>
                       </div>
-                    </Link>
-                  );
-                })}
-              </div>
-              <Link to="/ai-match" className="block mt-4 text-center text-xs text-primary hover:underline">
-                Upload resume for better matches →
-              </Link>
-            </div>
-
-            {/* Saved Jobs */}
-            {savedJobs.length > 0 && (
-              <div className="p-6 rounded-2xl border border-border bg-card">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold">Saved Jobs</h3>
-                  <span className="text-xs text-muted-foreground">{savedJobIds.length} total</span>
-                </div>
-                <div className="space-y-3">
-                  {savedJobs.map(job => (
-                    <Link key={job.id} to={`/jobs/${job.id}`}
-                      className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary hover:bg-primary/5 transition-all">
-                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-lg">{job.logo}</div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm truncate">{job.title}</p>
-                        <p className="text-xs text-muted-foreground">{job.company}</p>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
                     </Link>
                   ))}
                 </div>
-                <Link to="/jobs" className="block mt-3 text-center text-xs text-primary hover:underline">View all saved →</Link>
-              </div>
-            )}
-
-            {/* AI Match CTA */}
-            {!user?.resumeUploaded && (
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-primary to-accent text-white">
-                <Brain className="w-10 h-10 mb-3 opacity-90" />
-                <h3 className="font-bold text-lg mb-2">Boost Your Matches</h3>
-                <p className="text-sm opacity-90 mb-4">Upload your resume to get AI-powered job recommendations tailored to your skills.</p>
-                <Link to="/ai-match" className="block w-full py-3 bg-white text-primary rounded-xl text-center font-bold hover:bg-white/90 transition-all">
-                  Upload Resume →
+                <Link to="/ai-match" className="block mt-8 text-center text-xs font-black uppercase tracking-widest text-primary hover:underline underline-offset-8">
+                  Master Match Tuning →
                 </Link>
-              </div>
-            )}
+              </motion.div>
+
+              {/* Recruitment Status */}
+              <motion.div variants={itemVariants} className="p-8 rounded-[2.5rem] bg-gradient-to-br from-primary to-accent text-white shadow-2xl overflow-hidden relative">
+                <div className="absolute top-0 right-0 p-8 opacity-20 transform translate-x-1/2 -translate-y-1/2 overflow-hidden">
+                    <Zap className="w-64 h-64 rotate-12" />
+                </div>
+                <h3 className="text-2xl font-black mb-4 relative z-10 leading-tight">Fast-Track Your <br/>Career Access</h3>
+                <p className="text-white/80 text-sm mb-8 leading-relaxed relative z-10">Upload your latest resume to enable <span className="font-bold text-white">Direct Recruiter Directing</span> and bypass entry testing.</p>
+                <Link to="/ai-match" className="block w-full py-4 bg-white text-[#030213] rounded-2xl text-center font-black transition-all hover:shadow-[0_15px_30px_rgba(255,255,255,0.3)] hover:-translate-y-1 relative z-10">
+                  Boost Visibility →
+                </Link>
+              </motion.div>
+            </aside>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

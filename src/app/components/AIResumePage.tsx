@@ -1,19 +1,11 @@
 import { useState, useCallback } from 'react';
 import { Link } from 'react-router';
-import { Upload, Brain, Zap, Target, AlertCircle, CheckCircle, ChevronRight, FileText, Loader2, Star, TrendingUp } from 'lucide-react';
+import { Upload, Brain, Zap, Target, AlertCircle, CheckCircle, ChevronRight, FileText, Loader2, Star, TrendingUp, Award, BookOpen, Briefcase } from 'lucide-react';
 import { jobs } from '../data/jobs';
 import { courses } from '../data/courses';
-import { extractSkillsFromText, simulateResumeParse, matchJobsToResume, getCareerInsights } from '../utils/resumeUtils';
+import { extractSkillsFromText, simulateResumeParse, matchJobsToResume, getCareerInsights, parseResumeDetails, ResumeDetails } from '../utils/resumeUtils';
 import { useApp } from '../context/AppContext';
 
-const DEMO_RESUME_TEXT = `
-John Doe - Senior Software Engineer
-Skills: Python, Machine Learning, TensorFlow, PyTorch, AWS, Docker, Kubernetes, SQL, PostgreSQL, Git, CI/CD
-Experience: 5 years in software development, 3 years ML engineering at TechCorp
-Education: B.Tech Computer Science, IIT Delhi
-Projects: Built real-time recommendation engine serving 10M users using collaborative filtering
-Certifications: AWS Certified Solutions Architect, Google Cloud Professional Data Engineer
-`;
 
 export function AIResumePage() {
   const { setResumeSkills, resumeSkills } = useApp();
@@ -22,17 +14,20 @@ export function AIResumePage() {
   const [parsing, setParsing] = useState(false);
   const [parsed, setParsed] = useState(false);
   const [extractedSkills, setExtractedSkills] = useState<string[]>(resumeSkills);
+  const [resumeDetails, setResumeDetails] = useState<ResumeDetails | null>(null);
   const [matchResults, setMatchResults] = useState<ReturnType<typeof matchJobsToResume>>([]);
   const [careerInsights, setCareerInsights] = useState<ReturnType<typeof getCareerInsights>>([]);
 
   const processResume = async (text: string) => {
-    const skills = extractSkillsFromText(text);
-    const matches = matchJobsToResume(skills, jobs.map(j => ({ id: j.id, title: j.title, company: j.company, skills: j.skills })));
-    const insights = getCareerInsights(skills);
-    setExtractedSkills(skills);
+    const details = parseResumeDetails(text);
+    const matches = matchJobsToResume(details.skills, jobs.map(j => ({ id: j.id, title: j.title, company: j.company, skills: j.skills })));
+    const insights = getCareerInsights(details.skills);
+    
+    setResumeDetails(details);
+    setExtractedSkills(details.skills);
     setMatchResults(matches);
     setCareerInsights(insights);
-    setResumeSkills(skills);
+    setResumeSkills(details.skills);
     setParsed(true);
   };
 
@@ -51,16 +46,14 @@ export function AIResumePage() {
     if (f) handleFile(f);
   }, []);
 
-  const handleDemo = async () => {
-    setParsing(true);
-    await new Promise(r => setTimeout(r, 1500));
-    await processResume(DEMO_RESUME_TEXT);
-    setParsing(false);
-  };
 
   const topMatches = matchResults.slice(0, 5);
+  
+  // Find courses that help bridge the gap for top matches
+  const missingSkillsForTopMatches = Array.from(new Set(topMatches.flatMap(m => m.missingSkills)));
   const recommendedCourses = courses.filter(c =>
-    extractedSkills.length === 0 || c.skills.some(s => extractedSkills.some(es => es.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(es.toLowerCase())))
+    c.skills.some(s => missingSkillsForTopMatches.some(ms => ms.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(ms.toLowerCase()))) ||
+    (extractedSkills.length === 0 && c.featured)
   ).slice(0, 3);
 
   return (
@@ -133,23 +126,6 @@ export function AIResumePage() {
               )}
             </div>
 
-            {/* Demo button */}
-            {!parsing && (
-              <>
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-muted-foreground text-sm">or</span>
-                  <div className="flex-1 h-px bg-border" />
-                </div>
-                <button
-                  onClick={handleDemo}
-                  className="w-full py-4 rounded-2xl border-2 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 transition-all font-semibold text-primary flex items-center justify-center gap-2"
-                >
-                  <Zap className="w-5 h-5" />
-                  Try with a Demo Resume (Instant)
-                </button>
-              </>
-            )}
 
             {/* Features */}
             <div className="grid grid-cols-3 gap-4 mt-6">
@@ -177,7 +153,7 @@ export function AIResumePage() {
                 <p className="text-muted-foreground text-sm">Found <strong>{extractedSkills.length}</strong> skills • Matched against <strong>{jobs.length}</strong> jobs</p>
               </div>
               <button
-                onClick={() => { setParsed(false); setFile(null); setExtractedSkills([]); }}
+                onClick={() => { setParsed(false); setFile(null); setExtractedSkills([]); setResumeDetails(null); }}
                 className="px-4 py-2 rounded-xl border border-border hover:border-primary text-sm transition-colors"
               >
                 Upload New
@@ -202,13 +178,67 @@ export function AIResumePage() {
                   </div>
                 </div>
 
-                {/* Career Insights */}
-                {careerInsights.length > 0 && (
+                {/* Career Profile Details */}
+                {resumeDetails && (
                   <div className="p-6 rounded-2xl border border-border bg-card">
                     <h3 className="font-bold mb-4 flex items-center gap-2">
                       <TrendingUp className="w-5 h-5 text-accent" />
                       Career Profile
                     </h3>
+                    <div className="space-y-4">
+                      {resumeDetails.summary && (
+                        <div>
+                          <p className="text-xs font-bold uppercase text-muted-foreground mb-1">Professional Summary</p>
+                          <p className="text-sm italic text-muted-foreground leading-relaxed">"{resumeDetails.summary}"</p>
+                        </div>
+                      )}
+                      
+                      {resumeDetails.education.length > 0 && (
+                        <div>
+                          <p className="text-xs font-bold uppercase text-muted-foreground mb-2 flex items-center gap-1">
+                            <BookOpen className="w-3 h-3" /> Education
+                          </p>
+                          <ul className="space-y-1">
+                            {resumeDetails.education.map((edu, i) => (
+                              <li key={i} className="text-sm font-medium">{edu}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {resumeDetails.experience.length > 0 && (
+                        <div>
+                          <p className="text-xs font-bold uppercase text-muted-foreground mb-2 flex items-center gap-1">
+                            <Briefcase className="w-3 h-3" /> Experience
+                          </p>
+                          <ul className="space-y-1">
+                            {resumeDetails.experience.map((exp, i) => (
+                              <li key={i} className="text-sm font-medium">{exp}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {resumeDetails.achievements.length > 0 && (
+                        <div>
+                          <p className="text-xs font-bold uppercase text-muted-foreground mb-2 flex items-center gap-1">
+                            <Award className="w-3 h-3" /> Achievements
+                          </p>
+                          <ul className="space-y-1">
+                            {resumeDetails.achievements.map((ach, i) => (
+                              <li key={i} className="text-sm font-medium">• {ach}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Role Recommendations (Insights) */}
+                {careerInsights.length > 0 && (
+                  <div className="p-6 rounded-2xl border border-border bg-card">
+                    <h3 className="font-bold mb-4 text-sm text-muted-foreground uppercase">Potential Career Paths</h3>
                     <div className="space-y-3">
                       {careerInsights.map(({ category, level, icon }) => (
                         <div key={category} className="flex items-center gap-3">
@@ -219,11 +249,6 @@ export function AIResumePage() {
                             <p className="font-medium text-sm">{category}</p>
                             <p className="text-xs text-muted-foreground">{level}</p>
                           </div>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                            level === 'Expert' ? 'bg-green-500/20 text-green-600 dark:text-green-400' :
-                            level === 'Intermediate' ? 'bg-blue-500/20 text-blue-500' :
-                            'bg-muted text-muted-foreground'
-                          }`}>{level}</span>
                         </div>
                       ))}
                     </div>
@@ -232,21 +257,25 @@ export function AIResumePage() {
 
                 {/* Recommended courses */}
                 {recommendedCourses.length > 0 && (
-                  <div className="p-6 rounded-2xl bg-gradient-to-br from-primary to-accent text-white">
+                  <div className="p-6 rounded-2xl bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/20">
                     <h3 className="font-bold mb-3 flex items-center gap-2">
                       <Star className="w-5 h-5" />
                       Recommended Courses
                     </h3>
+                    <p className="text-xs mb-4 opacity-90">To bridge your skills gap and boost your profile:</p>
                     <div className="space-y-3">
                       {recommendedCourses.map(c => (
-                        <Link key={c.id} to={`/learn/${c.id}`} className="block p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
+                        <Link key={c.id} to={`/learn/${c.id}`} className="block p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10">
                           <p className="font-medium text-sm">{c.title}</p>
-                          <p className="text-xs opacity-80">{c.instructor}</p>
+                          <div className="flex items-center justify-between mt-1">
+                            <p className="text-[10px] opacity-80">{c.instructor}</p>
+                            <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded uppercase font-bold">Enrol Now</span>
+                          </div>
                         </Link>
                       ))}
                     </div>
-                    <Link to="/learn" className="block mt-3 text-center text-sm opacity-90 hover:opacity-100">
-                      Browse All Courses →
+                    <Link to="/learn" className="block mt-4 text-center text-sm font-semibold hover:underline">
+                      Explore Learning Hub →
                     </Link>
                   </div>
                 )}
@@ -254,24 +283,27 @@ export function AIResumePage() {
 
               {/* Right: Job Matches */}
               <div className="lg:col-span-2">
-                <div className="flex items-center gap-2 mb-5">
-                  <Target className="w-5 h-5 text-primary" />
-                  <h3 className="font-bold text-xl">Top Job Matches</h3>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-5 h-5 text-primary" />
+                    <h3 className="font-bold text-xl">Top Job Matches</h3>
+                  </div>
+                  <span className="text-sm text-muted-foreground">Showing top 5 results</span>
                 </div>
                 <div className="space-y-4">
                   {topMatches.map((match, i) => {
                     const job = jobs.find(j => j.id === match.jobId)!;
                     return (
-                      <div key={match.jobId} className="p-5 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-xl hover:shadow-primary/10 transition-all">
+                      <div key={match.jobId} className="p-5 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-xl hover:shadow-primary/10 transition-all group">
                         <div className="flex items-start gap-4">
-                          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-2xl flex-shrink-0">
+                          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">
                             {job.logo}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-4 mb-2">
                               <div>
-                                <p className="font-bold truncate">{match.title}</p>
-                                <p className="text-sm text-muted-foreground">{match.company} • {job.location}</p>
+                                <p className="font-bold truncate text-lg group-hover:text-primary transition-colors">{match.title}</p>
+                                <p className="text-sm text-muted-foreground font-medium">{match.company} • {job.location}</p>
                               </div>
                               {/* Match Score Ring */}
                               <div className={`shrink-0 w-14 h-14 rounded-full border-4 flex items-center justify-center font-bold text-sm ${
@@ -283,37 +315,47 @@ export function AIResumePage() {
                               </div>
                             </div>
 
-                            {/* Matched Skills */}
-                            {match.matchedSkills.length > 0 && (
-                              <div className="mb-2">
-                                <p className="text-xs text-muted-foreground mb-1">Matching skills:</p>
-                                <div className="flex flex-wrap gap-1">
-                                  {match.matchedSkills.slice(0, 4).map(s => (
-                                    <span key={s} className="px-2 py-0.5 text-xs rounded-full bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">✓ {s}</span>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+                            {/* Job Brief */}
+                            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                              {job.description}
+                            </p>
 
-                            {/* Missing Skills */}
-                            {match.missingSkills.length > 0 && (
-                              <div className="mb-3">
-                                <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                                  <AlertCircle className="w-3 h-3 text-orange-500" /> Missing skills:
-                                </p>
-                                <div className="flex flex-wrap gap-1">
-                                  {match.missingSkills.slice(0, 3).map(s => (
-                                    <span key={s} className="px-2 py-0.5 text-xs rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">✗ {s}</span>
-                                  ))}
+                            <div className="grid md:grid-cols-2 gap-4 mb-4">
+                              {/* Matched Skills */}
+                              {match.matchedSkills.length > 0 && (
+                                <div>
+                                  <p className="text-[10px] font-bold uppercase text-green-600 dark:text-green-400 mb-1.5">Matching Skills</p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {match.matchedSkills.slice(0, 4).map(s => (
+                                      <span key={s} className="px-2 py-0.5 text-[10px] rounded-full bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">✓ {s}</span>
+                                    ))}
+                                    {match.matchedSkills.length > 4 && <span className="text-[10px] text-muted-foreground">+{match.matchedSkills.length - 4} more</span>}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
 
-                            <div className="flex items-center gap-3">
-                              <Link to={`/jobs/${match.jobId}`} className="flex items-center gap-1 text-sm text-primary hover:underline font-medium">
-                                View Job <ChevronRight className="w-4 h-4" />
-                              </Link>
-                              <span className="text-xs text-muted-foreground">{job.salary}</span>
+                              {/* Missing Skills */}
+                              {match.missingSkills.length > 0 && (
+                                <div>
+                                  <p className="text-[10px] font-bold uppercase text-orange-600 dark:text-orange-400 mb-1.5">Skills to Develop</p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {match.missingSkills.slice(0, 3).map(s => (
+                                      <span key={s} className="px-2 py-0.5 text-[10px] rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">✗ {s}</span>
+                                    ))}
+                                    {match.missingSkills.length > 3 && <span className="text-[10px] text-muted-foreground">+{match.missingSkills.length - 3} more</span>}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                              <div className="flex items-center gap-3">
+                                <Link to={`/jobs/${match.jobId}`} className="flex items-center gap-1 text-sm text-primary hover:underline font-bold">
+                                  View Details <ChevronRight className="w-4 h-4" />
+                                </Link>
+                                <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-md">{job.salary}</span>
+                              </div>
+                              <span className="text-[10px] text-muted-foreground italic">Posted {job.postedAt || 'recently'}</span>
                             </div>
                           </div>
                         </div>
@@ -321,8 +363,10 @@ export function AIResumePage() {
                     );
                   })}
                 </div>
-                <div className="mt-4 text-center">
-                  <Link to="/jobs" className="text-sm text-primary hover:underline">View all {jobs.length} jobs →</Link>
+                <div className="mt-6 text-center">
+                  <Link to="/jobs" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary/5 text-primary hover:bg-primary/10 transition-colors font-bold border border-primary/20">
+                    Explore All Opportunities <ChevronRight className="w-4 h-4" />
+                  </Link>
                 </div>
               </div>
             </div>
