@@ -141,7 +141,7 @@ export function Dashboard() {
     );
   }
 
-  if (isLoading || jobs.length === 0 || courses.length === 0) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="relative">
