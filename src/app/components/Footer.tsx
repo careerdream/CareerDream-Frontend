@@ -22,7 +22,7 @@ const footerLinks = {
     { label: 'Careers', to: '/' },
     { label: 'Blog', to: '/' },
     { label: 'Report Issues', to: '/report-issue' },
-    { label: 'Contact', to: '/' },
+    { label: 'Contact', to: '/report-issue' },
   ],
   Legal: [
     { label: 'Privacy Policy', to: '/privacy-policy' },

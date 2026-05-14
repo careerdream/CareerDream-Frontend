@@ -45,7 +45,7 @@ export function JobsPage() {
       result = result.filter(j =>
         j.title.toLowerCase().includes(q) ||
         j.company.toLowerCase().includes(q) ||
-        j.skills.some(s => s.toLowerCase().includes(q)) ||
+        (Array.isArray(j.skills) && j.skills.some(s => s.toLowerCase().includes(q))) ||
         j.location.toLowerCase().includes(q)
       );
     }
@@ -57,10 +57,29 @@ export function JobsPage() {
     if (filterMode === 'applied') result = result.filter(j => appliedJobIds.includes(j.id));
 
     switch (sortBy) {
-      case 'Salary: High to Low': result.sort((a, b) => b.salaryMax - a.salaryMax); break;
-      case 'Salary: Low to High': result.sort((a, b) => a.salaryMin - b.salaryMin); break;
-      case 'Most Applicants': result.sort((a, b) => b.applicants - a.applicants); break;
-      default: result.sort((a, b) => a.postedDays - b.postedDays);
+      case 'Salary: High to Low': 
+        result.sort((a, b) => {
+          const valA = parseInt(a.salary.replace(/[^0-9]/g, '')) || 0;
+          const valB = parseInt(b.salary.replace(/[^0-9]/g, '')) || 0;
+          return valB - valA;
+        }); 
+        break;
+      case 'Salary: Low to High': 
+        result.sort((a, b) => {
+          const valA = parseInt(a.salary.replace(/[^0-9]/g, '')) || 0;
+          const valB = parseInt(b.salary.replace(/[^0-9]/g, '')) || 0;
+          return valA - valB;
+        }); 
+        break;
+      case 'Most Applicants': 
+        result.sort((a, b) => (b.stats?.applicants_count || 0) - (a.stats?.applicants_count || 0)); 
+        break;
+      default: 
+        result.sort((a, b) => {
+          const dateA = a.posted_at ? new Date(a.posted_at).getTime() : 0;
+          const dateB = b.posted_at ? new Date(b.posted_at).getTime() : 0;
+          return dateB - dateA;
+        });
     }
     return result;
   }, [searchQuery, selectedTypes, selectedLevels, selectedCategory, sortBy, filterMode, savedJobIds, appliedJobIds]);
@@ -377,12 +396,12 @@ export function JobsPage() {
 
                         <div className="flex flex-wrap items-center justify-between gap-6">
                           <div className="flex flex-wrap gap-2">
-                            {job.skills.slice(0, 4).map(skill => (
+                            {Array.isArray(job.skills) && job.skills.slice(0, 4).map(skill => (
                               <span key={skill} className="px-4 py-1.5 rounded-full bg-card border border-border/50 text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
                                 {skill}
                               </span>
                             ))}
-                            {job.skills.length > 4 && (
+                            {Array.isArray(job.skills) && job.skills.length > 4 && (
                               <span className="px-3 py-1.5 text-[10px] font-black text-muted-foreground">+{job.skills.length - 4} More</span>
                             )}
                           </div>
