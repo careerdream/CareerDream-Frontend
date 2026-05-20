@@ -26,17 +26,17 @@ export const assessments: Assessment[] = [
   {
     "id": 1,
     "title": "Python Programming",
-    "category": "Software Engineering",
+    "category": "Programming",
     "badge": "🐍",
-    "color": "from-green-500 to-emerald-700",
-    "duration": 60,
+    "color": "from-blue-500 to-cyan-500",
+    "duration": 45,
     "skills": [
-      "Data Types",
+      "Python",
       "OOP",
-      "Data Science"
+      "Data Structures"
     ],
     "avgScore": 78,
-    "attempts": 1205,
+    "attempts": 12450,
     "description": "120 unique questions across Easy, Medium, and Hard.",
     "difficulty": "All Levels",
     "questions": [
@@ -14223,6 +14223,1585 @@ export const assessments: Assessment[] = [
         ],
         "correct": 2,
         "explanation": "Mastery of Resource Management is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "JavaScript Fundamentals",
+    "category": "Programming",
+    "badge": "✨",
+    "color": "from-yellow-400 to-orange-500",
+    "duration": 40,
+    "skills": [
+      "JavaScript",
+      "ES6",
+      "DOM"
+    ],
+    "avgScore": 82,
+    "attempts": 15600,
+    "description": "120 unique questions across Easy, Medium, and Hard.",
+    "difficulty": "All Levels",
+    "questions": [
+      {
+        "id": 1081,
+        "question": "Which of the following best describes the core purpose of Variable?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Variable is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1082,
+        "question": "When dealing with Variable, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Variable is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1083,
+        "question": "Which of the following best describes the core purpose of Data Type?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Data Type is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1084,
+        "question": "When dealing with Data Type, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Data Type is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1085,
+        "question": "Which of the following best describes the core purpose of Operator?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Operator is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1086,
+        "question": "When dealing with Operator, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Operator is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1087,
+        "question": "Which of the following best describes the core purpose of Function?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Function is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1088,
+        "question": "When dealing with Function, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Function is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1089,
+        "question": "Which of the following best describes the core purpose of Object?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Object is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1090,
+        "question": "When dealing with Object, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Object is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1091,
+        "question": "Which of the following best describes the core purpose of Array?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Array is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1092,
+        "question": "When dealing with Array, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Array is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1093,
+        "question": "Which of the following best describes the core purpose of String Method?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "String Method is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1094,
+        "question": "When dealing with String Method, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "String Method is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1095,
+        "question": "Which of the following best describes the core purpose of Array Method?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Array Method is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1096,
+        "question": "When dealing with Array Method, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Array Method is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1097,
+        "question": "Which of the following best describes the core purpose of If Statement?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "If Statement is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1098,
+        "question": "When dealing with If Statement, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "If Statement is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1099,
+        "question": "Which of the following best describes the core purpose of For Loop?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "For Loop is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1100,
+        "question": "When dealing with For Loop, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "For Loop is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1101,
+        "question": "Which of the following best describes the core purpose of While Loop?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "While Loop is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1102,
+        "question": "When dealing with While Loop, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "While Loop is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1103,
+        "question": "Which of the following best describes the core purpose of Boolean?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Boolean is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1104,
+        "question": "When dealing with Boolean, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Boolean is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1105,
+        "question": "Which of the following best describes the core purpose of Undefined?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Undefined is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1106,
+        "question": "When dealing with Undefined, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Undefined is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1107,
+        "question": "Which of the following best describes the core purpose of Null?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Null is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1108,
+        "question": "When dealing with Null, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Null is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1109,
+        "question": "Which of the following best describes the core purpose of Template Literal?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Template Literal is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1110,
+        "question": "When dealing with Template Literal, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Template Literal is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1111,
+        "question": "Which of the following best describes the core purpose of Scope?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Scope is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1112,
+        "question": "When dealing with Scope, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Scope is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1113,
+        "question": "Which of the following best describes the core purpose of Arrow Function?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Arrow Function is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1114,
+        "question": "When dealing with Arrow Function, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Arrow Function is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1115,
+        "question": "Which of the following best describes the core purpose of Math Object?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Math Object is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1116,
+        "question": "When dealing with Math Object, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Math Object is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1117,
+        "question": "Which of the following best describes the core purpose of Date Object?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Date Object is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1118,
+        "question": "When dealing with Date Object, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Date Object is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1119,
+        "question": "Which of the following best describes the core purpose of Console Log?",
+        "options": [
+          "It is a security vulnerability.",
+          "It is an advanced hardware component.",
+          "It is a fundamental element used for basic operations in this domain.",
+          "It is an obsolete technology."
+        ],
+        "correct": 2,
+        "explanation": "Console Log is a foundational building block in this technology stack.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1120,
+        "question": "When dealing with Console Log, what is the most common use case?",
+        "options": [
+          "Utilizing it to achieve standard, expected behaviors in your application.",
+          "Ignoring it completely as it is deprecated.",
+          "Only using it for enterprise-level cloud deployments.",
+          "Applying it to break system limits."
+        ],
+        "correct": 0,
+        "explanation": "Console Log is widely used daily by developers to handle standard tasks efficiently.",
+        "difficulty": "Easy"
+      },
+      {
+        "id": 1121,
+        "question": "How does Closure improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Closure is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1122,
+        "question": "What is a common pitfall to avoid when implementing Closure?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Closure is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1123,
+        "question": "How does Promise improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Promise is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1124,
+        "question": "What is a common pitfall to avoid when implementing Promise?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Promise is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1125,
+        "question": "How does Async/Await improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Async/Await is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1126,
+        "question": "What is a common pitfall to avoid when implementing Async/Await?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Async/Await is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1127,
+        "question": "How does Event Listener improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Event Listener is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1128,
+        "question": "What is a common pitfall to avoid when implementing Event Listener?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Event Listener is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1129,
+        "question": "How does DOM Manipulation improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "DOM Manipulation is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1130,
+        "question": "What is a common pitfall to avoid when implementing DOM Manipulation?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While DOM Manipulation is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1131,
+        "question": "How does Event Bubbling improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Event Bubbling is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1132,
+        "question": "What is a common pitfall to avoid when implementing Event Bubbling?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Event Bubbling is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1133,
+        "question": "How does Event Capturing improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Event Capturing is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1134,
+        "question": "What is a common pitfall to avoid when implementing Event Capturing?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Event Capturing is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1135,
+        "question": "How does Callback improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Callback is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1136,
+        "question": "What is a common pitfall to avoid when implementing Callback?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Callback is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1137,
+        "question": "How does ES6 Module improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "ES6 Module is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1138,
+        "question": "What is a common pitfall to avoid when implementing ES6 Module?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While ES6 Module is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1139,
+        "question": "How does Destructuring improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Destructuring is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1140,
+        "question": "What is a common pitfall to avoid when implementing Destructuring?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Destructuring is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1141,
+        "question": "How does Spread Operator improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Spread Operator is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1142,
+        "question": "What is a common pitfall to avoid when implementing Spread Operator?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Spread Operator is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1143,
+        "question": "How does Rest Parameter improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Rest Parameter is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1144,
+        "question": "What is a common pitfall to avoid when implementing Rest Parameter?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Rest Parameter is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1145,
+        "question": "How does Fetch API improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Fetch API is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1146,
+        "question": "What is a common pitfall to avoid when implementing Fetch API?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Fetch API is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1147,
+        "question": "How does JSON Parse/Stringify improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "JSON Parse/Stringify is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1148,
+        "question": "What is a common pitfall to avoid when implementing JSON Parse/Stringify?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While JSON Parse/Stringify is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1149,
+        "question": "How does Local Storage improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Local Storage is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1150,
+        "question": "What is a common pitfall to avoid when implementing Local Storage?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Local Storage is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1151,
+        "question": "How does Session Storage improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Session Storage is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1152,
+        "question": "What is a common pitfall to avoid when implementing Session Storage?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Session Storage is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1153,
+        "question": "How does Class improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Class is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1154,
+        "question": "What is a common pitfall to avoid when implementing Class?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Class is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1155,
+        "question": "How does Inheritance improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Inheritance is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1156,
+        "question": "What is a common pitfall to avoid when implementing Inheritance?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Inheritance is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1157,
+        "question": "How does Map/Set improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Map/Set is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1158,
+        "question": "What is a common pitfall to avoid when implementing Map/Set?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Map/Set is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1159,
+        "question": "How does Try/Catch improve the efficiency or structure of an application?",
+        "options": [
+          "By completely rewriting the code automatically.",
+          "By providing optimized patterns and reducing redundancy compared to basic approaches.",
+          "By removing all errors from the console.",
+          "By converting all code to binary."
+        ],
+        "correct": 1,
+        "explanation": "Try/Catch is an intermediate technique designed to streamline and optimize processes.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1160,
+        "question": "What is a common pitfall to avoid when implementing Try/Catch?",
+        "options": [
+          "Using it too frequently without understanding its underlying performance costs or lifecycle impacts.",
+          "Not paying for its premium license.",
+          "Typing it in lowercase.",
+          "Using it on a Tuesday."
+        ],
+        "correct": 0,
+        "explanation": "While Try/Catch is powerful, misusing it can lead to memory leaks or unexpected behavior.",
+        "difficulty": "Medium"
+      },
+      {
+        "id": 1161,
+        "question": "At a low-level architectural scale, how does Event Loop resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Event Loop requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1162,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Event Loop provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Event Loop is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1163,
+        "question": "At a low-level architectural scale, how does Prototype Chain resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Prototype Chain requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1164,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Prototype Chain provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Prototype Chain is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1165,
+        "question": "At a low-level architectural scale, how does This Binding resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "This Binding requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1166,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does This Binding provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of This Binding is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1167,
+        "question": "At a low-level architectural scale, how does Memory Management resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Memory Management requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1168,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Memory Management provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Memory Management is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1169,
+        "question": "At a low-level architectural scale, how does Garbage Collection resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Garbage Collection requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1170,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Garbage Collection provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Garbage Collection is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1171,
+        "question": "At a low-level architectural scale, how does Hoisting resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Hoisting requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1172,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Hoisting provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Hoisting is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1173,
+        "question": "At a low-level architectural scale, how does Coercion resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Coercion requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1174,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Coercion provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Coercion is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1175,
+        "question": "At a low-level architectural scale, how does Web Worker resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Web Worker requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1176,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Web Worker provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Web Worker is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1177,
+        "question": "At a low-level architectural scale, how does Service Worker resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Service Worker requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1178,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Service Worker provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Service Worker is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1179,
+        "question": "At a low-level architectural scale, how does Shadow DOM resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Shadow DOM requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1180,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Shadow DOM provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Shadow DOM is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1181,
+        "question": "At a low-level architectural scale, how does Virtual DOM resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Virtual DOM requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1182,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Virtual DOM provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Virtual DOM is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1183,
+        "question": "At a low-level architectural scale, how does Generator Function resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Generator Function requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1184,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Generator Function provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Generator Function is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1185,
+        "question": "At a low-level architectural scale, how does Symbol resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Symbol requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1186,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Symbol provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Symbol is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1187,
+        "question": "At a low-level architectural scale, how does Proxy Object resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Proxy Object requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1188,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Proxy Object provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Proxy Object is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1189,
+        "question": "At a low-level architectural scale, how does Reflect API resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Reflect API requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1190,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Reflect API provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Reflect API is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1191,
+        "question": "At a low-level architectural scale, how does Strict Mode resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Strict Mode requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1192,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Strict Mode provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Strict Mode is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1193,
+        "question": "At a low-level architectural scale, how does Currying resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Currying requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1194,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Currying provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Currying is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1195,
+        "question": "At a low-level architectural scale, how does Debounce resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Debounce requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1196,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Debounce provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Debounce is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1197,
+        "question": "At a low-level architectural scale, how does Throttle resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Throttle requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1198,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Throttle provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Throttle is essential for building resilient, enterprise-grade distributed systems.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1199,
+        "question": "At a low-level architectural scale, how does Intersection Observer resolve complex system bottlenecks?",
+        "options": [
+          "By leveraging advanced algorithms, concurrent processing, or deep architectural abstractions to maximize performance.",
+          "By simply restarting the server.",
+          "By adding more RAM to the instance.",
+          "By alerting the user."
+        ],
+        "correct": 0,
+        "explanation": "Intersection Observer requires a deep understanding of computer science principles to implement and debug correctly.",
+        "difficulty": "Hard"
+      },
+      {
+        "id": 1200,
+        "question": "In a highly distributed, high-throughput environment, what guarantees does Intersection Observer provide?",
+        "options": [
+          "No guarantees.",
+          "It guarantees absolute zero latency.",
+          "It provides strict consistency, fault tolerance, or specialized optimizations critical for scaling.",
+          "It replaces the need for a database entirely."
+        ],
+        "correct": 2,
+        "explanation": "Mastery of Intersection Observer is essential for building resilient, enterprise-grade distributed systems.",
         "difficulty": "Hard"
       }
     ]

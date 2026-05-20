@@ -253,7 +253,6 @@ export function LandingPage() {
         <div className="absolute inset-0 z-0">
           <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[150px] -translate-y-1/2 animate-pulse" />
           <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-accent/20 rounded-full blur-[120px] translate-y-1/2" />
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] dark:opacity-[0.07]" />
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
@@ -598,10 +597,6 @@ export function LandingPage() {
         </div>
       </section>
       
-      {/* Scroll to Top Hint */}
-      <div className="fixed bottom-8 right-8 z-50 pointer-events-none opacity-20">
-         <div className="text-[10px] font-black uppercase tracking-[0.5em] vertical-text transform rotate-180">CareerDream v1.0.4</div>
-      </div>
     </div>
   );
 }

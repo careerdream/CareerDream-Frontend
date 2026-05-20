@@ -44,3 +44,15 @@ export const testLimiter = rateLimit({
     message: 'Rate limit exceeded for testing purposes',
   },
 });
+
+/**
+ * Rate limiter for code playground submissions (100 per minute per user)
+ */
+export const playgroundLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 100,
+  keyGenerator: (req) => req.user?.id?.toString() || req.ip,
+  message: { status: 429, message: 'Too many code submissions. Please wait 1 minute.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

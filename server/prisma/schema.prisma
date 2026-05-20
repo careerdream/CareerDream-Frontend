@@ -47,6 +47,8 @@ model User {
   jobMatches       PrecisionJobMatch[]
   loginHistory     LoginHistory[]
   activities       UserActivity[]
+  codeSubmissions  CodeSubmission[]
+  codeProgress     UserCodeProgress[]
 
   employerId       Int?
   employer         Employer? @relation(fields: [employerId], references: [id])
@@ -118,6 +120,7 @@ model Job {
   urgent           Boolean  @default(false)
   category         String
   status           String   @default("active") // active, expired, draft
+  externalUrl      String?
 
   stats            JobStats?
   savedBy          SavedJob[]
@@ -417,4 +420,68 @@ model AdminAuditLog {
   ipAddress     String?
   userAgent     String?  @db.Text
   timestamp     DateTime @default(now())
+}
+
+model CodingProblem {
+  id           Int              @id @default(autoincrement())
+  title        String
+  slug         String           @unique
+  category     String           // "algorithms", "cybersecurity", "cloud", "webdev"
+  difficulty   String           // "easy", "medium", "hard"
+  description  String           @db.Text
+  constraints  String?          @db.Text
+  inputFormat  String?          @db.Text
+  outputFormat String?          @db.Text
+  points       Int              @default(10)
+  editorial    String?          @db.Text // Solution explanation
+  stubs        Json             // Map of language to initial template code, e.g. { "python": "def twoSum..." }
+  tags         Json?            // e.g. ["Array", "Hash Table"]
+  
+  testCases    TestCase[]
+  submissions  CodeSubmission[]
+  progress     UserCodeProgress[]
+  
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model TestCase {
+  id           Int              @id @default(autoincrement())
+  problemId    Int
+  problem      CodingProblem    @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  input        String           @db.Text
+  expected     String           @db.Text
+  isSample     Boolean          @default(false) // Used to display examples to the user
+}
+
+model CodeSubmission {
+  id           Int              @id @default(autoincrement())
+  userId       Int
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId    Int
+  problem      CodingProblem    @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  language     String           // "python", "javascript", "cpp", "java", "go", "rust"
+  code         String           @db.Text
+  status       String           // "ACCEPTED", "WRONG_ANSWER", "TIME_LIMIT_EXCEEDED", "COMPILE_ERROR", "RUNTIME_ERROR"
+  runtime      Int?             // Execution time in ms
+  memory       Int?             // Memory usage in KB
+  errorMessage String?          @db.Text
+  passedCount  Int              @default(0)
+  totalCount   Int              @default(0)
+  correctness  Float            @default(0) // Percentage of test cases passed
+  submittedAt  DateTime         @default(now())
+}
+
+model UserCodeProgress {
+  id           Int              @id @default(autoincrement())
+  userId       Int
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId    Int
+  problem      CodingProblem    @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  solved       Boolean          @default(false)
+  attempts     Int              @default(0)
+  pointsEarned Int              @default(0)
+  updatedAt    DateTime         @default(now()) @updatedAt
+
+  @@unique([userId, problemId])
 }

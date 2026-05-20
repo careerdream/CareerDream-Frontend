@@ -169,15 +169,15 @@ export function JobsPage() {
               </div>
               <div className="hidden md:block w-px h-10 bg-muted my-auto" />
               <button
-                onClick={() => setShowFilters(!showFilters)}
+                onClick={clearFilters}
                 className={`flex items-center justify-center gap-3 px-8 py-4 rounded-[2rem] font-bold transition-all ${
-                  showFilters 
-                    ? 'bg-primary text-primary-foreground' 
+                  activeFilterCount > 0
+                    ? 'bg-primary text-primary-foreground'
                     : 'bg-card hover:bg-muted text-foreground border border-border'
                 }`}
               >
-                <SlidersHorizontal className="w-4 h-4" />
-                Advanced Filters
+                <X className="w-4 h-4" />
+                Clear Filters
                 {activeFilterCount > 0 && (
                   <span className="ml-2 w-6 h-6 rounded-full bg-foreground text-primary text-xs flex items-center justify-center">
                     {activeFilterCount}
@@ -190,10 +190,16 @@ export function JobsPage() {
       </div>
 
       <div className="container mx-auto px-6 py-16">
-        <div className="grid lg:grid-cols-4 gap-12">
+  <button onClick={() => setShowFilters(true)} className="lg:hidden mb-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+    Filters
+  </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Sidebar */}
-          <aside className={`lg:col-span-1 space-y-8 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            <div className="space-y-10 sticky top-32">
+          <aside className={`lg:col-span-1 space-y-8 ${showFilters ? 'block' : 'hidden lg:block'} ${showFilters ? 'fixed inset-0 z-40 bg-background/95 backdrop-blur p-4 overflow-y-auto lg:static lg:bg-transparent lg:p-0' : ''}`}>
+            <div className="flex justify-between items-center mb-4 lg:hidden">
+  <button onClick={() => setShowFilters(false)} className="text-sm font-medium text-primary">Close</button>
+</div>
+<div className="space-y-10 sticky top-32">
               {/* Filter Modes */}
               <div className="space-y-4">
                 <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">My Activity</h3>
@@ -394,7 +400,7 @@ export function JobsPage() {
                           )}
                         </div>
 
-                        <div className="flex flex-wrap items-center justify-between gap-6">
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
                           <div className="flex flex-wrap gap-2">
                             {Array.isArray(job.skills) && job.skills.slice(0, 4).map(skill => (
                               <span key={skill} className="px-4 py-1.5 rounded-full bg-card border border-border/50 text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
@@ -407,9 +413,9 @@ export function JobsPage() {
                           </div>
                           <Link
                             to={`/jobs/${job.id}`}
-                            className="px-8 py-3 rounded-2xl bg-foreground text-background font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform group-hover:translate-x-1 shadow-xl"
+                            className="ml-auto px-8 py-3 rounded-2xl bg-foreground text-background font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform group-hover:translate-x-1 shadow-xl whitespace-nowrap"
                           >
-                            View Role details
+                            View Role Details
                           </Link>
                         </div>
                       </div>

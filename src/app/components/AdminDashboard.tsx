@@ -21,7 +21,8 @@ import {
   Activity,
   AlertTriangle,
   Plus,
-  RefreshCw
+  RefreshCw,
+  Terminal
 } from 'lucide-react';
 import { AdminJobManagement } from './AdminJobManagement';
 import { AdminCourseManagement } from './AdminCourseManagement';
@@ -34,6 +35,7 @@ import { AdminSettingsManagement } from './AdminSettingsManagement';
 import { AdminBulkOperations } from './AdminBulkOperations';
 import { AdminRBACManagement } from './AdminRBACManagement';
 import { AdminIssuesPage } from './AdminIssuesPage';
+import { AdminPlaygroundManagement } from './AdminPlaygroundManagement';
 import {
   LineChart,
   Line,
@@ -109,6 +111,7 @@ export function AdminDashboard() {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'jobs', label: 'Job Management', icon: Briefcase },
+    { id: 'playground', label: 'Playground Mgmt', icon: Terminal },
     { id: 'courses', label: 'Course Management', icon: BookOpen },
     { id: 'assessments', label: 'Assessments', icon: ClipboardList },
     { id: 'users', label: 'Users Management', icon: Users },
@@ -350,6 +353,8 @@ export function AdminDashboard() {
               </div>
             ) : activeTab === 'jobs' ? (
             <AdminJobManagement />
+          ) : activeTab === 'playground' ? (
+            <AdminPlaygroundManagement />
           ) : activeTab === 'courses' ? (
             <AdminCourseManagement />
           ) : activeTab === 'assessments' ? (

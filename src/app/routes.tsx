@@ -1,5 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import { Root } from "./components/Root";
+import { PlaygroundPage } from "./components/PlaygroundPage";
+import { CodingWorkspace } from "./components/CodingWorkspace";
 import { LandingPage } from "./components/LandingPage";
 import { JobsPage } from "./components/JobsPage";
 import { JobDetailPage } from "./components/JobDetailPage";
@@ -38,6 +40,8 @@ export const router = createBrowserRouter([
     Component: Root,
     children: [
       { index: true, Component: LandingPage },
+      { path: "playground", Component: PlaygroundPage },
+      { path: "playground/:slug", Component: CodingWorkspace },
       { path: "about", Component: AboutPage },
       { path: "privacy-policy", Component: PrivacyPolicyPage },
       { path: "terms-of-service", Component: TermsOfServicePage },

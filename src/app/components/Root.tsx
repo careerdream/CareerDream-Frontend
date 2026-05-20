@@ -4,6 +4,7 @@ import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { AppProvider } from "../context/AppContext";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Toaster } from 'sonner';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
@@ -18,7 +19,7 @@ function AppShell() {
     <div className="min-h-screen bg-background flex flex-col">
       <ScrollToTop />
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 pb-16 lg:pb-0">
         <Outlet />
       </main>
       <Footer />
@@ -31,6 +32,7 @@ export function Root() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AppProvider>
         <AppShell />
+        <Toaster richColors position="top-right" />
       </AppProvider>
     </GoogleOAuthProvider>
   );

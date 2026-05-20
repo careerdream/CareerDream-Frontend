@@ -54,805 +54,3368 @@ export interface Job {
   category: string;
   matchScore?: number;
   tags: string[];
+  externalUrl?: string;
 }
 
 export const jobs: Job[] = [
   {
-    id: 1,
-    title: 'Senior ML Engineer',
-    company: 'TechCorp AI',
-    companyLogo: '🚀',
-    location: 'Remote',
-    country: 'USA',
-    type: 'Remote',
-    salary: '$150k – $200k',
-    salaryMin: 150000,
-    salaryMax: 200000,
-    posted: '2 days ago',
-    postedDays: 2,
-    logo: '🚀',
-    skills: ['Python', 'TensorFlow', 'PyTorch', 'AWS', 'MLOps', 'Docker'],
-    experience: 'Senior',
-    category: 'AI/ML',
-    featured: true,
-    tags: ['Remote', 'AI/ML'],
-    applicants: 45,
-    description: 'Join our world-class AI team to build and deploy production ML models at scale. You will architect intelligent systems that power our core products serving millions of users globally.',
-    responsibilities: [
-      'Design and implement ML models for production systems serving millions of users',
-      'Collaborate with cross-functional teams to define AI roadmaps',
-      'Optimize model performance, latency, and scalability',
-      'Build MLOps pipelines for automated training and deployment',
-      'Mentor junior engineers and contribute to technical standards',
-      'Stay current with the latest ML/AI research and apply it practically',
+    "id": 1,
+    "title": "Google Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "Google",
+    "companyLogo": "🤖",
+    "location": "Bengaluru, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🤖",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
     ],
-    requirements: [
-      '5+ years of ML engineering experience in production environments',
-      'Deep expertise in Python, TensorFlow, and PyTorch',
-      'Experience deploying models on AWS SageMaker or GCP Vertex AI',
-      'Understanding of MLOps: model versioning, monitoring, A/B testing',
-      'Strong math foundations: linear algebra, statistics, probability',
-      'Excellent communication and cross-functional collaboration skills',
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": true,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "AI/ML",
+      "Google"
     ],
-    niceToHave: [
-      'PhD in Computer Science or related ML field',
-      'Published research in NeurIPS, ICML, or ICLR',
-      'Experience with distributed training (Horovod, Ray)',
-      'Contributions to open-source ML frameworks',
+    "applicants": 32,
+    "description": "Join the team at Google as a Senior Software Engineer (AI/ML & Infrastructure). Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
     ],
-    benefits: [
-      'Competitive salary and substantial equity package',
-      'Fully remote with flexible hours',
-      'Comprehensive health, dental, and vision',
-      '$5,000 annual learning & conference budget',
-      'Top-of-the-line home office setup stipend',
-      '401(k) with 6% company match',
-      'Unlimited PTO',
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
     ],
-    aboutCompany: 'TechCorp AI is a leading AI-first company building intelligent systems for Fortune 500 clients. With 400+ employees across 30 countries, we are on a mission to make AI accessible for every enterprise.',
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "Google is a leading organization in the Hyperscale & AI sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.google.com/"
   },
   {
-    id: 2,
-    title: 'Cloud Solutions Architect',
-    company: 'CloudSys Inc',
-    companyLogo: '☁️',
-    location: 'New York, NY',
-    country: 'USA',
-    type: 'Full-time',
-    salary: '$140k – $185k',
-    salaryMin: 140000,
-    salaryMax: 185000,
-    posted: '1 day ago',
-    postedDays: 1,
-    logo: '☁️',
-    skills: ['AWS', 'Azure', 'GCP', 'Kubernetes', 'Terraform', 'Networking'],
-    experience: 'Senior',
-    category: 'Cloud',
-    urgent: true,
-    tags: ['Full-time', 'Cloud'],
-    applicants: 62,
-    description: 'Design and oversee the implementation of complex cloud architectures for enterprise clients across finance, healthcare, and e-commerce sectors.',
-    responsibilities: [
-      'Architect multi-cloud solutions across AWS, Azure, and GCP',
-      'Lead technical discovery sessions with enterprise clients',
-      'Create detailed architecture diagrams and technical documentation',
-      'Ensure security, compliance (SOC2, HIPAA), and cost optimization',
-      'Serve as a technical authority during pre-sales and delivery',
-      'Mentor cloud engineers and establish best practices',
+    "id": 2,
+    "title": "Microsoft Senior MLOps Engineer",
+    "company": "Microsoft",
+    "companyLogo": "💻",
+    "location": "Bengaluru, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💻",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
     ],
-    requirements: [
-      '7+ years of cloud architecture experience',
-      'AWS Solutions Architect Professional or Azure Expert certification',
-      'Deep knowledge of networking, security, and IAM',
-      'Experience with Kubernetes in production (EKS, AKS, GKE)',
-      'Terraform or Pulumi for infrastructure as code',
-      'Strong stakeholder communication skills',
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": true,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "DevOps",
+      "Microsoft"
     ],
-    niceToHave: [
-      'Google Professional Cloud Architect certification',
-      'FinOps certification',
-      'Experience with landing zone design',
-      'Healthcare or finance domain experience',
+    "applicants": 26,
+    "description": "Join the team at Microsoft as a Senior MLOps Engineer. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
     ],
-    benefits: [
-      'Premium health benefits (100% company-paid)',
-      'Annual bonus up to 20% of salary',
-      'Certifications paid by company',
-      '20 days PTO + 12 federal holidays',
-      'Gym & wellness reimbursement',
-      '401(k) with 5% match',
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
     ],
-    aboutCompany: 'CloudSys Inc is a cloud-native consultancy helping enterprises migrate and modernize. We are AWS Premier Partner and Microsoft Gold Partner with 12 years of cloud excellence.',
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Microsoft is a leading organization in the Hyperscale & Cloud sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.microsoft.com/"
   },
   {
-    id: 3,
-    title: 'Senior DevOps Engineer',
-    company: 'StartupXYZ',
-    companyLogo: '⚡',
-    location: 'San Francisco, CA',
-    country: 'USA',
-    type: 'Full-time',
-    salary: '$130k – $170k',
-    salaryMin: 130000,
-    salaryMax: 170000,
-    posted: '3 days ago',
-    postedDays: 3,
-    logo: '⚡',
-    skills: ['Docker', 'Kubernetes', 'Jenkins', 'Terraform', 'CI/CD', 'Linux'],
-    experience: 'Senior',
-    category: 'DevOps',
-    tags: ['Full-time', 'DevOps'],
-    applicants: 38,
-    description: 'Build and maintain the infrastructure backbone of a fast-growing startup. You will own the entire DevOps lifecycle from CI/CD pipelines to production reliability.',
-    responsibilities: [
-      'Build and maintain CI/CD pipelines using Jenkins, GitHub Actions, or GitLab CI',
-      'Manage Kubernetes clusters (EKS) across dev, staging, and production',
-      'Implement infrastructure as code using Terraform',
-      'Ensure 99.9% uptime SLAs through monitoring and alerting (Datadog, PagerDuty)',
-      'Drive security scanning and vulnerability management',
-      'Lead incident response and postmortems',
+    "id": 3,
+    "title": "AWS (Amazon Web Services) Full Stack Developer (React & Node.js)",
+    "company": "AWS (Amazon Web Services)",
+    "companyLogo": "☁️",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹18L – ₹30L",
+    "salaryMin": 1800000,
+    "salaryMax": 3000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "☁️",
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "MySQL",
+      "Tailwind CSS"
     ],
-    requirements: [
-      '5+ years of DevOps/SRE experience',
-      'Expert-level Docker and Kubernetes (CKA preferred)',
-      'Terraform for multi-environment IaC',
-      'CI/CD with GitHub Actions or Jenkins',
-      'AWS (EC2, RDS, EKS, S3, IAM)',
-      'Linux systems administration',
+    "experience": "Mid Level",
+    "category": "Full Stack",
+    "featured": true,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Full Stack",
+      "AWS (Amazon Web Services)"
     ],
-    niceToHave: [
-      'CKA/CKAD certification',
-      'AWS DevOps Engineer certification',
-      'Experience with service mesh (Istio, Linkerd)',
-      'eBPF/observability tooling experience',
+    "applicants": 8,
+    "description": "Join the team at AWS (Amazon Web Services) as a Full Stack Developer (React & Node.js). Build highly responsive web applications, interactive admin panels, and scalable server-side REST APIs for our consumer and enterprise products.",
+    "responsibilities": [
+      "Develop modular React frontend components using TypeScript.",
+      "Architect secure and optimized database queries in Node.js.",
+      "Collaborate with product designers to implement premium user interfaces."
     ],
-    benefits: [
-      'Equity: 0.05–0.2% of the company',
-      'Fully remote options',
-      'Health, dental, vision (80% covered)',
-      '$2,000 annual learning budget',
-      'Quarterly team offsites',
-      'Flexible PTO policy',
+    "requirements": [
+      "3+ years of professional full-stack development experience.",
+      "Strong proficiency in modern JavaScript/TypeScript, React 18, and Node.js.",
+      "Experience with ORMs like Prisma or Sequelize and SQL databases."
     ],
-    aboutCompany: 'StartupXYZ is building the next-generation developer productivity platform. Series B with $45M raised, growing 3x YoY. We are 80 people and proud of our engineering culture.',
+    "niceToHave": [
+      "Experience with Next.js App Router",
+      "Familiarity with serverless deployments."
+    ],
+    "benefits": [
+      "Competitive base salary",
+      "Generous medical benefits",
+      "Flex-hours & hybrid options",
+      "Latest hardware support"
+    ],
+    "aboutCompany": "AWS (Amazon Web Services) is a leading organization in the Hyperscale & Cloud sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.amazon.jobs/en/teams/amazon-web-services"
   },
   {
-    id: 4,
-    title: 'Full Stack Developer (React/Node)',
-    company: 'WebWorks Digital',
-    companyLogo: '💻',
-    location: 'Remote',
-    country: 'Global',
-    type: 'Contract',
-    salary: '$80–$120/hr',
-    salaryMin: 80,
-    salaryMax: 120,
-    posted: '4 days ago',
-    postedDays: 4,
-    logo: '💻',
-    skills: ['React', 'Node.js', 'TypeScript', 'PostgreSQL', 'GraphQL', 'AWS'],
-    experience: 'Mid Level',
-    category: 'Full Stack',
-    tags: ['Contract', 'Remote'],
-    applicants: 87,
-    description: '6-month contract with strong likelihood of conversion to full-time. Build our customer-facing web platform from the ground up using modern React and Node.js.',
-    responsibilities: [
-      'Build responsive React frontends with TypeScript and Tailwind CSS',
-      'Develop RESTful and GraphQL APIs with Node.js/NestJS',
-      'Design and optimize PostgreSQL database schemas',
-      'Write unit and integration tests (Jest, Cypress)',
-      'Conduct code reviews and maintain code quality standards',
-      'Deploy on AWS using ECS/Fargate',
+    "id": 4,
+    "title": "Meta Cloud Architect (AWS / Azure Solutions)",
+    "company": "Meta",
+    "companyLogo": "👁️",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "👁️",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
     ],
-    requirements: [
-      '3+ years full-stack development experience',
-      'Strong React with hooks and TypeScript',
-      'Node.js with Express or NestJS',
-      'PostgreSQL and ORM experience (Prisma or TypeORM)',
-      'Git workflow and code review experience',
-      'Experience with REST and GraphQL APIs',
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": true,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cloud",
+      "Meta"
     ],
-    niceToHave: [
-      'Next.js app router experience',
-      'Redis caching',
-      'Stripe or payment integration',
-      'Experience in SaaS products',
+    "applicants": 29,
+    "description": "Join the team at Meta as a Cloud Architect (AWS / Azure Solutions). Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
     ],
-    benefits: [
-      'Competitive hourly rate ($80–$120/hr)',
-      'Fully remote with async culture',
-      'Direct communication with founders',
-      'Possibility of full-time conversion',
-      'Flexible hours (results-focused)',
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
     ],
-    aboutCompany: 'WebWorks Digital is a product studio building SaaS tools for SMBs. With offices in NYC and London, we serve 500+ clients worldwide and are growing our engineering team.',
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "Meta is a leading organization in the Social Media & AI sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.metacareers.com/"
   },
   {
-    id: 5,
-    title: 'Lead Data Scientist',
-    company: 'DataPro Analytics',
-    companyLogo: '📊',
-    location: 'Boston, MA',
-    country: 'USA',
-    type: 'Full-time',
-    salary: '$135k – $180k',
-    salaryMin: 135000,
-    salaryMax: 180000,
-    posted: '5 days ago',
-    postedDays: 5,
-    logo: '📊',
-    skills: ['Python', 'SQL', 'Scikit-learn', 'Spark', 'Tableau', 'Statistics'],
-    experience: 'Lead',
-    category: 'Data Science',
-    featured: true,
-    tags: ['Full-time', 'Data'],
-    applicants: 52,
-    description: 'Lead a team of 5 data scientists to extract business insights and build predictive models that drive $100M+ revenue decisions for our clients.',
-    responsibilities: [
-      'Lead end-to-end data science projects from ideation to production',
-      'Manage and mentor a team of 5 data scientists',
-      'Build predictive models using classical ML and deep learning',
-      'Partner with product and business teams to define analytical strategy',
-      'Design A/B experiments and interpret statistical significance',
-      'Present findings to C-suite executives',
+    "id": 5,
+    "title": "Apple Senior Cybersecurity Engineer",
+    "company": "Apple",
+    "companyLogo": "🍎",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🍎",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
     ],
-    requirements: [
-      '7+ years in data science roles, 2+ in leadership',
-      'Expert in Python (Pandas, NumPy, Scikit-learn)',
-      'Deep statistical knowledge: regression, hypothesis testing, Bayesian methods',
-      'SQL and big data (Spark, Hive)',
-      'Strong data visualization (Tableau, Plotly)',
-      'Excellent communication and executive presentation skills',
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": true,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "Cybersecurity",
+      "Apple"
     ],
-    niceToHave: [
-      'PhD in Statistics, Math, or CS',
-      'Publication in data science journals',
-      'NLP or computer vision specialization',
-      'Causal inference expertise',
+    "applicants": 15,
+    "description": "Join the team at Apple as a Senior Cybersecurity Engineer. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
     ],
-    benefits: [
-      'Signing bonus up to $20,000',
-      'Annual performance bonus (15–20%)',
-      'Comprehensive benefits package',
-      '$5,000 professional development',
-      'Hybrid work model (2 days remote)',
-      '401(k) with generous match',
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
     ],
-    aboutCompany: 'DataPro Analytics provides advanced analytics consulting to Fortune 500 companies. With 15 years of expertise and 200+ data professionals, we turn complex data into business value.',
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "Apple is a leading organization in the Consumer Tech & Hardware sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.apple.com/careers/"
   },
   {
-    id: 6,
-    title: 'Cybersecurity Analyst',
-    company: 'SecureNet Defense',
-    companyLogo: '🔒',
-    location: 'Remote',
-    country: 'USA',
-    type: 'Remote',
-    salary: '$110k – $145k',
-    salaryMin: 110000,
-    salaryMax: 145000,
-    posted: '1 week ago',
-    postedDays: 7,
-    logo: '🔒',
-    skills: ['SIEM', 'Penetration Testing', 'Firewall', 'Python', 'Splunk', 'OSINT'],
-    experience: 'Mid Level',
-    category: 'Cybersecurity',
-    tags: ['Remote', 'Security'],
-    applicants: 29,
-    description: 'Protect critical infrastructure and enterprise clients from sophisticated cyber threats. You will work in our 24/7 SOC and lead threat hunting initiatives.',
-    responsibilities: [
-      'Monitor and analyze security events using SIEM (Splunk/QRadar)',
-      'Conduct penetration testing and vulnerability assessments',
-      'Respond to security incidents and lead forensic investigations',
-      'Develop and maintain security playbooks and runbooks',
-      'Perform threat intelligence analysis using OSINT',
-      'Collaborate with compliance teams on SOC2 and ISO27001 audits',
+    "id": 6,
+    "title": "Netflix Data Scientist (Analytics & Forecasting)",
+    "company": "Netflix",
+    "companyLogo": "🍿",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🍿",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
     ],
-    requirements: [
-      '3+ years in cybersecurity operations or SOC',
-      'CEH, OSCP, or CompTIA Security+ certification',
-      'Experience with SIEM platforms (Splunk, QRadar, Microsoft Sentinel)',
-      'Network security (firewalls, IDS/IPS, VPN)',
-      'Scripting: Python or PowerShell for automation',
-      'Knowledge of MITRE ATT&CK framework',
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Data Science",
+      "Netflix"
     ],
-    niceToHave: [
-      'CISSP certification',
-      'Red team experience',
-      'Cloud security (AWS Security Hub, Azure Defender)',
-      'Malware analysis experience',
+    "applicants": 22,
+    "description": "Join the team at Netflix as a Data Scientist (Analytics & Forecasting). Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
     ],
-    benefits: [
-      'Security clearance sponsorship available',
-      'Comprehensive benefits (Day 1)',
-      'Annual certifications paid',
-      'Remote work with secure home office setup',
-      'Quarterly threat intel training',
-      '401(k) with match',
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
     ],
-    aboutCompany: 'SecureNet Defense is a managed security services provider (MSSP) protecting 300+ enterprises. Our SOC operates 24/7 with analysts across 5 continents.',
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "Netflix is a leading organization in the Streaming & Infrastructure sector, committed to driving innovation globally.",
+    "externalUrl": "https://jobs.netflix.com/"
   },
   {
-    id: 7,
-    title: 'Backend Software Engineer (Go)',
-    company: 'APIHub Technologies',
-    companyLogo: '🔧',
-    location: 'Austin, TX',
-    country: 'USA',
-    type: 'Full-time',
-    salary: '$125k – $165k',
-    salaryMin: 125000,
-    salaryMax: 165000,
-    posted: '3 days ago',
-    postedDays: 3,
-    logo: '🔧',
-    skills: ['Go', 'PostgreSQL', 'Redis', 'gRPC', 'Kafka', 'Microservices'],
-    experience: 'Senior',
-    category: 'Backend',
-    tags: ['Full-time', 'Backend'],
-    applicants: 41,
-    description: 'Build high-performance microservices handling 1M+ requests per day. You will work on the core API gateway that powers our entire product ecosystem.',
-    responsibilities: [
-      'Build and maintain high-performance Go microservices',
-      'Design distributed systems with Kafka event streaming',
-      'Optimize database queries and Redis caching strategies',
-      'Implement gRPC APIs for inter-service communication',
-      'Contribute to system design decisions and architecture reviews',
-      'Write comprehensive tests and maintain 90%+ coverage',
+    "id": 7,
+    "title": "TCS (Tata Consultancy Services) Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "TCS (Tata Consultancy Services)",
+    "companyLogo": "🏢",
+    "location": "Bengaluru, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
     ],
-    requirements: [
-      '4+ years of backend development',
-      'Proficiency in Go (Golang) — 2+ years',
-      'PostgreSQL: query optimization, indexing, partitioning',
-      'Redis for caching and pub/sub',
-      'Experience with Kafka or RabbitMQ',
-      'Docker and Kubernetes basics',
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "AI/ML",
+      "TCS (Tata Consultancy Services)"
     ],
-    niceToHave: [
-      'Experience with eBPF profiling',
-      'Rust or C++ knowledge',
-      'Open-source contributions',
-      'Experience with high-scale systems (10M+ req/day)',
+    "applicants": 18,
+    "description": "Join the team at TCS (Tata Consultancy Services) as a Senior Software Engineer (AI/ML & Infrastructure). Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
     ],
-    benefits: [
-      'Equity package (0.01–0.05%)',
-      'Hybrid work model',
-      'Excellent health benefits',
-      '$3,000 annual learning budget',
-      'On-site gym and catered lunches',
-      '401(k) with 4% match',
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
     ],
-    aboutCompany: 'APIHub Technologies builds developer tools for API management and observability. Series A with $22M raised, serving 5,000+ developers. Engineering-first culture.',
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "TCS (Tata Consultancy Services) is a leading organization in the IT Consulting & Services sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.tcs.com/careers"
   },
   {
-    id: 8,
-    title: 'iOS Mobile Developer',
-    company: 'AppCraft Studios',
-    companyLogo: '📱',
-    location: 'Remote (US Only)',
-    country: 'USA',
-    type: 'Remote',
-    salary: '$115k – $150k',
-    salaryMin: 115000,
-    salaryMax: 150000,
-    posted: '2 days ago',
-    postedDays: 2,
-    logo: '📱',
-    skills: ['Swift', 'SwiftUI', 'UIKit', 'Core Data', 'Combine', 'XCode'],
-    experience: 'Senior',
-    category: 'Mobile',
-    tags: ['Remote', 'Mobile'],
-    applicants: 33,
-    description: 'Build the next generation of iOS apps used by 5M+ users. Join our mobile team to create delightful, high-performance applications with SwiftUI.',
-    responsibilities: [
-      'Develop and maintain iOS applications using Swift and SwiftUI',
-      'Implement complex UI with animations and custom components',
-      'Integrate with REST APIs and manage offline-first data with Core Data',
-      'Write unit and UI tests with XCTest',
-      'Optimize app performance using Instruments',
-      'Collaborate with design team on pixel-perfect implementations',
+    "id": 8,
+    "title": "Infosys Senior MLOps Engineer",
+    "company": "Infosys",
+    "companyLogo": "🏢",
+    "location": "Bengaluru, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
     ],
-    requirements: [
-      '4+ years of iOS development',
-      'Expert in Swift 5.0+ and SwiftUI',
-      'UIKit for legacy feature maintenance',
-      'Combine or async/await for reactive programming',
-      'App Store deployment experience',
-      'Understanding of HIG (Human Interface Guidelines)',
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "DevOps",
+      "Infosys"
     ],
-    niceToHave: [
-      'Cross-platform (React Native or Flutter)',
-      'Apple Watch or widget experience',
-      'ARKit or CoreML integration',
-      'Published apps with 100k+ downloads',
+    "applicants": 22,
+    "description": "Join the team at Infosys as a Senior MLOps Engineer. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
     ],
-    benefits: [
-      'Latest Apple hardware provided',
-      'Remote-first with flexible hours',
-      'Apple Developer account and tools',
-      'Annual WWDC attendance',
-      'Competitive health benefits',
-      'Unlimited PTO',
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
     ],
-    aboutCompany: 'AppCraft Studios creates award-winning mobile experiences. Our apps have been featured by Apple 12 times. 35-person team, bootstrapped and profitable.',
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Infosys is a leading organization in the IT Consulting & Services sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.infosys.com/careers.html"
   },
   {
-    id: 9,
-    title: 'Data Engineer (Big Data)',
-    company: 'StreamFlow Technologies',
-    companyLogo: '📈',
-    location: 'Remote',
-    country: 'Global',
-    type: 'Remote',
-    salary: '$130k – $165k',
-    salaryMin: 130000,
-    salaryMax: 165000,
-    posted: '6 days ago',
-    postedDays: 6,
-    logo: '📈',
-    skills: ['Apache Spark', 'Kafka', 'Airflow', 'dbt', 'Snowflake', 'Python'],
-    experience: 'Senior',
-    category: 'Data Engineering',
-    tags: ['Remote', 'Data'],
-    applicants: 27,
-    description: 'Build the data infrastructure that powers real-time analytics for 50M+ events per day. Work with cutting-edge streaming technologies to enable data-driven decisions.',
-    responsibilities: [
-      'Build real-time data pipelines using Apache Kafka and Spark Streaming',
-      'Design and maintain data warehouse schemas in Snowflake',
-      'Develop and schedule ETL workflows using Apache Airflow',
-      'Implement dbt models for data transformation and testing',
-      'Ensure data quality with automated testing frameworks',
-      'Partner with ML teams to prepare training datasets',
+    "id": 9,
+    "title": "Wipro Full Stack Developer (React & Node.js)",
+    "company": "Wipro",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹18L – ₹30L",
+    "salaryMin": 1800000,
+    "salaryMax": 3000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "MySQL",
+      "Tailwind CSS"
     ],
-    requirements: [
-      '4+ years data engineering experience',
-      'Apache Spark for batch and stream processing',
-      'Kafka for event-driven architectures',
-      'SQL expert with dimensional modeling knowledge',
-      'Python for data pipeline development',
-      'Airflow or Dagster for orchestration',
+    "experience": "Mid Level",
+    "category": "Full Stack",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "Full Stack",
+      "Wipro"
     ],
-    niceToHave: [
-      'Snowflake SnowPro certification',
-      'Delta Lake or Apache Iceberg',
-      'Flink for stream processing',
-      'dbt experience in production',
+    "applicants": 27,
+    "description": "Join the team at Wipro as a Full Stack Developer (React & Node.js). Build highly responsive web applications, interactive admin panels, and scalable server-side REST APIs for our consumer and enterprise products.",
+    "responsibilities": [
+      "Develop modular React frontend components using TypeScript.",
+      "Architect secure and optimized database queries in Node.js.",
+      "Collaborate with product designers to implement premium user interfaces."
     ],
-    benefits: [
-      'Fully remote with async culture',
-      'Comprehensive benefits',
-      '$4,000 learning and conferences',
-      'Home office allowance',
-      'Top-tier tools and subscriptions',
-      '401(k) plan',
+    "requirements": [
+      "3+ years of professional full-stack development experience.",
+      "Strong proficiency in modern JavaScript/TypeScript, React 18, and Node.js.",
+      "Experience with ORMs like Prisma or Sequelize and SQL databases."
     ],
-    aboutCompany: 'StreamFlow Technologies provides real-time data infrastructure for digital-native companies. Our platform processes 10B+ events monthly for 200+ clients.',
+    "niceToHave": [
+      "Experience with Next.js App Router",
+      "Familiarity with serverless deployments."
+    ],
+    "benefits": [
+      "Competitive base salary",
+      "Generous medical benefits",
+      "Flex-hours & hybrid options",
+      "Latest hardware support"
+    ],
+    "aboutCompany": "Wipro is a leading organization in the IT Consulting & Services sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.wipro.com/"
   },
   {
-    id: 10,
-    title: 'Government IT Project Manager',
-    company: 'Ministry of Electronics & IT',
-    companyLogo: '🏛️',
-    location: 'New Delhi, India',
-    country: 'India',
-    type: 'Government',
-    salary: '₹25L – ₹40L',
-    salaryMin: 2500000,
-    salaryMax: 4000000,
-    posted: '1 week ago',
-    postedDays: 7,
-    logo: '🏛️',
-    skills: ['Project Management', 'PMP', 'PRINCE2', 'Government Policy', 'Stakeholder Management'],
-    experience: 'Senior',
-    category: 'Government',
-    tags: ['Government', 'India'],
-    applicants: 156,
-    description: 'Lead the implementation of India Stack digital infrastructure projects including Aadhaar integration, DigiLocker enhancement, and UMANG platform expansion.',
-    responsibilities: [
-      'Lead end-to-end delivery of national digital infrastructure projects',
-      'Coordinate across government ministries and private vendors',
-      'Ensure compliance with GFR, CVC guidelines, and procurement rules',
-      'Manage budgets of ₹100+ crore for IT projects',
-      'Prepare DPRs (Detailed Project Reports) and cabinet notes',
-      'Report progress to Secretary and Joint Secretary level officials',
+    "id": 10,
+    "title": "HCLTech Cloud Architect (AWS / Azure Solutions)",
+    "company": "HCLTech",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
     ],
-    requirements: [
-      '8+ years in IT project management, 3+ in government sector',
-      'PMP or PRINCE2 certification mandatory',
-      'Knowledge of Government e-Marketplace (GeM) and CPPP',
-      'Experience with NIC, STQC, or similar government IT bodies',
-      'Strong documentation and policy drafting skills',
-      'B.Tech/MCA + MBA preferred',
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cloud",
+      "HCLTech"
     ],
-    niceToHave: [
-      'IAS/IPS/Group A services officer background',
-      'Experience in e-Governance projects',
-      'Knowledge of Right to Information Act',
-      'Multilingual (English + Hindi mandatory)',
+    "applicants": 17,
+    "description": "Join the team at HCLTech as a Cloud Architect (AWS / Azure Solutions). Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
     ],
-    benefits: [
-      'Grade Pay + DA as per 7th Pay Commission',
-      'Government quarters or HRA',
-      'Medical benefits (CGHS)',
-      'Provident Fund and Gratuity',
-      'Job security with pension',
-      'Official vehicle facility',
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
     ],
-    aboutCompany: 'Ministry of Electronics & IT (MeitY) is the apex government body overseeing India\'s digital transformation. Responsible for Digital India, India Stack, and national cyber policy.',
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "HCLTech is a leading organization in the IT Consulting & Services sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.hcltech.com/careers"
   },
   {
-    id: 11,
-    title: 'AI Research Scientist',
-    company: 'DeepMind',
-    companyLogo: '🧠',
-    location: 'London, UK',
-    country: 'UK',
-    type: 'Abroad',
-    salary: '£90k – £140k',
-    salaryMin: 90000,
-    salaryMax: 140000,
-    posted: '3 days ago',
-    postedDays: 3,
-    logo: '🧠',
-    skills: ['Deep Learning', 'Reinforcement Learning', 'JAX', 'PyTorch', 'Research'],
-    experience: 'Senior',
-    category: 'AI/ML',
-    featured: true,
-    tags: ['Abroad', 'AI/ML', 'Research'],
-    applicants: 210,
-    description: 'Conduct fundamental research in deep learning, reinforcement learning, and AGI safety at one of the world\'s premier AI labs. Publish at top-tier venues.',
-    responsibilities: [
-      'Conduct original research advancing the state-of-the-art in AI/ML',
-      'Publish findings at NeurIPS, ICML, ICLR, and Nature',
-      'Collaborate with cross-disciplinary teams (neuroscience, physics, math)',
-      'Develop novel algorithms and architectures',
-      'Apply research to real-world problems (healthcare, science, climate)',
-      'Mentor PhD students and junior researchers',
+    "id": 11,
+    "title": "Cognizant Senior Cybersecurity Engineer",
+    "company": "Cognizant",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
     ],
-    requirements: [
-      'PhD in CS, ML, Statistics, or related field',
-      'Strong publication record at top AI venues',
-      'Expert in JAX and/or PyTorch',
-      'Deep RL or generative model expertise',
-      'Strong mathematical background (ML theory, optimization)',
-      'Ability to navigate ambiguous research problems',
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cybersecurity",
+      "Cognizant"
     ],
-    niceToHave: [
-      'Post-doctoral experience',
-      'Collaboration with academic institutions',
-      'Open-source framework contributions',
-      'Experience with large-scale distributed training',
+    "applicants": 34,
+    "description": "Join the team at Cognizant as a Senior Cybersecurity Engineer. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
     ],
-    benefits: [
-      'World-class research environment',
-      'Visa and relocation sponsorship',
-      'Competitive salary + bonus',
-      'Unlimited conference travel budget',
-      'Compute resources (TPU pods)',
-      'Comprehensive UK private healthcare',
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
     ],
-    aboutCompany: 'DeepMind, a subsidiary of Alphabet, is the world\'s leading AI safety and research lab. Known for AlphaGo, AlphaFold, Gemini, and breakthrough scientific AI applications.',
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "Cognizant is a leading organization in the IT Consulting & Services sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.cognizant.com/"
   },
   {
-    id: 12,
-    title: 'Product Manager — Platform',
-    company: 'Razorpay',
-    companyLogo: '💳',
-    location: 'Bengaluru, India',
-    country: 'India',
-    type: 'Full-time',
-    salary: '₹30L – ₹50L',
-    salaryMin: 3000000,
-    salaryMax: 5000000,
-    posted: '2 days ago',
-    postedDays: 2,
-    logo: '💳',
-    skills: ['Product Strategy', 'SQL', 'User Research', 'Agile', 'Fintech', 'OKRs'],
-    experience: 'Senior',
-    category: 'Product',
-    tags: ['Full-time', 'Product'],
-    applicants: 198,
-    description: 'Define and drive the product strategy for Razorpay\'s core payments platform serving 10M+ businesses. Work at the intersection of technology, design, and business.',
-    responsibilities: [
-      'Own the product roadmap for the core payments API platform',
-      'Conduct user research and competitor analysis',
-      'Define product requirements and acceptance criteria',
-      'Drive sprint planning and backlog grooming with engineering',
-      'Define and monitor KPIs to measure product success',
-      'Collaborate with Razorpay\'s leadership team on product strategy',
+    "id": 12,
+    "title": "Tech Mahindra Data Scientist (Analytics & Forecasting)",
+    "company": "Tech Mahindra",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
     ],
-    requirements: [
-      '5+ years of product management experience',
-      'Fintech or payments domain knowledge preferred',
-      'Data-driven decision making with SQL proficiency',
-      'Experience managing API or platform products',
-      'Strong written and verbal communication',
-      'Engineering or Business degree from a top institution',
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Data Science",
+      "Tech Mahindra"
     ],
-    niceToHave: [
-      'MBA from IIM/ISB',
-      'Technical background (B.Tech)',
-      'Experience scaling 0-to-1 products',
-      'Knowledge of RBI regulations and PCI-DSS',
+    "applicants": 14,
+    "description": "Join the team at Tech Mahindra as a Data Scientist (Analytics & Forecasting). Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
     ],
-    benefits: [
-      'Competitive CTC with generous ESOPs',
-      'Flexible work model (hybrid)',
-      'Health insurance (self + family)',
-      'Learning allowance',
-      'Razorpay Banking benefits',
-      'Annual team retreats',
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
     ],
-    aboutCompany: 'Razorpay is India\'s leading full-stack financial services platform. Processing ₹8L crore annually for 10M+ businesses. Unicorn valued at $7.5B, backed by Tiger Global and Sequoia.',
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "Tech Mahindra is a leading organization in the IT Consulting & Services sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.techmahindra.com/"
   },
   {
-    id: 13,
-    title: 'Frontend Engineer (React/Next.js)',
-    company: 'Figma',
-    companyLogo: '🎨',
-    location: 'San Francisco, CA',
-    country: 'USA',
-    type: 'Full-time',
-    salary: '$160k – $220k',
-    salaryMin: 160000,
-    salaryMax: 220000,
-    posted: '1 day ago',
-    postedDays: 1,
-    logo: '🎨',
-    skills: ['React', 'Next.js', 'TypeScript', 'WebGL', 'Canvas API', 'WebAssembly'],
-    experience: 'Senior',
-    category: 'Frontend',
-    urgent: true,
-    tags: ['Full-time', 'Frontend'],
-    applicants: 320,
-    description: 'Build the collaborative design tools used by 8M+ designers worldwide. Work on cutting-edge browser technology at the intersection of art and engineering.',
-    responsibilities: [
-      'Build high-performance React components for collaborative design tools',
-      'Work on WebGL and Canvas-based rendering engine',
-      'Implement real-time collaborative features using CRDTs',
-      'Optimize rendering performance for complex design documents',
-      'Build developer tools and plugin APIs',
-      'Mentor engineers and contribute to our component design system',
+    "id": 13,
+    "title": "LTIMindtree Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "LTIMindtree",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
     ],
-    requirements: [
-      '5+ years frontend engineering experience',
-      'Expert in React and TypeScript',
-      'Understanding of browser rendering pipeline',
-      'Performance optimization (profiling, memoization, virtualization)',
-      'Test-driven development (Jest, Testing Library)',
-      'Communication and cross-functional collaboration',
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "AI/ML",
+      "LTIMindtree"
     ],
-    niceToHave: [
-      'WebGL or Three.js experience',
-      'WebAssembly (WASM) knowledge',
-      'Compiler or parser engineering experience',
-      'Game development background',
+    "applicants": 30,
+    "description": "Join the team at LTIMindtree as a Senior Software Engineer (AI/ML & Infrastructure). Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
     ],
-    benefits: [
-      'Top-tier compensation + stock',
-      'On-site meals and wellness perks',
-      'Premium health benefits',
-      '$2,000 equipment stipend',
-      'Paid parental leave (18 weeks)',
-      '21 days PTO',
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
     ],
-    aboutCompany: 'Figma is the world\'s leading collaborative design platform with $1B+ ARR. Used by 8M+ designers at companies like Airbnb, Microsoft, and Tesla. Acquired by Adobe in 2024.',
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "LTIMindtree is a leading organization in the IT Consulting & Services sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.ltimindtree.com/careers/"
   },
   {
-    id: 14,
-    title: 'DevSecOps Engineer',
-    company: 'Infosys Limited',
-    companyLogo: '🛡️',
-    location: 'Pune, India',
-    country: 'India',
-    type: 'Full-time',
-    salary: '₹18L – ₹30L',
-    salaryMin: 1800000,
-    salaryMax: 3000000,
-    posted: '4 days ago',
-    postedDays: 4,
-    logo: '🛡️',
-    skills: ['DevSecOps', 'Jenkins', 'Kubernetes', 'OWASP', 'Snyk', 'AWS SecurityHub'],
-    experience: 'Mid Level',
-    category: 'DevOps',
-    tags: ['Full-time', 'DevOps'],
-    applicants: 67,
-    description: 'Embed security into the SDLC for one of India\'s largest IT services companies. Work across 50+ client projects to build secure-by-default pipelines.',
-    responsibilities: [
-      'Integrate security testing into CI/CD pipelines (SAST, DAST, SCA)',
-      'Conduct threat modelling and security architecture reviews',
-      'Automate vulnerability scanning using Snyk, Checkmarx, and Trivy',
-      'Implement runtime security using Falco and OPA Gatekeeper',
-      'Train development teams on OWASP Top 10 and secure coding',
-      'Manage security findings and track remediation SLAs',
+    "id": 14,
+    "title": "Swiggy Senior MLOps Engineer",
+    "company": "Swiggy",
+    "companyLogo": "🍔",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🍔",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
     ],
-    requirements: [
-      '3+ years in DevSecOps or security engineering',
-      'CI/CD pipelines (Jenkins, GitLab CI, GitHub Actions)',
-      'Container security (Docker, Kubernetes)',
-      'Knowledge of OWASP ASVS, NIST CSF',
-      'Scripting: Python or Bash',
-      'AWS or Azure security services',
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "DevOps",
+      "Swiggy"
     ],
-    niceToHave: [
-      'CEH or OSCP certification',
-      'Kubernetes security (CKS)',
-      'Experience with compliance (PCI DSS, SOC2)',
-      'Bug bounty program participation',
+    "applicants": 21,
+    "description": "Join the team at Swiggy as a Senior MLOps Engineer. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
     ],
-    benefits: [
-      'Infosys flex benefits',
-      'Annual skill-based incentives',
-      'Mediclaim for family',
-      'Global mobility opportunities',
-      'Infosys learning platform access',
-      'Performance-linked variable pay',
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
     ],
-    aboutCompany: 'Infosys is a global IT services leader with $18B revenue and 350,000+ employees in 50 countries. Serving the world\'s leading enterprises in financial services, healthcare, retail, and more.',
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Swiggy is a leading organization in the On-Demand Delivery sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.swiggy.com/"
   },
   {
-    id: 15,
-    title: 'NLP Engineer',
-    company: 'OpenText',
-    companyLogo: '📝',
-    location: 'Toronto, Canada',
-    country: 'Canada',
-    type: 'Abroad',
-    salary: 'CAD $120k – $165k',
-    salaryMin: 120000,
-    salaryMax: 165000,
-    posted: '5 days ago',
-    postedDays: 5,
-    logo: '📝',
-    skills: ['NLP', 'Python', 'HuggingFace', 'spaCy', 'BERT', 'LangChain'],
-    experience: 'Mid Level',
-    category: 'AI/ML',
-    tags: ['Abroad', 'AI/ML'],
-    applicants: 44,
-    description: 'Build intelligent document processing and information extraction systems using state-of-the-art NLP and large language models for enterprise content management.',
-    responsibilities: [
-      'Build NLP pipelines for document classification, NER, and relation extraction',
-      'Fine-tune transformer models (BERT, RoBERTa, T5) on domain-specific data',
-      'Integrate LLMs using LangChain and RAG architectures',
-      'Build API services for NLP model serving (FastAPI, BentoML)',
-      'Evaluate model quality using standard NLP benchmarks',
-      'Collaborate with product teams to integrate AI into content workflows',
+    "id": 15,
+    "title": "Zomato Full Stack Developer (React & Node.js)",
+    "company": "Zomato",
+    "companyLogo": "🍕",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹18L – ₹30L",
+    "salaryMin": 1800000,
+    "salaryMax": 3000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🍕",
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "MySQL",
+      "Tailwind CSS"
     ],
-    requirements: [
-      '3+ years NLP engineering experience',
-      'Python and deep learning frameworks (PyTorch/JAX)',
-      'HuggingFace Transformers and Datasets',
-      'Experience fine-tuning pre-trained language models',
-      'Understanding of attention mechanisms and transformer architecture',
-      'SQL and basic data engineering skills',
+    "experience": "Mid Level",
+    "category": "Full Stack",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Full Stack",
+      "Zomato"
     ],
-    niceToHave: [
-      'Canadian PR or open work permit',
-      'Experience with LLM prompting and RLHF',
-      'Knowledge of multilingual NLP',
-      'Publications in ACL, EMNLP, or NAACL',
+    "applicants": 12,
+    "description": "Join the team at Zomato as a Full Stack Developer (React & Node.js). Build highly responsive web applications, interactive admin panels, and scalable server-side REST APIs for our consumer and enterprise products.",
+    "responsibilities": [
+      "Develop modular React frontend components using TypeScript.",
+      "Architect secure and optimized database queries in Node.js.",
+      "Collaborate with product designers to implement premium user interfaces."
     ],
-    benefits: [
-      'Work permit sponsorship available',
-      'Comprehensive health and dental (Day 1)',
-      'RRSP matching',
-      'Flexible hybrid work model',
-      '$3,000 annual learning allowance',
-      'Parental leave top-up',
+    "requirements": [
+      "3+ years of professional full-stack development experience.",
+      "Strong proficiency in modern JavaScript/TypeScript, React 18, and Node.js.",
+      "Experience with ORMs like Prisma or Sequelize and SQL databases."
     ],
-    aboutCompany: 'OpenText is a global leader in enterprise information management with $5.8B revenue. Based in Waterloo, Ontario, we serve 100,000+ organizations in 180+ countries.',
+    "niceToHave": [
+      "Experience with Next.js App Router",
+      "Familiarity with serverless deployments."
+    ],
+    "benefits": [
+      "Competitive base salary",
+      "Generous medical benefits",
+      "Flex-hours & hybrid options",
+      "Latest hardware support"
+    ],
+    "aboutCompany": "Zomato is a leading organization in the On-Demand Delivery sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.zomato.com/careers"
   },
+  {
+    "id": 16,
+    "title": "PhonePe Cloud Architect (AWS / Azure Solutions)",
+    "company": "PhonePe",
+    "companyLogo": "💳",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💳",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
+    ],
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cloud",
+      "PhonePe"
+    ],
+    "applicants": 33,
+    "description": "Join the team at PhonePe as a Cloud Architect (AWS / Azure Solutions). Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
+    ],
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
+    ],
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "PhonePe is a leading organization in the Fintech & Payments sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.phonepe.com/careers/"
+  },
+  {
+    "id": 17,
+    "title": "Paytm Senior Cybersecurity Engineer",
+    "company": "Paytm",
+    "companyLogo": "💳",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💳",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
+    ],
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "Cybersecurity",
+      "Paytm"
+    ],
+    "applicants": 18,
+    "description": "Join the team at Paytm as a Senior Cybersecurity Engineer. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
+    ],
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
+    ],
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "Paytm is a leading organization in the Fintech & Payments sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.paytm.com/"
+  },
+  {
+    "id": 18,
+    "title": "Razorpay Data Scientist (Analytics & Forecasting)",
+    "company": "Razorpay",
+    "companyLogo": "💳",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💳",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
+    ],
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Data Science",
+      "Razorpay"
+    ],
+    "applicants": 22,
+    "description": "Join the team at Razorpay as a Data Scientist (Analytics & Forecasting). Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
+    ],
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
+    ],
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "Razorpay is a leading organization in the Fintech & Payments sector, committed to driving innovation globally.",
+    "externalUrl": "https://razorpay.com/jobs/"
+  },
+  {
+    "id": 19,
+    "title": "Cred Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "Cred",
+    "companyLogo": "💳",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💳",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
+    ],
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "AI/ML",
+      "Cred"
+    ],
+    "applicants": 11,
+    "description": "Join the team at Cred as a Senior Software Engineer (AI/ML & Infrastructure). Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
+    ],
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
+    ],
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "Cred is a leading organization in the Fintech & Payments sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.cred.club/"
+  },
+  {
+    "id": 20,
+    "title": "Uber Senior MLOps Engineer",
+    "company": "Uber",
+    "companyLogo": "🚗",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🚗",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
+    ],
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "DevOps",
+      "Uber"
+    ],
+    "applicants": 13,
+    "description": "Join the team at Uber as a Senior MLOps Engineer. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
+    ],
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
+    ],
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Uber is a leading organization in the Mobility & Logistics sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.uber.com/careers/"
+  },
+  {
+    "id": 21,
+    "title": "Ola Full Stack Developer (React & Node.js)",
+    "company": "Ola",
+    "companyLogo": "🚕",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹18L – ₹30L",
+    "salaryMin": 1800000,
+    "salaryMax": 3000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🚕",
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "MySQL",
+      "Tailwind CSS"
+    ],
+    "experience": "Mid Level",
+    "category": "Full Stack",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "Full Stack",
+      "Ola"
+    ],
+    "applicants": 30,
+    "description": "Join the team at Ola as a Full Stack Developer (React & Node.js). Build highly responsive web applications, interactive admin panels, and scalable server-side REST APIs for our consumer and enterprise products.",
+    "responsibilities": [
+      "Develop modular React frontend components using TypeScript.",
+      "Architect secure and optimized database queries in Node.js.",
+      "Collaborate with product designers to implement premium user interfaces."
+    ],
+    "requirements": [
+      "3+ years of professional full-stack development experience.",
+      "Strong proficiency in modern JavaScript/TypeScript, React 18, and Node.js.",
+      "Experience with ORMs like Prisma or Sequelize and SQL databases."
+    ],
+    "niceToHave": [
+      "Experience with Next.js App Router",
+      "Familiarity with serverless deployments."
+    ],
+    "benefits": [
+      "Competitive base salary",
+      "Generous medical benefits",
+      "Flex-hours & hybrid options",
+      "Latest hardware support"
+    ],
+    "aboutCompany": "Ola is a leading organization in the Mobility & Logistics sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.olacabs.com/careers"
+  },
+  {
+    "id": 22,
+    "title": "Jio Cloud Architect (AWS / Azure Solutions)",
+    "company": "Jio",
+    "companyLogo": "📶",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "📶",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
+    ],
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cloud",
+      "Jio"
+    ],
+    "applicants": 31,
+    "description": "Join the team at Jio as a Cloud Architect (AWS / Azure Solutions). Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
+    ],
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
+    ],
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "Jio is a leading organization in the Telecom & Cloud sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.jio.com/"
+  },
+  {
+    "id": 23,
+    "title": "Airtel Senior Cybersecurity Engineer",
+    "company": "Airtel",
+    "companyLogo": "📶",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "📶",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
+    ],
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cybersecurity",
+      "Airtel"
+    ],
+    "applicants": 31,
+    "description": "Join the team at Airtel as a Senior Cybersecurity Engineer. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
+    ],
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
+    ],
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "Airtel is a leading organization in the Telecom & Cloud sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.airtel.in/careers"
+  },
+  {
+    "id": 24,
+    "title": "IBM Data Scientist (Analytics & Forecasting)",
+    "company": "IBM",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
+    ],
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Data Science",
+      "IBM"
+    ],
+    "applicants": 31,
+    "description": "Join the team at IBM as a Data Scientist (Analytics & Forecasting). Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
+    ],
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
+    ],
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "IBM is a leading organization in the Enterprise SaaS & AI sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.ibm.com/careers"
+  },
+  {
+    "id": 25,
+    "title": "Accenture Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "Accenture",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
+    ],
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "AI/ML",
+      "Accenture"
+    ],
+    "applicants": 8,
+    "description": "Join the team at Accenture as a Senior Software Engineer (AI/ML & Infrastructure). Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
+    ],
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
+    ],
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "Accenture is a leading organization in the IT Consulting & Services sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.accenture.com/careers"
+  },
+  {
+    "id": 26,
+    "title": "Capgemini Senior MLOps Engineer",
+    "company": "Capgemini",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
+    ],
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "DevOps",
+      "Capgemini"
+    ],
+    "applicants": 13,
+    "description": "Join the team at Capgemini as a Senior MLOps Engineer. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
+    ],
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
+    ],
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Capgemini is a leading organization in the IT Consulting & Services sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.capgemini.com/careers/"
+  },
+  {
+    "id": 27,
+    "title": "Deloitte Full Stack Developer (React & Node.js)",
+    "company": "Deloitte",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹18L – ₹30L",
+    "salaryMin": 1800000,
+    "salaryMax": 3000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "MySQL",
+      "Tailwind CSS"
+    ],
+    "experience": "Mid Level",
+    "category": "Full Stack",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Full Stack",
+      "Deloitte"
+    ],
+    "applicants": 8,
+    "description": "Join the team at Deloitte as a Full Stack Developer (React & Node.js). Build highly responsive web applications, interactive admin panels, and scalable server-side REST APIs for our consumer and enterprise products.",
+    "responsibilities": [
+      "Develop modular React frontend components using TypeScript.",
+      "Architect secure and optimized database queries in Node.js.",
+      "Collaborate with product designers to implement premium user interfaces."
+    ],
+    "requirements": [
+      "3+ years of professional full-stack development experience.",
+      "Strong proficiency in modern JavaScript/TypeScript, React 18, and Node.js.",
+      "Experience with ORMs like Prisma or Sequelize and SQL databases."
+    ],
+    "niceToHave": [
+      "Experience with Next.js App Router",
+      "Familiarity with serverless deployments."
+    ],
+    "benefits": [
+      "Competitive base salary",
+      "Generous medical benefits",
+      "Flex-hours & hybrid options",
+      "Latest hardware support"
+    ],
+    "aboutCompany": "Deloitte is a leading organization in the Consulting & Advisory sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.deloitte.com/"
+  },
+  {
+    "id": 28,
+    "title": "PwC Cloud Architect (AWS / Azure Solutions)",
+    "company": "PwC",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
+    ],
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cloud",
+      "PwC"
+    ],
+    "applicants": 32,
+    "description": "Join the team at PwC as a Cloud Architect (AWS / Azure Solutions). Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
+    ],
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
+    ],
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "PwC is a leading organization in the Consulting & Advisory sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.pwc.com/careers"
+  },
+  {
+    "id": 29,
+    "title": "EY Senior Cybersecurity Engineer",
+    "company": "EY",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
+    ],
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "Cybersecurity",
+      "EY"
+    ],
+    "applicants": 12,
+    "description": "Join the team at EY as a Senior Cybersecurity Engineer. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
+    ],
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
+    ],
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "EY is a leading organization in the Consulting & Advisory sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.ey.com/careers"
+  },
+  {
+    "id": 30,
+    "title": "KPMG Data Scientist (Analytics & Forecasting)",
+    "company": "KPMG",
+    "companyLogo": "🏢",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🏢",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
+    ],
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Data Science",
+      "KPMG"
+    ],
+    "applicants": 11,
+    "description": "Join the team at KPMG as a Data Scientist (Analytics & Forecasting). Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
+    ],
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
+    ],
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "KPMG is a leading organization in the Consulting & Advisory sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.kpmg"
+  },
+  {
+    "id": 31,
+    "title": "Salesforce Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "Salesforce",
+    "companyLogo": "☁️",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "☁️",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
+    ],
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "AI/ML",
+      "Salesforce"
+    ],
+    "applicants": 10,
+    "description": "Join the team at Salesforce as a Senior Software Engineer (AI/ML & Infrastructure). Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
+    ],
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
+    ],
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "Salesforce is a leading organization in the Enterprise SaaS sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.salesforce.com/company/careers/"
+  },
+  {
+    "id": 32,
+    "title": "Adobe Senior MLOps Engineer",
+    "company": "Adobe",
+    "companyLogo": "🎨",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🎨",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
+    ],
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "DevOps",
+      "Adobe"
+    ],
+    "applicants": 8,
+    "description": "Join the team at Adobe as a Senior MLOps Engineer. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
+    ],
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
+    ],
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Adobe is a leading organization in the Creative Software & SaaS sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.adobe.com/"
+  },
+  {
+    "id": 33,
+    "title": "Oracle Full Stack Developer (React & Node.js)",
+    "company": "Oracle",
+    "companyLogo": "🔴",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹18L – ₹30L",
+    "salaryMin": 1800000,
+    "salaryMax": 3000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🔴",
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "MySQL",
+      "Tailwind CSS"
+    ],
+    "experience": "Mid Level",
+    "category": "Full Stack",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "Full Stack",
+      "Oracle"
+    ],
+    "applicants": 6,
+    "description": "Join the team at Oracle as a Full Stack Developer (React & Node.js). Build highly responsive web applications, interactive admin panels, and scalable server-side REST APIs for our consumer and enterprise products.",
+    "responsibilities": [
+      "Develop modular React frontend components using TypeScript.",
+      "Architect secure and optimized database queries in Node.js.",
+      "Collaborate with product designers to implement premium user interfaces."
+    ],
+    "requirements": [
+      "3+ years of professional full-stack development experience.",
+      "Strong proficiency in modern JavaScript/TypeScript, React 18, and Node.js.",
+      "Experience with ORMs like Prisma or Sequelize and SQL databases."
+    ],
+    "niceToHave": [
+      "Experience with Next.js App Router",
+      "Familiarity with serverless deployments."
+    ],
+    "benefits": [
+      "Competitive base salary",
+      "Generous medical benefits",
+      "Flex-hours & hybrid options",
+      "Latest hardware support"
+    ],
+    "aboutCompany": "Oracle is a leading organization in the Enterprise Cloud & Database sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.oracle.com/corporate/careers/"
+  },
+  {
+    "id": 34,
+    "title": "Cisco Cloud Architect (AWS / Azure Solutions)",
+    "company": "Cisco",
+    "companyLogo": "🔌",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🔌",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
+    ],
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cloud",
+      "Cisco"
+    ],
+    "applicants": 21,
+    "description": "Join the team at Cisco as a Cloud Architect (AWS / Azure Solutions). Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
+    ],
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
+    ],
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "Cisco is a leading organization in the Networking & Security sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.cisco.com/"
+  },
+  {
+    "id": 35,
+    "title": "Intel Senior Cybersecurity Engineer",
+    "company": "Intel",
+    "companyLogo": "🔌",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🔌",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
+    ],
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cybersecurity",
+      "Intel"
+    ],
+    "applicants": 12,
+    "description": "Join the team at Intel as a Senior Cybersecurity Engineer. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
+    ],
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
+    ],
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "Intel is a leading organization in the Hardware & Semiconductors sector, committed to driving innovation globally.",
+    "externalUrl": "https://jobs.intel.com/"
+  },
+  {
+    "id": 36,
+    "title": "AMD Data Scientist (Analytics & Forecasting)",
+    "company": "AMD",
+    "companyLogo": "🔌",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🔌",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
+    ],
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Data Science",
+      "AMD"
+    ],
+    "applicants": 13,
+    "description": "Join the team at AMD as a Data Scientist (Analytics & Forecasting). Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
+    ],
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
+    ],
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "AMD is a leading organization in the Hardware & Semiconductors sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.amd.com/en/corporate/careers"
+  },
+  {
+    "id": 37,
+    "title": "HP Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "HP",
+    "companyLogo": "💻",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💻",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
+    ],
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "AI/ML",
+      "HP"
+    ],
+    "applicants": 19,
+    "description": "Join the team at HP as a Senior Software Engineer (AI/ML & Infrastructure). Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
+    ],
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
+    ],
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "HP is a leading organization in the Hardware & Computing sector, committed to driving innovation globally.",
+    "externalUrl": "https://jobs.hp.com/"
+  },
+  {
+    "id": 38,
+    "title": "Dell Senior MLOps Engineer",
+    "company": "Dell",
+    "companyLogo": "💻",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💻",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
+    ],
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "DevOps",
+      "Dell"
+    ],
+    "applicants": 6,
+    "description": "Join the team at Dell as a Senior MLOps Engineer. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
+    ],
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
+    ],
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Dell is a leading organization in the Hardware & Computing sector, committed to driving innovation globally.",
+    "externalUrl": "https://jobs.dell.com/"
+  },
+  {
+    "id": 39,
+    "title": "VMware Full Stack Developer (React & Node.js)",
+    "company": "VMware",
+    "companyLogo": "☁️",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹18L – ₹30L",
+    "salaryMin": 1800000,
+    "salaryMax": 3000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "☁️",
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "MySQL",
+      "Tailwind CSS"
+    ],
+    "experience": "Mid Level",
+    "category": "Full Stack",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Full Stack",
+      "VMware"
+    ],
+    "applicants": 20,
+    "description": "Join the team at VMware as a Full Stack Developer (React & Node.js). Build highly responsive web applications, interactive admin panels, and scalable server-side REST APIs for our consumer and enterprise products.",
+    "responsibilities": [
+      "Develop modular React frontend components using TypeScript.",
+      "Architect secure and optimized database queries in Node.js.",
+      "Collaborate with product designers to implement premium user interfaces."
+    ],
+    "requirements": [
+      "3+ years of professional full-stack development experience.",
+      "Strong proficiency in modern JavaScript/TypeScript, React 18, and Node.js.",
+      "Experience with ORMs like Prisma or Sequelize and SQL databases."
+    ],
+    "niceToHave": [
+      "Experience with Next.js App Router",
+      "Familiarity with serverless deployments."
+    ],
+    "benefits": [
+      "Competitive base salary",
+      "Generous medical benefits",
+      "Flex-hours & hybrid options",
+      "Latest hardware support"
+    ],
+    "aboutCompany": "VMware is a leading organization in the Cloud & Virtualization sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.vmware.com/"
+  },
+  {
+    "id": 40,
+    "title": "ServiceNow Cloud Architect (AWS / Azure Solutions)",
+    "company": "ServiceNow",
+    "companyLogo": "☁️",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "☁️",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
+    ],
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cloud",
+      "ServiceNow"
+    ],
+    "applicants": 12,
+    "description": "Join the team at ServiceNow as a Cloud Architect (AWS / Azure Solutions). Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
+    ],
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
+    ],
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "ServiceNow is a leading organization in the Enterprise Workflow SaaS sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.servicenow.com/careers.html"
+  },
+  {
+    "id": 41,
+    "title": "Stripe Senior Cybersecurity Engineer",
+    "company": "Stripe",
+    "companyLogo": "💳",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💳",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
+    ],
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "Cybersecurity",
+      "Stripe"
+    ],
+    "applicants": 32,
+    "description": "Join the team at Stripe as a Senior Cybersecurity Engineer. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
+    ],
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
+    ],
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "Stripe is a leading organization in the Fintech & Payments sector, committed to driving innovation globally.",
+    "externalUrl": "https://stripe.com/jobs"
+  },
+  {
+    "id": 42,
+    "title": "Zoom Data Scientist (Analytics & Forecasting)",
+    "company": "Zoom",
+    "companyLogo": "📹",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "📹",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
+    ],
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Data Science",
+      "Zoom"
+    ],
+    "applicants": 27,
+    "description": "Join the team at Zoom as a Data Scientist (Analytics & Forecasting). Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
+    ],
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
+    ],
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "Zoom is a leading organization in the Collaboration & Video sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.zoom.us/"
+  },
+  {
+    "id": 43,
+    "title": "Slack Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "Slack",
+    "companyLogo": "💬",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💬",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
+    ],
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "AI/ML",
+      "Slack"
+    ],
+    "applicants": 24,
+    "description": "Join the team at Slack as a Senior Software Engineer (AI/ML & Infrastructure). Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
+    ],
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
+    ],
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "Slack is a leading organization in the Collaboration & SaaS sector, committed to driving innovation globally.",
+    "externalUrl": "https://slack.com/careers"
+  },
+  {
+    "id": 44,
+    "title": "Atlassian Senior MLOps Engineer",
+    "company": "Atlassian",
+    "companyLogo": "🔷",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🔷",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
+    ],
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "DevOps",
+      "Atlassian"
+    ],
+    "applicants": 13,
+    "description": "Join the team at Atlassian as a Senior MLOps Engineer. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
+    ],
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
+    ],
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Atlassian is a leading organization in the Collaboration & DevOps sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.atlassian.com/company/careers"
+  },
+  {
+    "id": 45,
+    "title": "Snowflake Full Stack Developer (React & Node.js)",
+    "company": "Snowflake",
+    "companyLogo": "❄️",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹18L – ₹30L",
+    "salaryMin": 1800000,
+    "salaryMax": 3000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "❄️",
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "MySQL",
+      "Tailwind CSS"
+    ],
+    "experience": "Mid Level",
+    "category": "Full Stack",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "Full Stack",
+      "Snowflake"
+    ],
+    "applicants": 9,
+    "description": "Join the team at Snowflake as a Full Stack Developer (React & Node.js). Build highly responsive web applications, interactive admin panels, and scalable server-side REST APIs for our consumer and enterprise products.",
+    "responsibilities": [
+      "Develop modular React frontend components using TypeScript.",
+      "Architect secure and optimized database queries in Node.js.",
+      "Collaborate with product designers to implement premium user interfaces."
+    ],
+    "requirements": [
+      "3+ years of professional full-stack development experience.",
+      "Strong proficiency in modern JavaScript/TypeScript, React 18, and Node.js.",
+      "Experience with ORMs like Prisma or Sequelize and SQL databases."
+    ],
+    "niceToHave": [
+      "Experience with Next.js App Router",
+      "Familiarity with serverless deployments."
+    ],
+    "benefits": [
+      "Competitive base salary",
+      "Generous medical benefits",
+      "Flex-hours & hybrid options",
+      "Latest hardware support"
+    ],
+    "aboutCompany": "Snowflake is a leading organization in the Cloud Data Platform sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.snowflake.com/careers/"
+  },
+  {
+    "id": 46,
+    "title": "Databricks Cloud Architect (AWS / Azure Solutions)",
+    "company": "Databricks",
+    "companyLogo": "🧱",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🧱",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
+    ],
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cloud",
+      "Databricks"
+    ],
+    "applicants": 24,
+    "description": "Join the team at Databricks as a Cloud Architect (AWS / Azure Solutions). Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
+    ],
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
+    ],
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "Databricks is a leading organization in the AI & Big Data sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.databricks.com/company/careers"
+  },
+  {
+    "id": 47,
+    "title": "Twilio Senior Cybersecurity Engineer",
+    "company": "Twilio",
+    "companyLogo": "📞",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "📞",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
+    ],
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Cybersecurity",
+      "Twilio"
+    ],
+    "applicants": 21,
+    "description": "Join the team at Twilio as a Senior Cybersecurity Engineer. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
+    ],
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
+    ],
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "Twilio is a leading organization in the Cloud Communications sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.twilio.com/company/jobs"
+  },
+  {
+    "id": 48,
+    "title": "Shopify Data Scientist (Analytics & Forecasting)",
+    "company": "Shopify",
+    "companyLogo": "🛍️",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🛍️",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
+    ],
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "Data Science",
+      "Shopify"
+    ],
+    "applicants": 19,
+    "description": "Join the team at Shopify as a Data Scientist (Analytics & Forecasting). Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
+    ],
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
+    ],
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "Shopify is a leading organization in the E-Commerce SaaS sector, committed to driving innovation globally.",
+    "externalUrl": "https://www.shopify.com/careers"
+  },
+  {
+    "id": 49,
+    "title": "PayPal Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "PayPal",
+    "companyLogo": "💳",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "💳",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
+    ],
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": true,
+    "tags": [
+      "Hybrid",
+      "AI/ML",
+      "PayPal"
+    ],
+    "applicants": 8,
+    "description": "Join the team at PayPal as a Senior Software Engineer (AI/ML & Infrastructure). Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
+    ],
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
+    ],
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "PayPal is a leading organization in the Fintech & Payments sector, committed to driving innovation globally.",
+    "externalUrl": "https://careers.paypal-corp.com/"
+  },
+  {
+    "id": 50,
+    "title": "Grab Senior MLOps Engineer",
+    "company": "Grab",
+    "companyLogo": "🚗",
+    "location": "Hyderabad, India (Hybrid)",
+    "country": "India",
+    "type": "Full-time",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "Just now",
+    "postedDays": 0,
+    "logo": "🚗",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
+    ],
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Hybrid",
+      "DevOps",
+      "Grab"
+    ],
+    "applicants": 22,
+    "description": "Join the team at Grab as a Senior MLOps Engineer. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
+    ],
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
+    ],
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Grab is a leading organization in the Mobility & On-Demand sector, committed to driving innovation globally.",
+    "externalUrl": "https://grab.careers/"
+  },
+  {
+    "id": 51,
+    "title": "Specialist Cloud Architect (AWS / Azure Solutions)",
+    "company": "Google Labs",
+    "companyLogo": "🤖",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "🤖",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
+    ],
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "Cloud",
+      "Google"
+    ],
+    "applicants": 13,
+    "description": "Join Google Labs to work on cutting-edge research. Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
+    ],
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
+    ],
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "Google Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://careers.google.com/"
+  },
+  {
+    "id": 52,
+    "title": "Specialist Senior Cybersecurity Engineer",
+    "company": "Microsoft Labs",
+    "companyLogo": "💻",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "💻",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
+    ],
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "Cybersecurity",
+      "Microsoft"
+    ],
+    "applicants": 25,
+    "description": "Join Microsoft Labs to work on cutting-edge research. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
+    ],
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
+    ],
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "Microsoft Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://careers.microsoft.com/"
+  },
+  {
+    "id": 53,
+    "title": "Specialist Data Scientist (Analytics & Forecasting)",
+    "company": "AWS (Amazon Web Services) Labs",
+    "companyLogo": "☁️",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "☁️",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
+    ],
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "Data Science",
+      "AWS (Amazon Web Services)"
+    ],
+    "applicants": 23,
+    "description": "Join AWS (Amazon Web Services) Labs to work on cutting-edge research. Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
+    ],
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
+    ],
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "AWS (Amazon Web Services) Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://www.amazon.jobs/en/teams/amazon-web-services"
+  },
+  {
+    "id": 54,
+    "title": "Specialist Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "Meta Labs",
+    "companyLogo": "👁️",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "👁️",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
+    ],
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "AI/ML",
+      "Meta"
+    ],
+    "applicants": 16,
+    "description": "Join Meta Labs to work on cutting-edge research. Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
+    ],
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
+    ],
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "Meta Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://www.metacareers.com/"
+  },
+  {
+    "id": 55,
+    "title": "Specialist Senior MLOps Engineer",
+    "company": "Apple Labs",
+    "companyLogo": "🍎",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹30L – ₹50L",
+    "salaryMin": 3000000,
+    "salaryMax": 5000000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "🍎",
+    "skills": [
+      "AWS SageMaker",
+      "Terraform",
+      "Kubernetes",
+      "Python",
+      "ML Pipelines",
+      "Docker"
+    ],
+    "experience": "Senior",
+    "category": "DevOps",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "DevOps",
+      "Apple"
+    ],
+    "applicants": 30,
+    "description": "Join Apple Labs to work on cutting-edge research. Own the production reliability, deployment governance, and infrastructure scalability for large-scale enterprise machine learning workloads.",
+    "responsibilities": [
+      "Develop continuous integration and continuous deployment pipelines (CI/CD) for ML models.",
+      "Manage GPU clusters and cloud auto-scaling policies.",
+      "Implement monitoring and observability for model health and inference latency."
+    ],
+    "requirements": [
+      "5+ years in cloud and DevOps engineering, with 2+ years dedicated to MLOps.",
+      "Deep knowledge of Amazon SageMaker, feature stores, and model endpoints.",
+      "Proficiency with Terraform and Kubernetes in production environments."
+    ],
+    "niceToHave": [
+      "AWS Certified DevOps or ML Specialty",
+      "Experience with Triton Inference Server."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "RSUs",
+      "Internet & wellness allowance",
+      "Certification coverage"
+    ],
+    "aboutCompany": "Apple Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://www.apple.com/careers/"
+  },
+  {
+    "id": 56,
+    "title": "Specialist Full Stack Developer (React & Node.js)",
+    "company": "Google Labs",
+    "companyLogo": "🤖",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹18L – ₹30L",
+    "salaryMin": 1800000,
+    "salaryMax": 3000000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "🤖",
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "MySQL",
+      "Tailwind CSS"
+    ],
+    "experience": "Mid Level",
+    "category": "Full Stack",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "Full Stack",
+      "Google"
+    ],
+    "applicants": 36,
+    "description": "Join Google Labs to work on cutting-edge research. Build highly responsive web applications, interactive admin panels, and scalable server-side REST APIs for our consumer and enterprise products.",
+    "responsibilities": [
+      "Develop modular React frontend components using TypeScript.",
+      "Architect secure and optimized database queries in Node.js.",
+      "Collaborate with product designers to implement premium user interfaces."
+    ],
+    "requirements": [
+      "3+ years of professional full-stack development experience.",
+      "Strong proficiency in modern JavaScript/TypeScript, React 18, and Node.js.",
+      "Experience with ORMs like Prisma or Sequelize and SQL databases."
+    ],
+    "niceToHave": [
+      "Experience with Next.js App Router",
+      "Familiarity with serverless deployments."
+    ],
+    "benefits": [
+      "Competitive base salary",
+      "Generous medical benefits",
+      "Flex-hours & hybrid options",
+      "Latest hardware support"
+    ],
+    "aboutCompany": "Google Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://careers.google.com/"
+  },
+  {
+    "id": 57,
+    "title": "Specialist Cloud Architect (AWS / Azure Solutions)",
+    "company": "Microsoft Labs",
+    "companyLogo": "💻",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹32L – ₹52L",
+    "salaryMin": 3200000,
+    "salaryMax": 5200000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "💻",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Infrastructure as Code",
+      "Enterprise Architecture",
+      "Security"
+    ],
+    "experience": "Lead",
+    "category": "Cloud",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "Cloud",
+      "Microsoft"
+    ],
+    "applicants": 34,
+    "description": "Join Microsoft Labs to work on cutting-edge research. Guide enterprise customers through end-to-end cloud transformation journeys, from solution design to full-scale infrastructure deployments.",
+    "responsibilities": [
+      "Design end-to-end resilient and cost-optimized cloud solutions.",
+      "Lead migration pipelines from legacy systems to cloud-native platforms.",
+      "Provide architecture guidance and deliver hands-on proofs of concept (PoCs)."
+    ],
+    "requirements": [
+      "7+ years of experience in cloud infrastructure and systems architecture.",
+      "Deep knowledge of AWS or Azure, container orchestrations, and IaC.",
+      "Excellent communication and technical presentation skills."
+    ],
+    "niceToHave": [
+      "AWS Certified Solutions Architect Professional",
+      "Familiarity with zero-trust security."
+    ],
+    "benefits": [
+      "RSU programs",
+      "Comprehensive healthcare package",
+      "Remote equipment budget",
+      "Volunteering benefits"
+    ],
+    "aboutCompany": "Microsoft Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://careers.microsoft.com/"
+  },
+  {
+    "id": 58,
+    "title": "Specialist Senior Cybersecurity Engineer",
+    "company": "AWS (Amazon Web Services) Labs",
+    "companyLogo": "☁️",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹25L – ₹42L",
+    "salaryMin": 2500000,
+    "salaryMax": 4200000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "☁️",
+    "skills": [
+      "Zero Trust",
+      "IAM",
+      "OIDC",
+      "SAML",
+      "Penetration Testing",
+      "Security Auditing"
+    ],
+    "experience": "Senior",
+    "category": "Cybersecurity",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "Cybersecurity",
+      "AWS (Amazon Web Services)"
+    ],
+    "applicants": 26,
+    "description": "Join AWS (Amazon Web Services) Labs to work on cutting-edge research. Lead the security assessment, threat modeling, and implementation of identity protection controls across our distributed cloud platforms.",
+    "responsibilities": [
+      "Design and deploy robust Zero Trust identity architectures.",
+      "Conduct continuous penetration testing and vulnerability reviews.",
+      "Implement incident response pipelines and security auditing dashboards."
+    ],
+    "requirements": [
+      "5+ years of software security or enterprise engineering experience.",
+      "Deep familiarity with IAM protocols, WebAuthn, and auth mechanisms.",
+      "Strong understanding of network protocols, firewalls, and encryption standards."
+    ],
+    "niceToHave": [
+      "CISSP or CEH certifications",
+      "Experience with AWS security controls."
+    ],
+    "benefits": [
+      "Annual health checks",
+      "Gym memberships",
+      "Flexible PTO",
+      "Corporate discounts"
+    ],
+    "aboutCompany": "AWS (Amazon Web Services) Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://www.amazon.jobs/en/teams/amazon-web-services"
+  },
+  {
+    "id": 59,
+    "title": "Specialist Data Scientist (Analytics & Forecasting)",
+    "company": "Meta Labs",
+    "companyLogo": "👁️",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹16L – ₹28L",
+    "salaryMin": 1600000,
+    "salaryMax": 2800000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "👁️",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Pandas",
+      "Statistical Modeling",
+      "Data Visualization"
+    ],
+    "experience": "Mid Level",
+    "category": "Data Science",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "Data Science",
+      "Meta"
+    ],
+    "applicants": 12,
+    "description": "Join Meta Labs to work on cutting-edge research. Leverage advanced statistical modeling and machine learning to build customer behavior profiles, churn forecasts, and predictive insights.",
+    "responsibilities": [
+      "Analyze massive customer transaction datasets to isolate behavioral trends.",
+      "Build and evaluate machine learning models for forecasting metrics.",
+      "Present actionable business recommendations to product leads."
+    ],
+    "requirements": [
+      "3+ years of professional data science or analytics experience.",
+      "Master's in Statistics, Applied Mathematics, or Computer Science.",
+      "Exceptional command of Python/R and SQL."
+    ],
+    "niceToHave": [
+      "Experience with Tableau or PowerBI dashboards",
+      "Familiarity with Snowflake."
+    ],
+    "benefits": [
+      "Performance bonuses",
+      "Hybrid work models",
+      "Professional training reimbursement",
+      "Paid parental leave"
+    ],
+    "aboutCompany": "Meta Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://www.metacareers.com/"
+  },
+  {
+    "id": 60,
+    "title": "Specialist Senior Software Engineer (AI/ML & Infrastructure)",
+    "company": "Apple Labs",
+    "companyLogo": "🍎",
+    "location": "Remote (India)",
+    "country": "India",
+    "type": "Remote",
+    "salary": "₹35L – ₹55L",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "posted": "1 day ago",
+    "postedDays": 1,
+    "logo": "🍎",
+    "skills": [
+      "Python",
+      "C++",
+      "PyTorch",
+      "TensorFlow",
+      "Distributed Systems",
+      "ML Infrastructure"
+    ],
+    "experience": "Senior",
+    "category": "AI/ML",
+    "featured": false,
+    "urgent": false,
+    "tags": [
+      "Remote",
+      "AI/ML",
+      "Apple"
+    ],
+    "applicants": 38,
+    "description": "Join Apple Labs to work on cutting-edge research. Build and scale production machine learning models and large-scale model infrastructure supporting generative AI systems and search platforms.",
+    "responsibilities": [
+      "Design large-scale distributed training systems.",
+      "Optimize deep learning models for production scale and low-latency inference.",
+      "Collaborate with research and hardware acceleration teams (TPUs/GPUs)."
+    ],
+    "requirements": [
+      "5+ years of software development experience in production environments.",
+      "Strong background in AI/ML architectures and cloud systems infrastructure.",
+      "Proficiency in Python, C++, and deep learning frameworks like PyTorch."
+    ],
+    "niceToHave": [
+      "Experience scaling transformer models",
+      "Contributions to open-source compilers."
+    ],
+    "benefits": [
+      "Top-tier compensation",
+      "Stock grants (RSUs)",
+      "Comprehensive healthcare",
+      "Learning budgets"
+    ],
+    "aboutCompany": "Apple Labs focuses on pushing technology frontiers through rigorous cloud R&D.",
+    "externalUrl": "https://www.apple.com/careers/"
+  }
 ];
-
-export function getJobById(id: number): Job | undefined {
-  return jobs.find(j => j.id === id);
-}
-
-export function getJobsByCategory(category: string): Job[] {
-  if (category === 'All') return jobs;
-  if (category === 'Remote') return jobs.filter(j => j.type === 'Remote');
-  if (category === 'Government') return jobs.filter(j => j.type === 'Government');
-  if (category === 'Abroad') return jobs.filter(j => j.type === 'Abroad');
-  if (category === 'Contract') return jobs.filter(j => j.type === 'Contract');
-  return jobs.filter(j => j.category === category);
-}

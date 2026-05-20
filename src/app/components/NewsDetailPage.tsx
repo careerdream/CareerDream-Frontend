@@ -9,6 +9,78 @@ import { api } from '../utils/api';
 import type { BlogPost } from './NewsPage';
 import { useApp } from '../context/AppContext';
 import { formatShareMessage } from '../utils/watermark';
+import { fallbackPosts } from '../data/newsFallback';
+import { toast } from 'sonner';
+
+// Simple helper to parse inline **bold** syntax and dynamic title/label bolding
+const parseInlineStyles = (text: string) => {
+  // Safe split for any residual double asterisks
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  let parsedElements = parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="text-white font-extrabold">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+
+  // Smart prefix colon bolding (e.g. "Role Focus: Designing distributed..." -> bold "Role Focus:")
+  // Apply only if it contains a colon in the first 45 characters and doesn't look like a URL
+  const firstPart = parsedElements[0];
+  if (typeof firstPart === 'string' && firstPart.includes(':') && !firstPart.includes('://')) {
+    const colonIdx = firstPart.indexOf(':');
+    if (colonIdx > 0 && colonIdx < 45) {
+      const boldPrefix = firstPart.substring(0, colonIdx + 1);
+      const rest = firstPart.substring(colonIdx + 1);
+      parsedElements[0] = rest;
+      parsedElements.unshift(
+        <strong key="prefix-bold" className="text-white font-extrabold">{boldPrefix}</strong>
+      );
+    }
+  }
+
+  return parsedElements;
+};
+
+const renderParagraph = (paragraph: string, index: number) => {
+  let trimmed = paragraph.trim();
+  if (!trimmed) return null;
+
+  // Clean any leftover raw markdown symbols to guarantee 100% human-looking articles
+  trimmed = trimmed.replace(/^\s*####\s*/, '');
+  trimmed = trimmed.replace(/^\s*###\s*/, '');
+  trimmed = trimmed.replace(/^\s*##\s*/, '');
+  trimmed = trimmed.replace(/^\s*#\s*/, '');
+
+  // Handle lists starting with unicode bullet, dash, or asterisk
+  if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
+    // Strip bullet prefix and trailing spaces
+    const listContent = trimmed.replace(/^[•\-*]\s*/, '').trim();
+    return (
+      <li key={index} className="list-disc list-inside pl-4 text-gray-300 ml-4 font-medium text-lg leading-relaxed my-2">
+        {parseInlineStyles(listContent)}
+      </li>
+    );
+  }
+
+  // Handle numeric headings or short section headings beautifully
+  // A heading is either numbered (e.g. "1. Senior Software Engineer") or a short title with no trailing period
+  const isNumericHeading = /^\d+\.\s+[A-Za-z0-9]/.test(trimmed);
+  const isShortHeading = trimmed.length < 85 && !trimmed.endsWith('.') && !trimmed.endsWith('?') && !trimmed.endsWith('"') && !trimmed.includes('says');
+
+  if (isNumericHeading || isShortHeading) {
+    return (
+      <h3 key={index} className="text-xl md:text-2xl font-black text-white pt-6 pb-2 tracking-tight">
+        {parseInlineStyles(trimmed)}
+      </h3>
+    );
+  }
+
+  return (
+    <p key={index} className="text-gray-300 leading-relaxed text-lg font-medium my-4">
+      {parseInlineStyles(paragraph)}
+    </p>
+  );
+};
 
 export function NewsDetailPage() {
   const { id } = useParams();
@@ -67,7 +139,20 @@ export function NewsDetailPage() {
           const related = await api.get(`/blog/posts?limit=3`);
           setRelatedPosts(related.posts.filter((p: BlogPost) => p.id !== parseInt(id || "")));
         } catch (apiError) {
-          console.warn('API failed, but no fallback found for this ID.');
+          console.warn('API failed, attempting static fallback lookup...');
+          const fallbackPost = fallbackPosts.find(p => p.id === parseInt(id || "") || p.slug === id);
+          if (fallbackPost) {
+            setPost(fallbackPost as any);
+            setLikeCount(fallbackPost.views % 13);
+            setIsLiked(false);
+            setComments([]);
+            const related = fallbackPosts
+              .filter(p => p.id !== fallbackPost.id)
+              .slice(0, 2);
+            setRelatedPosts(related as any);
+          } else {
+            console.error('No fallback post found for ID/slug:', id);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch post details:', error);
@@ -263,9 +348,7 @@ export function NewsDetailPage() {
 
             <div className="prose prose-invert prose-lg max-w-none">
               <div className="text-gray-300 leading-relaxed space-y-6 text-lg font-medium">
-                {post.content.split('\n').map((paragraph, i) => (
-                  <p key={i}>{paragraph}</p>
-                ))}
+                {post.content.split('\n').map((paragraph, i) => renderParagraph(paragraph, i))}
               </div>
             </div>
 
@@ -406,12 +489,27 @@ export function NewsDetailPage() {
                   <span className="text-xs font-bold uppercase tracking-widest">{link.name}</span>
                 </a>
               ))}
+              
+              <button
+                onClick={() => {
+                  if (post) {
+                    const formattedText = `📰 *${post.title}*\n📝 Excerpt: ${post.excerpt}\n\n${post.content}\n\n🌐 Read the full article on CareerDream: ${window.location.href}`;
+                    navigator.clipboard.writeText(formattedText);
+                    toast.success("Full article copied successfully! Go ahead and paste it on LinkedIn, WhatsApp, or Facebook.");
+                  }
+                }}
+                className="col-span-2 flex items-center justify-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 text-white hover:opacity-90 transition-all"
+              >
+                <Share2 className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold uppercase tracking-widest">Copy Full Article & Share</span>
+              </button>
+
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(window.location.href);
-                  alert('Link copied to clipboard!');
+                  toast.success('Link copied to clipboard!');
                 }}
-                className="col-span-2 flex items-center justify-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-all"
+                className="col-span-2 flex items-center justify-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-all"
               >
                 <LinkIcon className="w-4 h-4" />
                 <span className="text-xs font-bold uppercase tracking-widest">Copy Article Link</span>

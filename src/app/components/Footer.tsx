@@ -97,24 +97,48 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Links */}
-          {Object.entries(footerLinks).map(([section, links]) => (
-            <div key={section}>
-              <h4 className="font-semibold text-sm mb-4">{section}</h4>
-              <ul className="space-y-2.5">
-                {links.map(({ label, to }) => (
-                  <li key={label}>
-                    <Link
-                      to={to}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Links - Mobile Accordions */}
+          <div className="lg:hidden space-y-4">
+            {Object.entries(footerLinks).map(([section, links]) => (
+              <details key={section} className="border-b border-border pb-2">
+                <summary className="font-semibold text-sm mb-2 cursor-pointer select-none">
+                  {section}
+                </summary>
+                <ul className="space-y-1.5 ml-2">
+                  {links.map(({ label, to }) => (
+                    <li key={label}>
+                      <Link
+                        to={to}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
+          </div>
+          {/* Links - Desktop Grid */}
+          <div className="hidden lg:grid grid-cols-2 md:grid-cols-4 gap-8">
+            {Object.entries(footerLinks).map(([section, links]) => (
+              <div key={section}>
+                <h4 className="font-semibold text-sm mb-4">{section}</h4>
+                <ul className="space-y-2.5">
+                  {links.map(({ label, to }) => (
+                    <li key={label}>
+                      <Link
+                        to={to}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

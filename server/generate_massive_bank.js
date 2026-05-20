@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -50,6 +51,11 @@ const topicsData = {
     easyConcepts: ['ETL', 'Data Warehouse', 'Big Data', 'Data Pipeline', 'Structured Data', 'Unstructured Data', 'Database', 'Table', 'Row', 'Column', 'SQL', 'CSV', 'JSON', 'API', 'Extraction', 'Transformation', 'Loading', 'Cloud', 'Storage', 'Analytics'],
     mediumConcepts: ['Apache Spark', 'Data Lake', 'Star Schema', 'Snowflake Schema', 'Apache Kafka', 'Batch Processing', 'Stream Processing', 'Hadoop', 'HDFS', 'MapReduce', 'NoSQL', 'MongoDB', 'Cassandra', 'Data Modeling', 'Data Cleansing', 'Data Profiling', 'Orchestration', 'Airflow', 'Luigi', 'Data Mart'],
     hardConcepts: ['Columnar Database', 'Data Skew', 'Exactly-Once Semantics', 'Snowflake Architecture', 'Redshift', 'BigQuery', 'Data Mesh', 'Data Fabric', 'Lambda Architecture', 'Kappa Architecture', 'Change Data Capture (CDC)', 'Apache Flink', 'Apache Beam', 'Delta Lake', 'Apache Iceberg', 'Apache Hudi', 'Distributed Computing', 'Zookeeper', 'YARN', 'Resource Management']
+  },
+  'JavaScript Fundamentals': {
+    easyConcepts: ['Variable', 'Data Type', 'Operator', 'Function', 'Object', 'Array', 'String Method', 'Array Method', 'If Statement', 'For Loop', 'While Loop', 'Boolean', 'Undefined', 'Null', 'Template Literal', 'Scope', 'Arrow Function', 'Math Object', 'Date Object', 'Console Log'],
+    mediumConcepts: ['Closure', 'Promise', 'Async/Await', 'Event Listener', 'DOM Manipulation', 'Event Bubbling', 'Event Capturing', 'Callback', 'ES6 Module', 'Destructuring', 'Spread Operator', 'Rest Parameter', 'Fetch API', 'JSON Parse/Stringify', 'Local Storage', 'Session Storage', 'Class', 'Inheritance', 'Map/Set', 'Try/Catch'],
+    hardConcepts: ['Event Loop', 'Prototype Chain', 'This Binding', 'Memory Management', 'Garbage Collection', 'Hoisting', 'Coercion', 'Web Worker', 'Service Worker', 'Shadow DOM', 'Virtual DOM', 'Generator Function', 'Symbol', 'Proxy Object', 'Reflect API', 'Strict Mode', 'Currying', 'Debounce', 'Throttle', 'Intersection Observer']
   }
 };
 
@@ -129,7 +135,7 @@ const templates = {
 };
 
 const assessmentsDataList = [
-  { id: 1, title: 'Python Programming', category: 'Software Engineering', badge: '🐍', color: 'from-green-500 to-emerald-700', duration: 60, skills: ['Data Types', 'OOP', 'Data Science'], avgScore: 78, attempts: 1205, description: '120 unique questions across Easy, Medium, and Hard.' },
+  { id: 1, title: 'Python Programming', category: 'Programming', badge: '🐍', color: 'from-blue-500 to-cyan-500', duration: 45, skills: ['Python', 'OOP', 'Data Structures'], avgScore: 78, attempts: 12450, description: '120 unique questions across Easy, Medium, and Hard.' },
   { id: 2, title: 'React.js Mastery', category: 'Frontend', badge: '⚛️', color: 'from-blue-400 to-cyan-600', duration: 60, skills: ['Hooks', 'Context', 'Performance'], avgScore: 72, attempts: 3400, description: '120 unique questions across Easy, Medium, and Hard.' },
   { id: 3, title: 'Full-Stack Architecture', category: 'System Design', badge: '🏗️', color: 'from-purple-500 to-indigo-700', duration: 90, skills: ['Microservices', 'Databases'], avgScore: 65, attempts: 890, description: '120 unique questions across Easy, Medium, and Hard.' },
   { id: 4, title: 'Data Science & ML', category: 'AI / ML', badge: '🧠', color: 'from-orange-500 to-red-600', duration: 120, skills: ['Algorithms', 'Deep Learning'], avgScore: 70, attempts: 2100, description: '120 unique questions across Easy, Medium, and Hard.' },
@@ -137,7 +143,8 @@ const assessmentsDataList = [
   { id: 6, title: 'SQL & Database Mastery', category: 'Database', badge: '📊', color: 'from-cyan-500 to-blue-700', duration: 60, skills: ['SQL', 'Normalization'], avgScore: 75, attempts: 1800, description: '120 unique questions across Easy, Medium, and Hard.' },
   { id: 7, title: 'DevOps Engineering', category: 'DevOps', badge: '♾️', color: 'from-teal-500 to-emerald-800', duration: 75, skills: ['Docker', 'Kubernetes'], avgScore: 68, attempts: 950, description: '120 unique questions across Easy, Medium, and Hard.' },
   { id: 8, title: 'Mobile App Development', category: 'Mobile', badge: '📱', color: 'from-rose-500 to-pink-700', duration: 60, skills: ['React Native', 'Swift'], avgScore: 74, attempts: 1100, description: '120 unique questions across Easy, Medium, and Hard.' },
-  { id: 9, title: 'Data Engineering', category: 'Data Science', badge: '⚙️', color: 'from-amber-500 to-orange-700', duration: 90, skills: ['ETL', 'Spark'], avgScore: 71, attempts: 800, description: '120 unique questions across Easy, Medium, and Hard.' }
+  { id: 9, title: 'Data Engineering', category: 'Data Science', badge: '⚙️', color: 'from-amber-500 to-orange-700', duration: 90, skills: ['ETL', 'Spark'], avgScore: 71, attempts: 800, description: '120 unique questions across Easy, Medium, and Hard.' },
+  { id: 10, title: 'JavaScript Fundamentals', category: 'Programming', badge: '✨', color: 'from-yellow-400 to-orange-500', duration: 40, skills: ['JavaScript', 'ES6', 'DOM'], avgScore: 82, attempts: 15600, description: '120 unique questions across Easy, Medium, and Hard.' }
 ];
 
 async function main() {
@@ -230,12 +237,13 @@ export interface Assessment {
 export const assessments: Assessment[] = ${JSON.stringify(finalExportData, null, 2)};
 `;
 
-  const tsPath = path.resolve(process.cwd(), 'src/app/data/assessments.ts');
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const tsPath = path.resolve(__dirname, '../src/app/data/assessments.ts');
   fs.writeFileSync(tsPath, fileContent, 'utf8');
   console.log('Successfully wrote src/app/data/assessments.ts');
 
   // Write Markdown Artifact
-  const mdPath = path.resolve(process.cwd(), 'Artifact_QuestionBank.md');
+  const mdPath = path.resolve(__dirname, 'Artifact_QuestionBank.md');
   fs.writeFileSync(mdPath, markdownOutput, 'utf8');
   console.log('Successfully wrote Artifact_QuestionBank.md');
 
@@ -246,15 +254,20 @@ export const assessments: Assessment[] = ${JSON.stringify(finalExportData, null,
       where: { title: data.title }
     });
 
-    // We store questions as a JSON array in SQLite, or as relations. 
-    // Wait, the schema uses JSON for questions? Let's check prisma schema or assume it works like before.
-    // In seed_assessments.js, it updates \`questions: questions\` directly.
     if (existing) {
       await prisma.assessment.update({
         where: { id: existing.id },
         data: {
-          questions: data.questions,
-          description: data.description
+          category: data.category,
+          difficulty: data.difficulty,
+          duration: data.duration,
+          badge: data.badge,
+          color: data.color,
+          skills: data.skills,
+          avgScore: data.avgScore,
+          attempts: data.attempts,
+          description: data.description,
+          questions: data.questions
         }
       });
       console.log(`Updated DB: ${data.title}`);
@@ -267,6 +280,9 @@ export const assessments: Assessment[] = ${JSON.stringify(finalExportData, null,
           duration: data.duration,
           badge: data.badge,
           color: data.color,
+          skills: data.skills,
+          avgScore: data.avgScore,
+          attempts: data.attempts,
           description: data.description,
           questions: data.questions
         }

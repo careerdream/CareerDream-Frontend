@@ -11,6 +11,7 @@ import { BlogPostCard } from './BlogPostCard';
 import { BlogSubmissionForm } from './BlogSubmissionForm';
 import { SocialMediaModal } from './SocialMediaModal';
 import { NewsletterForm } from './NewsletterForm';
+import { fallbackPosts } from '../data/newsFallback';
 
 export interface BlogPost {
   id: number;
@@ -80,7 +81,13 @@ export function NewsPage() {
       setPosts(response.posts);
       setTotalPages(response.pagination.pages || 1);
     } catch (error) {
-      console.error('Failed to fetch blog posts:', error);
+      console.error('Failed to fetch blog posts from API, falling back to static posts:', error);
+      let filtered = fallbackPosts;
+      if (selectedCategory) {
+        filtered = fallbackPosts.filter(p => p.category === selectedCategory);
+      }
+      setPosts(filtered.slice((currentPage - 1) * 6, currentPage * 6) as any);
+      setTotalPages(Math.ceil(filtered.length / 6) || 1);
     } finally {
       setIsLoading(false);
     }

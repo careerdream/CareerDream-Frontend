@@ -1,0 +1,52 @@
+/* Global design system and responsive foundations */
+:root {
+  /* Color palette */
+  --color-primary: 99 102 241; /* rgb */
+  --color-accent: 139 92 246;
+  --color-background: 255 255 255;
+  --color-foreground: 30 30 30;
+  --color-muted: 245 245 245;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* Mobile‑first breakpoints */
+@media (min-width: 640px) { /* sm */ }
+@media (min-width: 768px) { /* md */ }
+@media (min-width: 1024px) { /* lg */ }
+
+/* Utility helpers (fallback for Tailwind‑like classes) */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Ensure SVG icons inherit currentColor */
+svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Hide scrollbars for overflow containers on mobile */
+@media (max-width: 639px) {
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

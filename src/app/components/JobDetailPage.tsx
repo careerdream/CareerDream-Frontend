@@ -43,6 +43,11 @@ export function JobDetailPage() {
       alert('Please log in to apply for this job.');
       return;
     }
+    if (job.externalUrl) {
+      window.open(job.externalUrl, '_blank');
+      applyToJob(job.id);
+      return;
+    }
     setShowApply(true);
   };
 
@@ -132,14 +137,28 @@ export function JobDetailPage() {
             </div>
 
             <div className="flex flex-wrap gap-4">
-              {isApplied ? (
+              {job.externalUrl ? (
+                <a
+                  href={job.externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    if (!isApplied) {
+                      applyToJob(job.id);
+                    }
+                  }}
+                  className="px-10 py-4 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform hover:scale-105 shadow-2xl flex items-center gap-2 text-center"
+                >
+                  Apply on company site <ExternalLink className="w-4 h-4" />
+                </a>
+              ) : isApplied ? (
                 <div className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-green-500/10 text-green-400 border border-green-500/20 font-black text-xs uppercase tracking-widest">
                   <CheckCircle className="w-5 h-5" /> Application Received
                 </div>
               ) : (
                 <button
                   onClick={handleOpenApplyModal}
-                  className="px-10 py-4 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform hover:scale-105 shadow-2xl"
+                  className="px-10 py-4 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform hover:scale-105 shadow-2xl flex items-center gap-2"
                 >
                   Apply Now
                 </button>
@@ -256,18 +275,34 @@ export function JobDetailPage() {
             </div>
 
             {/* Quick Apply Card */}
-            {!isApplied && (
+            {(job.externalUrl || !isApplied) && (
               <div className="p-8 rounded-[2.5rem] bg-foreground text-background shadow-2xl space-y-6">
                 <h3 className="text-2xl font-black tracking-tighter">Ready to join?</h3>
                 <p className="font-bold text-sm leading-relaxed opacity-70">
                   {job.company} is actively looking for candidates with your profile. Apply today to start the conversation.
                 </p>
-                <button 
-                  onClick={handleOpenApplyModal}
-                  className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-primary/20"
-                >
-                  Send Application
-                </button>
+                {job.externalUrl ? (
+                  <a
+                    href={job.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      if (!isApplied) {
+                        applyToJob(job.id);
+                      }
+                    }}
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-primary/20 block text-center"
+                  >
+                    Apply on company site
+                  </a>
+                ) : (
+                  <button 
+                    onClick={handleOpenApplyModal}
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-primary/20"
+                  >
+                    Send Application
+                  </button>
+                )}
               </div>
             )}
 

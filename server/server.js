@@ -66,6 +66,7 @@ import recruiterRoutes from './routes/recruiter.js';
 import issuesRoutes from './routes/issues.js';
 import activityRoutes from './routes/activity.js';
 import adminRoutes from './routes/admin.js';
+import adminPlaygroundRoutes from './routes/admin_playground.js';
 import adminJobRoutes from './routes/admin_jobs.js';
 import adminCourseRoutes from './routes/admin_courses.js';
 import adminAssessmentRoutes from './routes/admin_assessments.js';
@@ -77,9 +78,11 @@ import adminSettingsRoutes from './routes/admin_settings.js';
 import adminBulkRoutes from './routes/admin_bulk.js';
 import adminAdminsRoutes from './routes/admin_admins.js';
 import resumeRoutes from './routes/resume.js';
+import playgroundRoutes from './routes/playground.js';
 
 // Apply stricter rate limiting to authentication routes
 app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/playground', playgroundRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/courses', courseRoutes);
@@ -100,6 +103,7 @@ app.use('/api/admin/settings', verifyToken, verifyAdmin, adminSettingsRoutes);
 app.use('/api/admin/bulk', verifyToken, verifyAdmin, adminBulkRoutes);
 app.use('/api/admin/admins', verifyToken, verifyAdmin, adminAdminsRoutes);
 app.use('/api/admin', verifyToken, verifyAdmin, adminRoutes);
+app.use('/api/admin/playground', adminPlaygroundRoutes);
 
 // Serve uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

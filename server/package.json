@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "postinstall": "npx prisma generate"
+    "postinstall": "npx prisma generate",
+    "scrape": "node automated_scraper.js",
+    "scrape:watch": "node automated_scraper.js --schedule"
   },
   "author": "CareerDream",
   "license": "ISC",

@@ -27,7 +27,11 @@ const jobs = [
   
   // Data
   { title: 'Senior Data Engineer', company: 'DataLake Corp', location: 'Remote', salary: '$150k - $200k', type: 'Remote', experience: 'Senior', logo: '📊', category: 'Data', posted: '2 days ago', featured: true, description: 'Build data infrastructure petabyte-scale.', aboutCompany: 'DataLake provides data for enterprises.', skills: ['Spark', 'Airflow', 'Python'], responsibilities: ['Design data'], requirements: ['6+ years'], niceToHave: ['Delta Lake'], benefits: ['70k bonus'] },
-  { title: 'Data Engineer', company: 'AnalyticsHub', location: 'Austin, TX', salary: '$110k - $150k', type: 'Full-time', experience: 'Mid Level', logo: '📈', category: 'Data', posted: '1 day ago', featured: false, description: 'Build real-time data pipelines.', aboutCompany: 'AnalyticsHub provides real-time analytics.', skills: ['Python', 'SQL', 'Kafka'], responsibilities: ['Build pipelines'], requirements: ['2+ years'], niceToHave: ['Spark'], benefits:   // AI/ML Courses
+  { title: 'Data Engineer', company: 'AnalyticsHub', location: 'Austin, TX', salary: '$110k - $150k', type: 'Full-time', experience: 'Mid Level', logo: '📈', category: 'Data', posted: '1 day ago', featured: false, description: 'Build real-time data pipelines.', aboutCompany: 'AnalyticsHub provides real-time analytics.', skills: ['Python', 'SQL', 'Kafka'], responsibilities: ['Build pipelines'], requirements: ['2+ years'], niceToHave: ['Spark'], benefits: ['Health insurance', 'Paid time off'] }
+];
+
+const courses = [
+  // AI/ML Courses
   { title: 'Advanced Machine Learning with Python', instructor: 'Programming with Mosh', instructorBio: 'Mosh Hamedani is a software engineer with over 20 years of experience, known for his clear, concise, and practical coding tutorials. His channel provides no-fluff, professional-grade training for both beginners and experienced developers.', instructorAvatar: 'M', rating: 4.9, reviews: 12450, students: 45200, duration: '8 weeks', level: 'Advanced', image: '🤖', price: 'Free', originalPrice: 'Free', bestseller: true, skills: ['Python', 'TensorFlow', 'Neural Networks'], category: 'AI/ML', language: 'English', lastUpdated: 'March 2026', certificate: true, color: 'from-violet-500 to-purple-600', description: 'Master advanced ML with hands-on projects building production systems.', whatYouLearn: ['Build neural networks', 'Deploy models to production', 'Optimize ML pipelines'], prerequisites: ['Python intermediate', 'Math basics'], modules: [] },
   { title: 'Natural Language Processing Masterclass', instructor: 'Simplilearn', instructorBio: 'Simplilearn is a leading online bootcamp provider that offers comprehensive training in digital skills like Data Science, Cloud Computing, and AI. Their channel features expert-led tutorials designed to help professionals master in-demand technologies and advance their careers.', instructorAvatar: 'S', rating: 4.8, reviews: 8920, students: 32100, duration: '10 weeks', level: 'Advanced', image: '🧠', price: 'Free', originalPrice: 'Free', bestseller: true, skills: ['Transformers', 'BERT', 'GPT', 'PyTorch'], category: 'AI/ML', language: 'English', lastUpdated: 'February 2026', certificate: true, color: 'from-blue-500 to-cyan-500', description: 'Become NLP expert. Learn transformers, fine-tune LLMs, deploy at scale.', whatYouLearn: ['Transformers', 'Fine-tune BERT', 'Question answering'], prerequisites: ['Deep learning basics'], modules: [] },
   
@@ -72,19 +76,43 @@ const importData = async () => {
   try {
     console.log('Connecting to database...');
     
-    await prisma.assessment.deleteMany();
-    await prisma.course.deleteMany();
-    await prisma.job.deleteMany();
-    
-    console.log('Inserting data...');
-    await prisma.job.createMany({ data: jobs });
-    console.log(`Inserted ${jobs.length} jobs`);
-    
-    await prisma.course.createMany({ data: courses });
-    console.log(`Inserted ${courses.length} courses`);
-    
-    await prisma.assessment.createMany({ data: assessments });
-    console.log(`Inserted ${assessments.length} assessments`);
+    console.log('Upserting data...');
+    for (const job of jobs) {
+      const existing = await prisma.job.findFirst({ where: { title: job.title, company: job.company } });
+      if (existing) {
+        await prisma.job.update({ where: { id: existing.id }, data: job });
+      } else {
+        await prisma.job.create({ data: job });
+      }
+    }
+    console.log(`Upserted ${jobs.length} jobs`);
+
+    for (const course of courses) {
+      const existing = await prisma.course.findFirst({ where: { title: course.title } });
+      if (existing) {
+        await prisma.course.update({ where: { id: existing.id }, data: course });
+      } else {
+        await prisma.course.create({ data: course });
+      }
+    }
+    console.log(`Upserted ${courses.length} courses`);
+
+    for (const assessment of assessments) {
+       const existing = await prisma.assessment.findFirst({ where: { title: assessment.title } });
+       if (existing) {
+         const existingCount = Array.isArray(existing.questions) ? existing.questions.length : 0;
+         if (existingCount >= 120 && assessment.questions.length < 120) {
+           console.log(`Preserving ${existingCount} questions for ${assessment.title}`);
+           const { questions, ...otherData } = assessment;
+           await prisma.assessment.update({ where: { id: existing.id }, data: otherData });
+         } else {
+           await prisma.assessment.update({ where: { id: existing.id }, data: assessment });
+         }
+       } else {
+         await prisma.assessment.create({ data: assessment });
+       }
+    }
+    console.log(`Upserted ${assessments.length} assessments`);
 
     console.log('✓ Database seeded with proper emojis and icons!');
     process.exit(0);
