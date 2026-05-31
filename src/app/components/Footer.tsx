@@ -120,7 +120,7 @@ export function Footer() {
             ))}
           </div>
           {/* Links - Desktop Grid */}
-          <div className="hidden lg:grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="hidden lg:grid grid-cols-4 lg:col-span-4 gap-8">
             {Object.entries(footerLinks).map(([section, links]) => (
               <div key={section}>
                 <h4 className="font-semibold text-sm mb-4">{section}</h4>

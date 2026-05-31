@@ -9,19 +9,20 @@ interface Props {
   defaultTab?: 'login' | 'signup';
 }
 
-type View = 'login' | 'signup' | 'forgot' | 'success_login' | 'success_signup';
+type View = 'login' | 'signup' | 'forgot' | 'success_login' | 'success_signup' | 'verify_email' | 'verify_mfa';
 
 export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Props) {
   const [view, setView] = useState<View>(defaultTab);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
   const [name, setName] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const { login, signup, loginWithGoogle, loginWithGitHub, forgotPassword, user, isAdmin } = useApp();
+  const { login, signup, loginWithGoogle, loginWithGitHub, forgotPassword, verifyEmail, verifyMfa, user, isAdmin } = useApp();
 
   // Sync view with defaultTab and reset form when modal opens
   useEffect(() => {
@@ -34,6 +35,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Props) {
       setName('');
       setLoading(false);
       setShowPass(false);
+      setOtp('');
     }
   }, [isOpen, defaultTab]);
 
@@ -65,9 +67,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Props) {
 
     setLoading(true);
     try {
-      const ok = await login(email, password, rememberMe);
-      if (ok) setView('success_login');
-      else setError('Invalid email or password.');
+      const result = await login(email, password, rememberMe);
+      if (result.mfaRequired) {
+        setView('verify_mfa');
+      } else if (result.requiresVerification) {
+        setView('verify_email');
+      } else if (result.success) {
+        setView('success_login');
+      } else {
+        setError('Invalid email or password.');
+      }
     } catch (err: any) {
       console.warn('Login attempt failed:', err);
       // Check if it's a network/connectivity error or a server-side 5xx error
@@ -94,11 +103,46 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Props) {
 
     setLoading(true);
     try {
-      const ok = await signup(name, email, password);
-      if (ok) setView('success_signup');
-      else setError('This email is already registered. Try logging in instead.');
+      const result = await signup(name, email, password);
+      if (result.requiresVerification) {
+        setView('verify_email');
+      } else if (result.success) {
+        setView('success_signup');
+      } else {
+        setError('This email is already registered. Try logging in instead.');
+      }
     } catch (err: any) {
       setError(err?.message || 'Unable to create account. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    if (!otp || otp.length !== 6) { setError('Please enter a valid 6-digit OTP.'); return; }
+    setLoading(true);
+    try {
+      await verifyEmail(email, otp);
+      setView('success_signup');
+    } catch (err: any) {
+      setError(err?.message || 'Invalid or expired OTP.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyMfa = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    if (!otp || otp.length !== 6) { setError('Please enter a valid 6-digit OTP.'); return; }
+    setLoading(true);
+    try {
+      await verifyMfa(email, otp, rememberMe);
+      setView('success_login');
+    } catch (err: any) {
+      setError(err?.message || 'Invalid or expired OTP.');
     } finally {
       setLoading(false);
     }
@@ -159,11 +203,12 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Props) {
           </div>
 
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-            {view === 'login' ? 'Welcome Back' : view === 'signup' ? 'Get Started' : 'Reset Password'}
+            {view === 'login' ? 'Welcome Back' : view === 'signup' ? 'Get Started' : (view === 'verify_email' || view === 'verify_mfa') ? 'Verification Required' : 'Reset Password'}
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
             {view === 'login' ? 'Enter your details to access your account' 
               : view === 'signup' ? 'Create an account to track your career progress'
+              : (view === 'verify_email' || view === 'verify_mfa') ? 'Check your email for the verification code'
               : 'Enter your email and we\'ll send you a reset link'}
           </p>
 
@@ -295,6 +340,27 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Props) {
               {error && <ErrorBanner message={error} />}
 
               <SubmitButton loading={loading} label="Create Account" />
+            </form>
+          )}
+
+          {/* ── Verify OTP Form ── */}
+          {(view === 'verify_email' || view === 'verify_mfa') && (
+            <form onSubmit={view === 'verify_email' ? handleVerifyEmail : handleVerifyMfa} className="space-y-4">
+              <div className="text-sm text-slate-500 mb-4 text-center">
+                We've sent a 6-digit OTP to <strong>{email}</strong>. Please enter it below.
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="otp-input" className="text-sm font-medium text-slate-700 dark:text-slate-300 ml-1">One-Time Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input id="otp-input" type="text" placeholder="123456" maxLength={6} value={otp} onChange={e => setOtp(e.target.value.replace(/\\D/g, ''))}
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-1 focus:ring-primary/20 focus:outline-none text-center tracking-widest text-lg font-mono transition-all" />
+                </div>
+              </div>
+
+              {error && <ErrorBanner message={error} />}
+
+              <SubmitButton loading={loading} label="Verify Account" />
             </form>
           )}
 

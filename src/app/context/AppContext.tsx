@@ -78,8 +78,10 @@ export interface AppState {
 }
 
 interface AppContextType extends AppState {
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<boolean>;
-  signup: (name: string, email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<any>;
+  signup: (name: string, email: string, password: string) => Promise<any>;
+  verifyEmail: (email: string, otp: string) => Promise<boolean>;
+  verifyMfa: (email: string, otp: string, rememberMe?: boolean) => Promise<boolean>;
   loginWithGoogle: (tokenId: string) => Promise<boolean>;
   loginWithGitHub: (code: string) => Promise<boolean>;
   forgotPassword: (email: string) => Promise<string>;
@@ -104,6 +106,7 @@ interface AppContextType extends AppState {
   likeArticle: (articleId: number) => Promise<void>;
   commentArticle: (articleId: number, text: string) => Promise<void>;
   updateSettings: (settings: Record<string, any>) => Promise<void>;
+  logout: () => Promise<void>;
   addCertificate: (name: string, authority: string, issuedAt: string, expiryDate?: string) => Promise<void>;
   updateSkillProficiency: (skillName: string, level: number) => Promise<void>;
 }
@@ -314,8 +317,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
 
   const processAuthResponse = async (data: any) => {
-    // Store token for API calls
-    localStorage.setItem('authToken', data.token);
+    // Token is now managed securely via HttpOnly cookies by the backend
 
     // Fetch user profile with token to get complete user data
     let userData = { ...data };
@@ -362,47 +364,47 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
-  const login = async (email: string, password: string, rememberMe = false): Promise<boolean> => {
+  const login = async (email: string, password: string, rememberMe = false): Promise<any> => {
     try {
       const data = await api.post('/auth/login', { email, password, rememberMe });
-      return await processAuthResponse(data);
+      if (data.mfaRequired || data.requiresVerification) return data;
+      await processAuthResponse(data);
+      return { success: true };
     } catch (error: any) {
-      console.warn('Backend login failed, checking local database...', error);
-      
-      // Fallback: Check local storage "database"
-      const localUsers = JSON.parse(localStorage.getItem('careerdream-local-users') || '[]');
-      const user = localUsers.find((u: any) => u.email === email && u.password === password);
-      
-      if (user) {
-        return await processAuthResponse({
-          token: 'local-token-' + Date.now(),
-          ...user
-        });
-      }
-      throw new Error('Invalid email or password.');
+      console.warn('Backend login failed', error);
+      throw error;
     }
   };
 
-  const signup = async (name: string, email: string, password: string): Promise<boolean> => {
+  const signup = async (name: string, email: string, password: string): Promise<any> => {
     try {
       const data = await api.post('/auth/register', { name, email, password });
-      return await processAuthResponse(data);
+      if (data.requiresVerification) return data;
+      await processAuthResponse(data);
+      return { success: true };
     } catch (error: any) {
-      console.warn('Backend signup failed, saving to local database...', error);
-      
-      const localUsers = JSON.parse(localStorage.getItem('careerdream-local-users') || '[]');
-      if (localUsers.find((u: any) => u.email === email)) {
-        throw new Error('This email is already registered.');
-      }
-      
-      const newUser = { id: Date.now(), name, email, password, role: 'user' };
-      localUsers.push(newUser);
-      localStorage.setItem('careerdream-local-users', JSON.stringify(localUsers));
-      
-      return await processAuthResponse({
-        token: 'local-token-' + Date.now(),
-        ...newUser
-      });
+      console.warn('Backend signup failed', error);
+      throw error;
+    }
+  };
+
+  const verifyEmail = async (email: string, otp: string): Promise<boolean> => {
+    try {
+      const data = await api.post('/auth/verify-email', { email, otp });
+      await processAuthResponse(data);
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const verifyMfa = async (email: string, otp: string, rememberMe = false): Promise<boolean> => {
+    try {
+      const data = await api.post('/auth/login/mfa', { email, otp, rememberMe });
+      await processAuthResponse(data);
+      return true;
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -464,10 +466,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [state]);
 
-  const logout = () => {
-    localStorage.removeItem('authToken');
+  const logout = async () => {
+    try { await api.post('/auth/logout', {}); } catch(e) {}
     localStorage.removeItem('careerdream-state');
-    setState(prev => ({ ...prev, user: null, isLoggedIn: false }));
+    setState({ ...DEFAULT_STATE, isLoading: false });
+    window.location.href = '/';
   };
 
   const toggleSaveJob = async (jobId: number) => {
@@ -716,6 +719,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       signup,
       loginWithGoogle,
       loginWithGitHub,
+      verifyEmail,
+      verifyMfa,
       forgotPassword,
       resetPassword,
 

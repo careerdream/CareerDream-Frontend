@@ -15,6 +15,20 @@ function ScrollToTop() {
 }
 
 function AppShell() {
+  const { pathname } = useLocation();
+  const isWorkspace = pathname.startsWith('/playground/');
+
+  if (isWorkspace) {
+    return (
+      <div className="h-screen bg-background flex flex-col overflow-hidden">
+        <ScrollToTop />
+        <main className="flex-1 overflow-hidden">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <ScrollToTop />

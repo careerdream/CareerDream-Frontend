@@ -111,20 +111,7 @@ async function runLocal({ code, language, input }) {
 
 function runLocalJS(code, input, fileId) {
   const tmpFile = path.join(SCRATCH_DIR, `run_${fileId}.cjs`);
-  // Wrap code to capture stdout safely and inject input via process.argv
-  const wrappedCode = `
-const _INPUT = ${JSON.stringify(input)};
-const readline = require('readline');
-const lines = _INPUT.split('\\n');
-let lineIdx = 0;
-const _rl = { question: (_, cb) => cb(lines[lineIdx++] || '') };
-// Override process.stdin.read-style usage
-process._inputLines = lines;
-
-${code}
-`.trim();
-
-  fs.writeFileSync(tmpFile, wrappedCode, 'utf8');
+  fs.writeFileSync(tmpFile, code, 'utf8');
   return execWithTimeout(`node "${tmpFile}"`, input, tmpFile, TIMEOUT_MS);
 }
 
@@ -257,9 +244,15 @@ function execWithTimeout(cmd, input, tmpFile, timeoutMs) {
       if (error?.killed || error?.code === 'ETIMEDOUT') {
         return resolve({ status: 'TIME_LIMIT_EXCEEDED', error: 'Process exceeded time limit of 5s', runtime });
       }
+      
+      if (error) {
+        return resolve({ status: 'RUNTIME_ERROR', error: (stderr || stdout || error.message).trim(), runtime });
+      }
+
       if (stderr && !stdout) {
         return resolve({ status: 'RUNTIME_ERROR', error: stderr.trim(), runtime });
       }
+      
       resolve({ status: 'SUCCESS', output: stdout.trim(), runtime, memory: 0 });
     });
 

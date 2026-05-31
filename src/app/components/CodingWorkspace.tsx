@@ -312,7 +312,7 @@ public:
             ))}
           </div>
 
-          <div className="relative rounded-lg overflow-hidden border border-border bg-[#050414] font-mono text-[11px] text-foreground/90 shadow-inner">
+          <div className="relative rounded-lg overflow-hidden border border-border bg-muted/50 dark:bg-[#050414] font-mono text-[11px] text-foreground/90 shadow-inner">
             <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/50 bg-card/60">
               <span className="text-[9px] uppercase font-bold text-muted-foreground">{selectedLang}</span>
               <button 
@@ -380,13 +380,13 @@ public:
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-[#030213] flex items-center justify-center text-primary font-bold animate-pulse">Loading Workspace...</div>;
+    return <div className="min-h-screen bg-background flex items-center justify-center text-primary font-bold animate-pulse">Loading Workspace...</div>;
   }
 
   if (!problem) return null;
 
   return (
-    <div className="flex flex-col h-screen bg-[#030213] text-foreground font-sans overflow-hidden">
+    <div className="flex flex-col h-screen bg-background text-foreground font-sans overflow-hidden">
       
       {/* Header */}
       <header className="h-14 border-b border-border bg-card/50 flex items-center justify-between px-4 shrink-0">
@@ -565,7 +565,7 @@ public:
                           const lines = paragraph.split('\n');
                           const codeLines = lines.slice(1, lines.length - 1).join('\n');
                           return (
-                            <div key={pIdx} className="relative rounded-lg overflow-hidden border border-border bg-[#050414] font-mono text-[11px] text-foreground/90 my-2 shadow-inner">
+                            <div key={pIdx} className="relative rounded-lg overflow-hidden border border-border bg-muted/50 dark:bg-[#050414] font-mono text-[11px] text-foreground/90 my-2 shadow-inner">
                               <pre className="p-3 overflow-x-auto max-h-[300px]">
                                 <code>{codeLines}</code>
                               </pre>
@@ -653,7 +653,7 @@ public:
                         </button>
                       </div>
 
-                      <div className="relative rounded-lg overflow-hidden border border-border bg-[#050414] font-mono text-[11px] text-foreground/90 shadow-inner">
+                      <div className="relative rounded-lg overflow-hidden border border-border bg-muted/50 dark:bg-[#050414] font-mono text-[11px] text-foreground/90 shadow-inner">
                         <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/50 bg-card/60">
                           <span className="text-[9px] uppercase font-bold text-muted-foreground">{selectedSubmission.language}</span>
                         </div>

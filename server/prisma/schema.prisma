@@ -30,6 +30,12 @@ model User {
   resetToken        String?
   resetTokenExpiry  DateTime?
 
+  // Verification and MFA
+  isEmailVerified   Boolean   @default(false)
+  emailOtp          String?
+  emailOtpExpiry    DateTime?
+  mfaEnabled        Boolean   @default(false)
+
   // Relations
   savedJobs        SavedJob[]
   appliedJobs      JobApplication[]

@@ -3,7 +3,10 @@ import prisma from '../lib/prisma.js';
 
 export const verifyToken = (req, res, next) => {
   try {
-    const token = req.header('Authorization')?.split(' ')[1];
+    let token = req.cookies?.token;
+    if (!token) {
+      token = req.header('Authorization')?.split(' ')[1];
+    }
     if (!token) {
       return res.status(401).json({ message: 'No token provided, authorization denied' });
     }

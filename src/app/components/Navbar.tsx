@@ -60,7 +60,7 @@ export function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   location.pathname === link.path
                     ? 'bg-primary/20 text-primary'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -200,7 +200,7 @@ export function Navbar() {
               </div>
             ) : (
               <>
-                <div className="hidden lg:flex items-center gap-4">
+                <div className="hidden lg:flex items-center gap-4 shrink-0">
                   <button
                     onClick={() => {
                       const recruiterAuth = localStorage.getItem('recruiterAuth');
@@ -210,19 +210,19 @@ export function Navbar() {
                         navigate('/recruiter/login');
                       }
                     }}
-                    className="hidden md:flex items-center px-4 py-1.5 rounded-full border border-border text-sm font-semibold hover:bg-muted transition-all"
+                    className="hidden md:flex items-center px-4 py-1.5 rounded-full border border-border text-sm font-semibold hover:bg-muted transition-all whitespace-nowrap"
                   >
                     Recruiter
                   </button>
                   <button
                     onClick={() => { setAuthTab('login'); setAuthOpen(true); }}
-                    className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
                   >
                     Log In
                   </button>
                   <button
                     onClick={() => { setAuthTab('signup'); setAuthOpen(true); }}
-                    className="px-6 py-2 rounded-full bg-primary text-white hover:shadow-lg hover:shadow-primary/30 transition-all font-bold text-sm"
+                    className="px-6 py-2 rounded-full bg-primary text-white hover:shadow-lg hover:shadow-primary/30 transition-all font-bold text-sm whitespace-nowrap"
                   >
                     Get Started
                   </button>

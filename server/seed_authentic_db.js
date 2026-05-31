@@ -1,4 +1,7 @@
 import fs from 'fs';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
 import path from 'path';
 
 // Define the authentic questions per topic
@@ -398,3 +401,22 @@ if (!fs.existsSync(dirPath)) {
 }
 fs.writeFileSync(targetPath, fileContent, 'utf8');
 console.log('Successfully generated src/app/data/assessments.ts with authentic real-world questions.');
+
+;(async () => {
+  for(const data of exportData) {
+    const existing = await prisma.assessment.findFirst({where:{title:data.title}});
+    if(existing) {
+      await prisma.assessment.update({
+        where:{id:existing.id},
+        data: { ...data, id: undefined, questions: data.questions }
+      });
+      console.log("Updated " + data.title);
+    } else {
+      await prisma.assessment.create({
+        data: { ...data, questions: data.questions }
+      });
+      console.log("Created " + data.title);
+    }
+  }
+  await prisma.$disconnect();
+})();

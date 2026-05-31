@@ -87,8 +87,13 @@ export const submitCode = async (req, res) => {
       if (result.status === 'COMPILE_ERROR') { status = 'COMPILE_ERROR'; errorMessage = result.error; break; }
       if (result.status === 'RUNTIME_ERROR') { status = 'RUNTIME_ERROR'; errorMessage = result.error; break; }
 
-      const actual = (result.output || '').trim();
-      const expected = (tc.expected || '').trim();
+      let actual = (result.output || '').replace(/\r\n/g, '\n').trim();
+      const expected = (tc.expected || '').replace(/\r\n/g, '\n').trim();
+      
+      // Normalize Python booleans
+      if (actual === 'True') actual = 'true';
+      if (actual === 'False') actual = 'false';
+
       if (actual === expected) {
         passedCount++;
       } else {
