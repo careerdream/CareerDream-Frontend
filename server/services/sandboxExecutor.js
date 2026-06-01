@@ -29,6 +29,8 @@ const JUDGE0_LANG_IDS = {
   bash: 46,        // Bash
 };
 
+import vm from 'vm';
+
 /**
  * Main dispatch function — uses Judge0 if configured, else local sandbox
  */
@@ -78,188 +80,76 @@ async function runWithJudge0({ code, language, input }) {
     }
   } catch (err) {
     console.error('Judge0 error:', err.message);
-    // Fallback to local execution
-    return await runLocal({ code, language, input });
+    return { status: 'RUNTIME_ERROR', error: 'Judge0 connection failed. Is the service running?' };
   }
 }
 
 /**
  * Secure local sandboxed execution
- * Supported: javascript, python, sql, bash
+ * Only JavaScript is supported locally for security reasons.
  */
 async function runLocal({ code, language, input }) {
-  const fileId = crypto.randomBytes(10).toString('hex');
-
   if (language === 'javascript') {
-    return await runLocalJS(code, input, fileId);
-  } else if (language === 'python') {
-    return await runLocalPython(code, input, fileId);
-  } else if (language === 'sql') {
-    return await runLocalSQL(code, input, fileId);
-  } else if (language === 'bash') {
-    return await runLocalBash(code, input, fileId);
+    return await runLocalJS(code, input);
   } else {
-    // For unsupported local languages, simulate success for demo purposes
+    // Prevent RCE: Disallow direct execution of system processes without Judge0 or Docker
     return {
-      status: 'SUCCESS',
-      output: `[Local sandbox] ${language} execution not available without Judge0. Set JUDGE0_URL in server .env to enable ${language} support.`,
-      runtime: 1,
+      status: 'RUNTIME_ERROR',
+      output: `[Security Policy] Local execution for ${language} is disabled to prevent Remote Code Execution (RCE). Please configure JUDGE0_URL in your .env file to enable secure execution for this language.`,
+      runtime: 0,
       memory: 0,
     };
   }
 }
 
-function runLocalJS(code, input, fileId) {
-  const tmpFile = path.join(SCRATCH_DIR, `run_${fileId}.cjs`);
-  fs.writeFileSync(tmpFile, code, 'utf8');
-  return execWithTimeout(`node "${tmpFile}"`, input, tmpFile, TIMEOUT_MS);
-}
-
-function runLocalPython(code, input, fileId) {
-  const tmpFile = path.join(SCRATCH_DIR, `run_${fileId}.py`);
-  // Prevent dangerous imports
-  const blocked = ['os.system', 'subprocess', 'shutil.rmtree', '__import__("os")'];
-  for (const b of blocked) {
-    if (code.includes(b)) {
-      return Promise.resolve({ status: 'RUNTIME_ERROR', error: `Blocked: use of '${b}' is not allowed` });
-    }
-  }
-
-  let finalCode = code;
-
-  // Automatically wrap Pandas codes if pandas DataFrame is targeted
-  if (code.includes('import pandas') || code.includes('pd.DataFrame') || input.trim().startsWith('{')) {
-    finalCode += `\n
-# --- PANDAS WRAPPER ---
-import sys
-import json
-import pandas as pd
-
-if __name__ == '__main__':
-    try:
-        input_data = sys.stdin.read().strip()
-        if input_data:
-            data = json.loads(input_data)
-            dfs = {k: pd.DataFrame(v) for k, v in data.items()}
-            
-            solver = None
-            if 'solve' in globals():
-                solver = globals()['solve']
-            else:
-                for name, obj in list(globals().items()):
-                    if callable(obj) and obj.__module__ == '__main__' and name != 'main':
-                        solver = obj
-                        break
-            
-            if solver:
-                import inspect
-                sig = inspect.signature(solver)
-                kwargs = {}
-                for param_name in sig.parameters:
-                    if param_name in dfs:
-                        kwargs[param_name] = dfs[param_name]
-                    elif len(dfs) == 1:
-                        kwargs[param_name] = list(dfs.values())[0]
-                
-                result = solver(**kwargs)
-                if isinstance(result, pd.DataFrame):
-                    print(result.to_csv(index=False).strip())
-                elif isinstance(result, pd.Series):
-                    print(result.to_csv(index=False).strip())
-                else:
-                    print(result)
-    except Exception as e:
-        print(f"Pandas Execution Error: {e}", file=sys.stderr)
-        sys.exit(1)
-`;
-  }
-
-  fs.writeFileSync(tmpFile, finalCode, 'utf8');
-  return execWithTimeout(`python "${tmpFile}"`, input, tmpFile, TIMEOUT_MS);
-}
-
-function runLocalSQL(code, input, fileId) {
-  const queryFile = path.join(SCRATCH_DIR, `query_${fileId}.sql`);
-  // Ensure query exists
-  fs.writeFileSync(queryFile, code, 'utf8');
-
-  const runnerPy = path.join(SCRATCH_DIR, `run_sql_${fileId}.py`);
-  const runnerCode = `
-import sqlite3
-import sys
-
-def main():
-    setup_sql = sys.stdin.read().strip()
-    with open(r"${queryFile}", "r", encoding="utf-8") as f:
-        user_query = f.read().strip()
-    try:
-        conn = sqlite3.connect(":memory:")
-        cursor = conn.cursor()
-        if setup_sql:
-            cursor.executescript(setup_sql)
-        cursor.execute(user_query)
-        rows = cursor.fetchall()
-        if cursor.description:
-            cols = [desc[0] for desc in cursor.description]
-            print(",".join(cols))
-            for r in rows:
-                print(",".join(str(x) if x is not None else "null" for x in r))
-        conn.close()
-    except Exception as e:
-        print(f"SQL Error: {e}", file=sys.stderr)
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main()
-  `.trim();
-
-  fs.writeFileSync(runnerPy, runnerCode, 'utf8');
-
-  return execWithTimeout(`python "${runnerPy}"`, input, runnerPy, TIMEOUT_MS)
-    .then(result => {
-      try { fs.unlinkSync(queryFile); } catch (_) {}
-      return result;
-    });
-}
-
-function runLocalBash(code, input, fileId) {
-  const tmpFile = path.join(SCRATCH_DIR, `run_${fileId}.sh`);
-  const cleanCode = code.replace(/\r\n/g, '\n');
-  fs.writeFileSync(tmpFile, cleanCode, 'utf8');
-
-  const bashPath = fs.existsSync('C:\\Program Files\\Git\\bin\\bash.exe')
-    ? '"C:\\Program Files\\Git\\bin\\bash.exe"'
-    : 'bash';
-
-  return execWithTimeout(`${bashPath} "${tmpFile}"`, input, tmpFile, TIMEOUT_MS);
-}
-
-function execWithTimeout(cmd, input, tmpFile, timeoutMs) {
+function runLocalJS(code, input) {
   return new Promise((resolve) => {
     const start = Date.now();
-    const child = exec(cmd, { timeout: timeoutMs, maxBuffer: 1024 * 256 }, (error, stdout, stderr) => {
+    let outputBuffer = [];
+    
+    // Create a safe sandbox environment
+    const sandbox = {
+      console: {
+        log: (...args) => outputBuffer.push(args.join(' ')),
+        error: (...args) => outputBuffer.push(args.join(' ')),
+        warn: (...args) => outputBuffer.push(args.join(' ')),
+      },
+      process: {
+        stdin: {
+          read: () => input
+        }
+      },
+      Buffer: Buffer,
+      Math: Math,
+      JSON: JSON,
+      Array: Array,
+      String: String,
+      Number: Number,
+      Object: Object,
+    };
+
+    try {
+      const script = new vm.Script(code);
+      const context = vm.createContext(sandbox);
+      
+      // Execute the script with a 2-second timeout
+      script.runInContext(context, { timeout: 2000 });
+      
       const runtime = Date.now() - start;
-      try { fs.unlinkSync(tmpFile); } catch (_) {}
-
-      if (error?.killed || error?.code === 'ETIMEDOUT') {
-        return resolve({ status: 'TIME_LIMIT_EXCEEDED', error: 'Process exceeded time limit of 5s', runtime });
-      }
+      resolve({ 
+        status: 'SUCCESS', 
+        output: outputBuffer.join('\n').trim(), 
+        runtime, 
+        memory: 0 
+      });
       
-      if (error) {
-        return resolve({ status: 'RUNTIME_ERROR', error: (stderr || stdout || error.message).trim(), runtime });
+    } catch (err) {
+      const runtime = Date.now() - start;
+      if (err.message.includes('Script execution timed out')) {
+        resolve({ status: 'TIME_LIMIT_EXCEEDED', error: 'Execution timed out', runtime });
+      } else {
+        resolve({ status: 'RUNTIME_ERROR', error: err.message, runtime });
       }
-
-      if (stderr && !stdout) {
-        return resolve({ status: 'RUNTIME_ERROR', error: stderr.trim(), runtime });
-      }
-      
-      resolve({ status: 'SUCCESS', output: stdout.trim(), runtime, memory: 0 });
-    });
-
-    // Feed input to stdin
-    if (input && child.stdin) {
-      child.stdin.write(input);
-      child.stdin.end();
     }
   });
 }

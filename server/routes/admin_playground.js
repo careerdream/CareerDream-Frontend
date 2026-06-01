@@ -29,8 +29,6 @@ router.post('/bulk', async (req, res) => {
         inputFormat: prob.inputFormat,
         outputFormat: prob.outputFormat,
         editorial: prob.editorial,
-        stubs: prob.stubs || {},
-        tags: prob.tags || [],
       };
 
       const created = await prisma.codingProblem.upsert({
@@ -38,6 +36,22 @@ router.post('/bulk', async (req, res) => {
         update: pData,
         create: pData,
       });
+
+      // Handle tags manually
+      if (prob.tags && Array.isArray(prob.tags)) {
+        await prisma.codingProblemTag.deleteMany({ where: { problemId: created.id } });
+        await prisma.codingProblemTag.createMany({
+          data: prob.tags.map(name => ({ problemId: created.id, name }))
+        });
+      }
+
+      // Handle stubs manually
+      if (prob.stubs && typeof prob.stubs === 'object') {
+        await prisma.codingProblemStub.deleteMany({ where: { problemId: created.id } });
+        await prisma.codingProblemStub.createMany({
+          data: Object.entries(prob.stubs).map(([language, code]) => ({ problemId: created.id, language, code }))
+        });
+      }
 
       if (prob.testCases && Array.isArray(prob.testCases)) {
         await prisma.testCase.deleteMany({ where: { problemId: created.id } });

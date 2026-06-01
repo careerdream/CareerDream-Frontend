@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Search, Star, Clock, Award, TrendingUp, BookOpen, Play, ChevronRight, Filter, Users, Loader2 } from 'lucide-react';
+import { Search, Star, Clock, Award, TrendingUp, BookOpen, Play, ChevronRight, Filter, Users, Loader2, Trophy, CheckCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 const CATEGORIES = ['All', 'AI/ML', 'Cloud', 'Full Stack', 'Data Science', 'DevOps', 'Cybersecurity', 'Data Engineering', 'Mobile', 'UI/UX', 'Backend', 'Frontend'];
@@ -252,13 +252,20 @@ export function LearningHub() {
         </section>
 
         {/* CTA */}
-        <section className="py-12 px-8 rounded-2xl bg-gradient-to-br from-primary to-accent text-white text-center">
-          <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-90" />
-          <h2 className="text-3xl font-bold mb-3">Ready to Accelerate Your Career?</h2>
-          <p className="text-xl opacity-90 mb-8 max-w-xl mx-auto">Access 1,500+ courses, structured learning paths, and industry certifications.</p>
-          <button className="px-10 py-4 bg-white text-primary rounded-xl hover:bg-white/90 font-bold text-lg shadow-xl hover:shadow-2xl transition-all">
-            Explore All Courses
-          </button>
+        <section className="py-12 px-8 rounded-2xl bg-gradient-to-br from-primary to-accent text-white text-center flex flex-col items-center">
+          <Trophy className="w-12 h-12 mx-auto mb-4 opacity-90" />
+          <h2 className="text-3xl font-bold mb-3">Earn Certificates</h2>
+          <p className="text-xl opacity-90 mb-6 max-w-xl mx-auto">Score 70%+ to earn a shareable certificate. Add it to LinkedIn and stand out to employers.</p>
+          <div className="flex flex-wrap justify-center gap-6 mb-8 text-sm opacity-90">
+            {['Shareable on LinkedIn', 'Industry recognized', 'Lifetime validity'].map(f => (
+              <div key={f} className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 shrink-0" /> {f}
+              </div>
+            ))}
+          </div>
+          <Link to="/assessments" className="px-10 py-4 bg-white text-primary rounded-xl hover:bg-white/90 font-bold text-lg shadow-xl hover:shadow-2xl transition-all inline-block">
+            Start a Test Now
+          </Link>
         </section>
       </div>
     </div>

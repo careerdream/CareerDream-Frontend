@@ -8,8 +8,8 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "postinstall": "npx prisma generate",
-    "scrape": "node automated_scraper.js",
-    "scrape:watch": "node automated_scraper.js --schedule"
+    "scrape": "node scripts/automated_scraper.js",
+    "scrape:watch": "node scripts/automated_scraper.js --schedule"
   },
   "author": "CareerDream",
   "license": "ISC",
@@ -30,6 +30,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.1.1",
+    "node-cache": "^5.1.2",
     "nodemailer": "^8.0.5",
     "prisma": "^5.22.0"
   },

@@ -440,8 +440,9 @@ model CodingProblem {
   outputFormat String?          @db.Text
   points       Int              @default(10)
   editorial    String?          @db.Text // Solution explanation
-  stubs        Json             // Map of language to initial template code, e.g. { "python": "def twoSum..." }
-  tags         Json?            // e.g. ["Array", "Hash Table"]
+  
+  stubs        CodingProblemStub[]
+  tags         CodingProblemTag[]
   
   testCases    TestCase[]
   submissions  CodeSubmission[]
@@ -449,6 +450,25 @@ model CodingProblem {
   
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
+}
+
+model CodingProblemStub {
+  id           Int              @id @default(autoincrement())
+  problemId    Int
+  problem      CodingProblem    @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  language     String
+  code         String           @db.Text
+
+  @@unique([problemId, language])
+}
+
+model CodingProblemTag {
+  id           Int              @id @default(autoincrement())
+  problemId    Int
+  problem      CodingProblem    @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  name         String
+
+  @@unique([problemId, name])
 }
 
 model TestCase {

@@ -2,13 +2,14 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma.js';
 import { verifyToken, verifyAdmin } from '../middleware/auth.js';
+import { cacheMiddleware } from '../utils/cache.js';
 
 const router = express.Router();
 
 
 // @route   GET /api/jobs
 // @desc    Get all jobs (with optional employer filter)
-router.get('/', async (req, res) => {
+router.get('/', cacheMiddleware(60), async (req, res) => {
   try {
     const { employerId } = req.query;
     const where = {};
@@ -33,7 +34,7 @@ router.get('/', async (req, res) => {
 
 // @route   GET /api/jobs/:id
 // @desc    Get a single job by ID (and increment view count)
-router.get('/:id', async (req, res) => {
+router.get('/:id', cacheMiddleware(60), async (req, res) => {
   try {
     const jobId = parseInt(req.params.id);
     const job = await prisma.job.findUnique({

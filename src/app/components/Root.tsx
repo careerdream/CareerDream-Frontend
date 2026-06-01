@@ -17,8 +17,9 @@ function ScrollToTop() {
 function AppShell() {
   const { pathname } = useLocation();
   const isWorkspace = pathname.startsWith('/playground/');
+  const isCertificate = pathname.startsWith('/certificate/');
 
-  if (isWorkspace) {
+  if (isWorkspace || isCertificate) {
     return (
       <div className="h-screen bg-background flex flex-col overflow-hidden">
         <ScrollToTop />

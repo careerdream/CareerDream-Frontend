@@ -477,10 +477,18 @@ async function seed() {
             inputFormat: prob.inputFormat,
             outputFormat: prob.outputFormat,
             editorial: prob.editorial,
-            stubs: prob.stubs,
-            tags: prob.tags,
+            stubs: {
+              create: Object.entries(prob.stubs || {}).map(([language, code]) => ({ language, code }))
+            },
+            tags: {
+              create: (prob.tags || []).map(name => ({ name }))
+            },
             testCases: {
-              create: prob.testCases
+              create: prob.testCases.map(tc => ({
+                input: tc.input,
+                expected: tc.expected,
+                isSample: tc.isSample
+              }))
             }
           }
         });

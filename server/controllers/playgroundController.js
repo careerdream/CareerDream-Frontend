@@ -16,7 +16,7 @@ export const getProblems = async (req, res) => {
         where,
         select: {
           id: true, title: true, slug: true, category: true,
-          difficulty: true, points: true, tags: true,
+          difficulty: true, points: true, tags: { select: { name: true } },
           _count: { select: { submissions: true } },
         },
         orderBy: [{ difficulty: 'asc' }, { id: 'asc' }],
@@ -26,8 +26,13 @@ export const getProblems = async (req, res) => {
       prisma.codingProblem.count({ where }),
     ]);
 
+    const formattedProblems = problems.map(p => ({
+      ...p,
+      tags: p.tags ? p.tags.map(t => t.name) : []
+    }));
+
     res.json({
-      problems,
+      problems: formattedProblems,
       pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / parseInt(limit)) },
     });
   } catch (err) {
@@ -44,10 +49,27 @@ export const getProblemBySlug = async (req, res) => {
       where: { slug },
       include: {
         testCases: { where: { isSample: true }, select: { id: true, input: true, expected: true } },
+        stubs: true,
+        tags: true,
       },
     });
     if (!problem) return res.status(404).json({ message: 'Problem not found' });
-    res.json(problem);
+    
+    // Map relations back to JSON format for frontend compatibility
+    const stubsObj = {};
+    if (problem.stubs) {
+      problem.stubs.forEach(stub => {
+        stubsObj[stub.language] = stub.code;
+      });
+    }
+    
+    const formattedProblem = {
+      ...problem,
+      tags: problem.tags ? problem.tags.map(t => t.name) : [],
+      stubs: stubsObj
+    };
+
+    res.json(formattedProblem);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch problem' });
   }

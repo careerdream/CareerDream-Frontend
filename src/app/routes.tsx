@@ -33,6 +33,8 @@ import { AdminIssuesPage } from "./components/AdminIssuesPage";
 import { SettingsPage } from "./components/SettingsPage";
 import { AdminRoute } from "./components/AdminRoute";
 import { AdminDashboard } from "./components/AdminDashboard";
+import { CertificatePage } from "./components/CertificatePage";
+import { CertificatesPage } from "./components/CertificatesPage";
 
 export const router = createBrowserRouter([
   {
@@ -60,12 +62,14 @@ export const router = createBrowserRouter([
       { path: "assessments/:id", Component: TestPage },
       { path: "assessments/:id/leaderboard", Component: LeaderboardPage },
       { path: "dashboard", Component: Dashboard },
+      { path: "certificates", Component: CertificatesPage },
       { path: "ai-match", Component: AIResumePage },
       { path: "profile", Component: ProfilePage },
       { path: "settings", Component: SettingsPage },
       { path: "news", Component: NewsPage },
       { path: "news/:id", Component: NewsDetailPage },
       { path: "report-issue", Component: ReportIssuePage },
+      { path: "certificate/:courseId", Component: CertificatePage },
       { path: "*", Component: NotFound },
     ],
   },
@@ -84,5 +88,5 @@ export const router = createBrowserRouter([
   {
     path: "/recruiter/post-job",
     Component: JobPostingForm,
-  },
+  }
 ]);

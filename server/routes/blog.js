@@ -1,6 +1,7 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
+import { cacheMiddleware } from '../utils/cache.js';
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ const generateSlug = (title) => {
 // @route   GET /api/blog/posts
 // @desc    Get all blog posts with pagination
 // @access  Public
-router.get('/posts', async (req, res) => {
+router.get('/posts', cacheMiddleware(60), async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 6;
@@ -74,7 +75,7 @@ router.get('/posts', async (req, res) => {
 // @route   GET /api/blog/posts/:id
 // @desc    Get a single blog post by ID
 // @access  Public
-router.get('/posts/:id', async (req, res) => {
+router.get('/posts/:id', cacheMiddleware(60), async (req, res) => {
   try {
     const post = await prisma.blogPost.findUnique({
       where: { id: parseInt(req.params.id) },

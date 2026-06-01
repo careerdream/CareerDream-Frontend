@@ -55,8 +55,7 @@ export function AssessmentsPage() {
             Test your knowledge, earn certifications, and showcase your expertise to top employers. Over 50,000 professionals have already been certified.
           </p>
 
-          {/* My Stats */}
-          {testResults.length > 0 ? (
+          {testResults.length > 0 && (
             <div className="grid grid-cols-3 gap-4 max-w-lg">
               {[
                 { icon: Target, label: 'Tests Taken', value: testResults.length, color: 'text-primary' },
@@ -69,10 +68,6 @@ export function AssessmentsPage() {
                   <div className="text-xs text-muted-foreground">{label}</div>
                 </div>
               ))}
-            </div>
-          ) : (
-            <div className="p-5 rounded-2xl bg-card border border-dashed border-border inline-block">
-              <p className="text-muted-foreground text-sm">Take your first assessment to see your stats!</p>
             </div>
           )}
         </div>
@@ -192,22 +187,24 @@ export function AssessmentsPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Certificate CTA */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-primary to-accent text-white">
-              <Trophy className="w-12 h-12 mb-4 opacity-90" />
-              <h3 className="text-xl font-bold mb-2">Earn Certificates</h3>
-              <p className="text-sm opacity-90 mb-5">Score 70%+ to earn a shareable certificate. Add it to LinkedIn and stand out to employers.</p>
-              <div className="space-y-2 mb-5">
-                {['Shareable on LinkedIn', 'Industry recognized', 'Lifetime validity'].map(f => (
-                  <div key={f} className="flex items-center gap-2 text-sm opacity-90">
-                    <CheckCircle className="w-4 h-4 shrink-0" /> {f}
-                  </div>
-                ))}
-              </div>
-              <Link to={`/assessments/${displayAssessments[0]?.id || 1}`} className="block w-full py-3 text-center bg-white text-primary rounded-xl hover:bg-white/90 transition-all font-bold shadow-lg">
-                Start a Test Now
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-primary to-accent text-white text-center">
+              <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-90" />
+              <h3 className="text-xl font-bold mb-2">Ready to Accelerate Your Career?</h3>
+              <p className="text-sm opacity-90 mb-6">Access 1,500+ courses, structured learning paths, and industry certifications.</p>
+              <Link to="/learn" className="block w-full py-3 text-center bg-white text-primary rounded-xl hover:bg-white/90 transition-all font-bold shadow-lg">
+                Explore All Courses
               </Link>
+            </div>
 
+            {/* View Certificates Button */}
+            <div className="space-y-3">
+              <Link to="/certificates" className="flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all">
+                <Trophy className="w-5 h-5" />
+                View My Certificates
+              </Link>
+              <Link to="/certificate/sample" className="flex items-center justify-center text-sm font-medium text-primary hover:underline hover:text-primary/80 transition-colors">
+                View Sample Certificate
+              </Link>
             </div>
 
             {/* Leaderboard */}

@@ -171,14 +171,33 @@ function FeaturedBlogSection() {
 
                 <div className="space-y-3 border-t border-border/50 pt-4 mt-auto">
                   <div className="flex items-center gap-3">
-                    {post.author.avatar ? (
+                    {post.author.name === 'CareerDream Admin' ? (
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md">
+                        <span className="text-white font-bold text-xs">CD</span>
+                      </div>
+                    ) : post.author.avatar ? (
                       <img
                         src={post.author.avatar}
                         alt={post.author.name}
                         className="w-8 h-8 rounded-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          const nextSibling = (e.target as HTMLImageElement).nextElementSibling;
+                          if (nextSibling) {
+                            (nextSibling as HTMLElement).style.display = 'flex';
+                          }
+                        }}
                       />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-sm">
+                        <span className="text-xs font-bold text-white">
+                          {post.author.name.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    {/* Fallback for broken image if needed */}
+                    {post.author.name !== 'CareerDream Admin' && post.author.avatar && (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent hidden items-center justify-center shadow-sm">
                         <span className="text-xs font-bold text-white">
                           {post.author.name.charAt(0)}
                         </span>

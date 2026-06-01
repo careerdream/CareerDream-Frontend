@@ -1,11 +1,12 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
+import { cacheMiddleware } from '../utils/cache.js';
 
 const router = express.Router();
 
 // @route   GET /api/courses
 // @desc    Get all courses
-router.get('/', async (req, res) => {
+router.get('/', cacheMiddleware(60), async (req, res) => {
   try {
     const courses = await prisma.course.findMany();
     res.json(courses);
@@ -17,7 +18,7 @@ router.get('/', async (req, res) => {
 
 // @route   GET /api/courses/:id
 // @desc    Get a single course by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', cacheMiddleware(60), async (req, res) => {
   try {
     const course = await prisma.course.findUnique({
       where: { id: parseInt(req.params.id) },
