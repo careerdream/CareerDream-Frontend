@@ -35,6 +35,8 @@ import { AdminRoute } from "./components/AdminRoute";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { CertificatePage } from "./components/CertificatePage";
 import { CertificatesPage } from "./components/CertificatesPage";
+import { CareersPage } from "./components/CareersPage";
+import { ContactPage } from "./components/ContactPage";
 
 export const router = createBrowserRouter([
   {
@@ -70,6 +72,8 @@ export const router = createBrowserRouter([
       { path: "news/:id", Component: NewsDetailPage },
       { path: "report-issue", Component: ReportIssuePage },
       { path: "certificate/:courseId", Component: CertificatePage },
+      { path: "careers", Component: CareersPage },
+      { path: "contact", Component: ContactPage },
       { path: "*", Component: NotFound },
     ],
   },

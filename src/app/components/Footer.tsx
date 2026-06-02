@@ -1,6 +1,8 @@
 import { Link } from 'react-router';
-import { Briefcase, BookOpen, ClipboardCheck, Brain, ArrowRight, MapPin, Mail } from 'lucide-react';
+import { useState } from 'react';
+import { Briefcase, BookOpen, ClipboardCheck, Brain, ArrowRight, MapPin, Mail, CheckCircle, Loader } from 'lucide-react';
 import { SocialLinks } from './SocialLinks';
+import { api } from '../utils/api';
 
 const footerLinks = {
   Platform: [
@@ -19,10 +21,10 @@ const footerLinks = {
   ],
   Company: [
     { label: 'About Us', to: '/about' },
-    { label: 'Careers', to: '/' },
-    { label: 'Blog', to: '/' },
+    { label: 'Careers', to: '/careers' },
+    { label: 'Blog', to: '/news' },
     { label: 'Report Issues', to: '/report-issue' },
-    { label: 'Contact', to: '/report-issue' },
+    { label: 'Contact', to: '/contact' },
   ],
   Legal: [
     { label: 'Privacy Policy', to: '/privacy-policy' },
@@ -34,6 +36,24 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const [email, setEmail] = useState('');
+  const [subStatus, setSubStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes('@')) return;
+    setSubStatus('loading');
+    try {
+      await api.post('/blog/subscribe', { email });
+      setSubStatus('success');
+      setEmail('');
+      setTimeout(() => setSubStatus('idle'), 4000);
+    } catch {
+      setSubStatus('error');
+      setTimeout(() => setSubStatus('idle'), 3000);
+    }
+  };
+
   return (
     <footer className="bg-card border-t border-border mt-auto">
       {/* CTA Banner */}
@@ -78,23 +98,34 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
               <MapPin className="w-3 h-3" />
-              San Francisco, CA & Bengaluru, India
+              San Francisco, CA &amp; Bengaluru, India
             </div>
 
-            {/* Newsletter */}
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-border bg-input-background focus:border-primary focus:outline-none transition-colors"
-                />
+            {/* Newsletter - Wired up */}
+            <form onSubmit={handleSubscribe} className="space-y-2">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    disabled={subStatus === 'loading' || subStatus === 'success'}
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-border bg-input-background focus:border-primary focus:outline-none transition-colors disabled:opacity-60"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={subStatus === 'loading' || subStatus === 'success'}
+                  className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors disabled:opacity-60 flex items-center gap-1"
+                >
+                  {subStatus === 'loading' ? <Loader className="w-3 h-3 animate-spin" /> : subStatus === 'success' ? <CheckCircle className="w-3 h-3" /> : null}
+                  {subStatus === 'success' ? 'Subscribed!' : 'Subscribe'}
+                </button>
               </div>
-              <button className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors">
-                Subscribe
-              </button>
-            </div>
+              {subStatus === 'error' && <p className="text-xs text-red-500">Failed to subscribe. Try again.</p>}
+            </form>
           </div>
 
           {/* Links - Mobile Accordions */}

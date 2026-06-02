@@ -1,4 +1,5 @@
 import express from 'express';
+import nodemailer from 'nodemailer';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
 import { cacheMiddleware } from '../utils/cache.js';
@@ -313,6 +314,92 @@ router.post('/subscribe', async (req, res) => {
 
     subscribers.push(email);
     fs.writeFileSync(NEWSLETTER_FILE, JSON.stringify(subscribers, null, 2));
+
+    // Send welcome email
+    try {
+      const welcomeTransporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+        port: parseInt(process.env.SMTP_PORT || '465'),
+        secure: true,
+        auth: {
+          user: process.env.SMTP_USER || 'noreply@careerdream.in',
+          pass: process.env.SMTP_PASS || '',
+        },
+      });
+      const welcomeHtml = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+  body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f4f4f5;margin:0;padding:0;}
+  .container{max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;}
+  .header{background:linear-gradient(135deg,#3b82f6,#06b6d4);padding:40px 30px;text-align:center;}
+  .logo-box{display:inline-block;width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,0.2);text-align:center;line-height:60px;margin-bottom:16px;}
+  .logo-text{color:#fff;font-weight:bold;font-size:24px;font-family:sans-serif;}
+  .brand{color:#fff;font-size:28px;font-weight:bold;margin:0;}
+  .content{padding:40px 30px;}
+  .title{font-size:22px;font-weight:bold;color:#111827;margin-bottom:12px;}
+  .subtitle{color:#4b5563;font-size:15px;line-height:1.6;margin-bottom:32px;}
+  .features{background:#f9fafb;border-radius:12px;padding:24px;margin-bottom:32px;}
+  .feature{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;}
+  .feature:last-child{margin-bottom:0;}
+  .feature-icon{width:36px;height:36px;border-radius:10px;text-align:center;line-height:36px;font-size:18px;flex-shrink:0;}
+  .feature-text h4{margin:0 0 4px;font-size:14px;font-weight:bold;color:#111827;}
+  .feature-text p{margin:0;font-size:13px;color:#6b7280;}
+  .cta-btn{display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;text-decoration:none;border-radius:10px;font-weight:bold;font-size:15px;}
+  .footer{background:#f3f4f6;padding:24px 30px;text-align:center;border-top:1px solid #e5e7eb;}
+  .footer-text{font-size:12px;color:#9ca3af;}
+  .email-link{color:#3b82f6;text-decoration:none;font-weight:bold;}
+</style></head><body>
+<div style="background:#f4f4f5;padding:24px 0;">
+  <div class="container">
+    <div class="header">
+      <div class="logo-box"><span class="logo-text">CD</span></div>
+      <p class="brand">CareerDream</p>
+    </div>
+    <div class="content">
+      <h2 class="title">You're on the list!</h2>
+      <p class="subtitle">Welcome to the CareerDream newsletter. You'll be the first to know about exciting updates from India's fastest-growing IT career platform.</p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon" style="background:#ecfdf5;">📰</div>
+          <div class="feature-text">
+            <h4>Blog &amp; Articles</h4>
+            <p>Expert career advice, IT industry insights, and how-to guides delivered to your inbox.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon" style="background:#eff6ff;">💼</div>
+          <div class="feature-text">
+            <h4>New Job Alerts</h4>
+            <p>Be the first to know about top remote, government, and global IT job opportunities.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon" style="background:#faf5ff;">🎓</div>
+          <div class="feature-text">
+            <h4>New Courses</h4>
+            <p>Get notified when new AI/ML, Cloud, Full Stack, and DevOps courses go live.</p>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-bottom:32px;">
+        <a href="https://careerdream.in" class="cta-btn">Explore CareerDream</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p class="footer-text">You subscribed with <strong>${email}</strong>. Questions? Contact us at <a href="mailto:info@careerdream.in" class="email-link">info@careerdream.in</a></p>
+      <p class="footer-text" style="margin-top:8px;">© ${new Date().getFullYear()} CareerDream. All rights reserved.</p>
+    </div>
+  </div>
+</div>
+</body></html>`;
+      await welcomeTransporter.sendMail({
+        from: `"CareerDream" <${process.env.SMTP_USER || 'noreply@careerdream.in'}>`,
+        to: email,
+        subject: 'You\'re subscribed to CareerDream updates!',
+        html: welcomeHtml,
+      });
+    } catch (emailError) {
+      console.error('Welcome email failed (non-critical):', emailError.message);
+    }
 
     console.log(`Newsletter subscription: ${email} (Total: ${subscribers.length})`);
     res.status(200).json({ message: 'Successfully subscribed to newsletter!' });
