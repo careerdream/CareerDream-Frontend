@@ -331,16 +331,16 @@ router.post('/subscribe', async (req, res) => {
   body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f4f4f5;margin:0;padding:0;}
   .container{max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;}
   .header{background:linear-gradient(135deg,#3b82f6,#06b6d4);padding:40px 30px;text-align:center;}
-  .logo-box{display:inline-block;width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,0.2);text-align:center;line-height:60px;margin-bottom:16px;}
-  .logo-text{color:#fff;font-weight:bold;font-size:24px;font-family:sans-serif;}
-  .brand{color:#fff;font-size:28px;font-weight:bold;margin:0;}
+  .logo-box{display:inline-block;width:80px;height:80px;border-radius:20px;background:rgba(255,255,255,0.2);text-align:center;line-height:80px;margin-bottom:16px;box-shadow:0 4px 10px rgba(0,0,0,0.15);}
+  .logo-text{color:#fff;font-weight:bold;font-size:32px;font-family:sans-serif;}
+  .brand{color:#fff;font-size:34px;font-weight:bold;margin:0;letter-spacing:-0.5px;}
   .content{padding:40px 30px;}
   .title{font-size:22px;font-weight:bold;color:#111827;margin-bottom:12px;}
   .subtitle{color:#4b5563;font-size:15px;line-height:1.6;margin-bottom:32px;}
   .features{background:#f9fafb;border-radius:12px;padding:24px;margin-bottom:32px;}
   .feature{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;}
   .feature:last-child{margin-bottom:0;}
-  .feature-icon{width:36px;height:36px;border-radius:10px;text-align:center;line-height:36px;font-size:18px;flex-shrink:0;}
+  .feature-icon{width:40px;height:40px;border-radius:12px;text-align:center;line-height:40px;flex-shrink:0;}
   .feature-text h4{margin:0 0 4px;font-size:14px;font-weight:bold;color:#111827;}
   .feature-text p{margin:0;font-size:13px;color:#6b7280;}
   .cta-btn{display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;text-decoration:none;border-radius:10px;font-weight:bold;font-size:15px;}
@@ -359,21 +359,21 @@ router.post('/subscribe', async (req, res) => {
       <p class="subtitle">Welcome to the CareerDream newsletter. You'll be the first to know about exciting updates from India's fastest-growing IT career platform.</p>
       <div class="features">
         <div class="feature">
-          <div class="feature-icon" style="background:#ecfdf5;">📰</div>
+          <div class="feature-icon" style="background:#ecfdf5;"><img src="https://img.icons8.com/ios-filled/50/10b981/news.png" alt="Blog" width="24" height="24" style="vertical-align:middle;border:none;" /></div>
           <div class="feature-text">
             <h4>Blog &amp; Articles</h4>
             <p>Expert career advice, IT industry insights, and how-to guides delivered to your inbox.</p>
           </div>
         </div>
         <div class="feature">
-          <div class="feature-icon" style="background:#eff6ff;">💼</div>
+          <div class="feature-icon" style="background:#eff6ff;"><img src="https://img.icons8.com/ios-filled/50/3b82f6/new-job.png" alt="Jobs" width="24" height="24" style="vertical-align:middle;border:none;" /></div>
           <div class="feature-text">
             <h4>New Job Alerts</h4>
             <p>Be the first to know about top remote, government, and global IT job opportunities.</p>
           </div>
         </div>
         <div class="feature">
-          <div class="feature-icon" style="background:#faf5ff;">🎓</div>
+          <div class="feature-icon" style="background:#faf5ff;"><img src="https://img.icons8.com/ios-filled/50/a855f7/graduation-cap.png" alt="Courses" width="24" height="24" style="vertical-align:middle;border:none;" /></div>
           <div class="feature-text">
             <h4>New Courses</h4>
             <p>Get notified when new AI/ML, Cloud, Full Stack, and DevOps courses go live.</p>
@@ -385,7 +385,59 @@ router.post('/subscribe', async (req, res) => {
       </div>
     </div>
     <div class="footer">
-      <p class="footer-text">You subscribed with <strong>${email}</strong>. Questions? Contact us at <a href="mailto:info@careerdream.in" class="email-link">info@careerdream.in</a></p>
+      <p class="footer-text" style="margin-bottom:20px;">If you have any questions, contact : info@careerdream.in</p>
+      <div style="border-top:1px solid #e5e7eb; margin:20px 0;"></div>
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td align="center">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:0 8px;">
+                  <a href="https://whatsapp.com/channel/0029VbCUhAq2kNFsL5vFwE1N" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/whatsapp--v1.png" alt="WhatsApp" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                  </a>
+                </td>
+                <td style="padding:0 8px;">
+                  <a href="mailto:info@careerdream.in" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/new-post.png" alt="Email" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                  </a>
+                </td>
+                <td style="padding:0 8px;">
+                  <a href="https://www.instagram.com/careerdream.in/" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new--v1.png" alt="Instagram" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                  </a>
+                </td>
+                <td style="padding:0 8px;">
+                  <a href="https://t.me/careerdream365" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/telegram-app.png" alt="Telegram" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                  </a>
+                </td>
+                <td style="padding:0 8px;">
+                  <a href="https://www.facebook.com/profile.php?id=61572023950143" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/facebook-new.png" alt="Facebook" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                  </a>
+                </td>
+                <td style="padding:0 8px;">
+                  <a href="https://x.com/CDream85874" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/twitterx--v1.png" alt="Twitter" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                  </a>
+                </td>
+                <td style="padding:0 8px;">
+                  <a href="https://youtube.com/@careerdream365" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/youtube-play.png" alt="YouTube" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                  </a>
+                </td>
+                <td style="padding:0 8px;">
+                  <a href="https://linkedin.com/company/careerdream.in" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/linkedin.png" alt="LinkedIn" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <p class="footer-text" style="margin-top:24px;">You subscribed with <strong>${email}</strong>.</p>
       <p class="footer-text" style="margin-top:8px;">© ${new Date().getFullYear()} CareerDream. All rights reserved.</p>
     </div>
   </div>

@@ -65,8 +65,8 @@ const getOtpEmailTemplate = (otp, type = 'register') => {
       <div style="text-align: center;">
         <!-- Logo -->
         <a href="https://careerdream.in" style="display: inline-flex; align-items: center; text-decoration: none; margin-bottom: 25px;">
-          <div style="display: inline-block; vertical-align: middle; width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6, #06b6d4); text-align: center; line-height: 60px; margin-right: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-            <span style="color: #ffffff; font-weight: bold; font-size: 24px; font-family: sans-serif;">CD</span>
+          <div style="display: inline-block; vertical-align: middle; width: 80px; height: 80px; border-radius: 20px; background: linear-gradient(135deg, #3b82f6, #06b6d4); text-align: center; line-height: 80px; margin-right: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+            <span style="color: #ffffff; font-weight: bold; font-size: 32px; font-family: sans-serif;">CD</span>
           </div>
           <span style="font-size: 34px; font-weight: bold; color: #1f2937; font-family: sans-serif; vertical-align: middle; letter-spacing: -0.5px;">CareerDream</span>
         </a>
@@ -91,7 +91,7 @@ const getOtpEmailTemplate = (otp, type = 'register') => {
     
     <div class="footer">
       <div class="footer-text">
-        If you have any questions, contact : <a href="mailto:info@careerdream.in" style="color:#3b82f6; text-decoration:none;">info@careerdream.in</a>
+        If you have any questions, contact : info@careerdream.in
       </div>
       <div style="border-top: 1px solid #000; margin: 30px 0;"></div>
       <div class="footer-links" style="margin-bottom: 20px;">
@@ -106,51 +106,51 @@ const getOtpEmailTemplate = (otp, type = 'register') => {
             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
               <tr>
                 <!-- WhatsApp -->
-                <td style="padding:0 5px;">
-                  <a href="https://whatsapp.com/channel/0029VbCUhAq2kNFsL5vFwE1N" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <td style="padding:0 8px;">
+                  <a href="https://whatsapp.com/channel/0029VbCUhAq2kNFsL5vFwE1N" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/whatsapp--v1.png" alt="WhatsApp" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <!-- Email -->
-                <td style="padding:0 5px;">
-                  <a href="mailto:info@careerdream.in" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <td style="padding:0 8px;">
+                  <a href="mailto:info@careerdream.in" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/new-post.png" alt="Email" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <!-- Instagram -->
-                <td style="padding:0 5px;">
-                  <a href="https://www.instagram.com/careerdream.in/" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                <td style="padding:0 8px;">
+                  <a href="https://www.instagram.com/careerdream.in/" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new--v1.png" alt="Instagram" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <!-- Telegram -->
-                <td style="padding:0 5px;">
-                  <a href="https://t.me/careerdream365" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0088cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                <td style="padding:0 8px;">
+                  <a href="https://t.me/careerdream365" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/telegram-app.png" alt="Telegram" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <!-- Facebook -->
-                <td style="padding:0 5px;">
-                  <a href="https://www.facebook.com/profile.php?id=61572023950143" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1877F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                <td style="padding:0 8px;">
+                  <a href="https://www.facebook.com/profile.php?id=61572023950143" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/facebook-new.png" alt="Facebook" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <!-- X / Twitter -->
-                <td style="padding:0 5px;">
-                  <a href="https://x.com/CDream85874" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#000000" style="display:inline-block;vertical-align:middle;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.738l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                <td style="padding:0 8px;">
+                  <a href="https://x.com/CDream85874" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/twitterx--v1.png" alt="Twitter" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <!-- YouTube -->
-                <td style="padding:0 5px;">
-                  <a href="https://youtube.com/@careerdream365" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#FF0000" stroke="none"/></svg>
+                <td style="padding:0 8px;">
+                  <a href="https://youtube.com/@careerdream365" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/youtube-play.png" alt="YouTube" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <!-- LinkedIn -->
-                <td style="padding:0 5px;">
-                  <a href="https://linkedin.com/company/careerdream.in" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A66C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                <td style="padding:0 8px;">
+                  <a href="https://linkedin.com/company/careerdream.in" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/linkedin.png" alt="LinkedIn" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
               </tr>
