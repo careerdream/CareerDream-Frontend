@@ -20,7 +20,7 @@ export function Navbar() {
 
   const navLinks = [
     { path: '/jobs', label: 'Jobs', icon: Briefcase },
-    { path: '/learn', label: 'Learn', icon: BookOpen },
+    { path: '/learn', label: 'Courses', icon: BookOpen },
     { path: '/assessments', label: 'Assessments', icon: ClipboardCheck },
     { path: '/playground', label: 'Playground', icon: Code },
     { path: '/ai-match', label: 'AI Match', icon: Brain, badge: 'AI' },
@@ -414,7 +414,7 @@ export function Navbar() {
           }`}
         >
           <BookOpen className="w-5 h-5 transition-transform duration-200" />
-          <span className="text-[10px] font-bold tracking-wide uppercase">Learn</span>
+          <span className="text-[10px] font-bold tracking-wide uppercase">Courses</span>
         </Link>
 
         {/* Assessments Link */}
