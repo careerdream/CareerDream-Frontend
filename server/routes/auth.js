@@ -8,7 +8,18 @@ import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
 import axios from 'axios';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
 const router = express.Router();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load base64 icons - embedded directly in email HTML (no attachments)
+const iconsB64Path = path.join(__dirname, '..', 'icons', 'icons_b64.json');
+const iconB64 = JSON.parse(fs.readFileSync(iconsB64Path, 'utf-8'));
 
 // Email transporter (configure in .env)
 const transporter = nodemailer.createTransport({
@@ -20,6 +31,139 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS || '',
   },
 });
+
+const getOtpEmailTemplate = (otp, type = 'register') => {
+  const desc = type === 'register' 
+    ? "Please verify you're really you by entering this 6-digit code to complete your registration. Just a heads up, this code will expire in 10 minutes for security reasons."
+    : "Please verify you're really you by entering this 6-digit code when you sign in. Just a heads up, this code will expire in 10 minutes for security reasons.";
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f5; margin: 0; padding: 0; }
+  .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+  .header { background-color: #dcfce7; padding: 40px 20px; text-align: center; }
+  .logo { font-size: 28px; font-weight: bold; color: #166534; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+  .content { padding: 40px 40px 20px 40px; text-align: center; }
+  .title { font-size: 24px; font-weight: bold; color: #000000; margin-bottom: 30px; }
+  .otp-box { border: 2px solid #000000; padding: 15px 40px; font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #000000; display: inline-block; margin-bottom: 30px; }
+  .desc { font-size: 14px; line-height: 1.6; color: #000000; margin-bottom: 40px; max-width: 450px; margin-left: auto; margin-right: auto; }
+  .footer { background-color: #f3f4f6; padding: 40px 20px; text-align: center; border-top: 1px solid #e5e7eb; }
+  .footer-text { font-size: 13px; color: #4b5563; margin-bottom: 20px; line-height: 1.5; }
+  .footer-links { font-size: 14px; margin-bottom: 20px; }
+  .footer-links a { color: #111827; text-decoration: none; padding: 0 10px; }
+  .social-icons { margin-top: 20px; }
+  .social-icons span { display: inline-block; width: 32px; height: 32px; background-color: #000000; color: #ffffff; border-radius: 6px; line-height: 32px; margin: 0 5px; font-weight: bold; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div style="text-align: center;">
+        <!-- Logo -->
+        <a href="https://careerdream.in" style="display: inline-flex; align-items: center; text-decoration: none; margin-bottom: 25px;">
+          <div style="display: inline-block; vertical-align: middle; width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6, #06b6d4); text-align: center; line-height: 60px; margin-right: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+            <span style="color: #ffffff; font-weight: bold; font-size: 24px; font-family: sans-serif;">CD</span>
+          </div>
+          <span style="font-size: 34px; font-weight: bold; color: #1f2937; font-family: sans-serif; vertical-align: middle; letter-spacing: -0.5px;">CareerDream</span>
+        </a>
+      </div>
+      <!-- Star motif from the image -->
+      <div style="background-color: #166534; color: white; display: inline-block; padding: 5px 20px; border-radius: 20px; letter-spacing: 4px; font-size: 18px;">
+        ✱✱✱✱✱
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="title">Your one-time code is</div>
+      
+      <div class="otp-box">
+        ${otp}
+      </div>
+      
+      <div class="desc">
+        ${desc}
+      </div>
+    </div>
+    
+    <div class="footer">
+      <div class="footer-text">
+        If you have any questions, contact : <a href="mailto:info@careerdream.in" style="color:#3b82f6; text-decoration:none;">info@careerdream.in</a>
+      </div>
+      <div style="border-top: 1px solid #000; margin: 30px 0;"></div>
+      <div class="footer-links" style="margin-bottom: 20px;">
+        <a href="#">Jobs</a> &nbsp;|&nbsp; 
+        <a href="#">Courses</a> &nbsp;|&nbsp; 
+        <a href="#">Assessments</a>
+      </div>
+      <!-- Social Icons using table layout for email client compatibility -->
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:24px;">
+        <tr>
+          <td align="center">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <!-- WhatsApp -->
+                <td style="padding:0 5px;">
+                  <a href="https://whatsapp.com/channel/0029VbCUhAq2kNFsL5vFwE1N" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  </a>
+                </td>
+                <!-- Email -->
+                <td style="padding:0 5px;">
+                  <a href="mailto:info@careerdream.in" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  </a>
+                </td>
+                <!-- Instagram -->
+                <td style="padding:0 5px;">
+                  <a href="https://www.instagram.com/careerdream.in/" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                  </a>
+                </td>
+                <!-- Telegram -->
+                <td style="padding:0 5px;">
+                  <a href="https://t.me/careerdream365" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0088cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  </a>
+                </td>
+                <!-- Facebook -->
+                <td style="padding:0 5px;">
+                  <a href="https://www.facebook.com/profile.php?id=61572023950143" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1877F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                  </a>
+                </td>
+                <!-- X / Twitter -->
+                <td style="padding:0 5px;">
+                  <a href="https://x.com/CDream85874" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#000000" style="display:inline-block;vertical-align:middle;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.738l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  </a>
+                </td>
+                <!-- YouTube -->
+                <td style="padding:0 5px;">
+                  <a href="https://youtube.com/@careerdream365" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#FF0000" stroke="none"/></svg>
+                  </a>
+                </td>
+                <!-- LinkedIn -->
+                <td style="padding:0 5px;">
+                  <a href="https://linkedin.com/company/careerdream.in" style="display:block; width:38px; height:38px; border:1.5px solid #d1d5db; border-radius:10px; background:#fff; text-align:center; text-decoration:none; line-height:38px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A66C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+};
 
 // Helper: generate JWT with optional remember-me duration
 
@@ -43,7 +187,7 @@ function generateToken(userId, rememberMe = false) {
 // ──────────────────────────────────────────────
 router.post('/register', [
   body('name').trim().notEmpty().withMessage('Name is required').escape(),
-  body('email').trim().isEmail().withMessage('Invalid email format').normalizeEmail(),
+  body('email').trim().isEmail().withMessage('Invalid email format').toLowerCase(),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
   body('phone').optional().matches(/^\+?[1-9]\d{1,14}$/).withMessage('Invalid phone number format')
 ], async (req, res) => {
@@ -66,16 +210,16 @@ router.post('/register', [
     });
 
     // Send OTP Email
+    console.log(`[DEVELOPMENT] OTP for ${email} is ${emailOtp}`);
     try {
       await transporter.sendMail({
         from: `"CareerDream" <${process.env.SMTP_USER || 'noreply@careerdream.in'}>`,
         to: email,
         subject: 'Verify your CareerDream Account',
-        html: `<p>Your verification OTP is: <strong>${emailOtp}</strong></p><p>It expires in 10 minutes.</p>`
+        html: getOtpEmailTemplate(emailOtp, 'register')
       });
-      console.log(`OTP for ${email} is ${emailOtp}`);
     } catch (e) {
-      console.error('Email send error:', e);
+      console.error('Email send error:', e.message);
     }
 
     res.status(201).json({
@@ -93,7 +237,7 @@ router.post('/register', [
 // LOGIN
 // ──────────────────────────────────────────────
 router.post('/login', [
-  body('email').trim().isEmail().withMessage('Invalid email').normalizeEmail(),
+  body('email').trim().isEmail().withMessage('Invalid email').toLowerCase(),
   body('password').notEmpty().withMessage('Password is required')
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -115,15 +259,15 @@ router.post('/login', [
         where: { id: user.id },
         data: { emailOtp, emailOtpExpiry: new Date(Date.now() + 10 * 60 * 1000) }
       });
+      console.log(`[DEVELOPMENT] MFA OTP for ${email} is ${emailOtp}`);
       try {
         await transporter.sendMail({
           from: `"CareerDream" <${process.env.SMTP_USER || 'noreply@careerdream.in'}>`,
           to: email,
           subject: 'Your Login OTP',
-          html: `<p>Your login OTP is: <strong>${emailOtp}</strong></p>`
+          html: getOtpEmailTemplate(emailOtp, 'login')
         });
-        console.log(`MFA OTP for ${email} is ${emailOtp}`);
-      } catch (e) { console.error('MFA Email error:', e); }
+      } catch (e) { console.error('MFA Email error:', e.message); }
 
       return res.json({ mfaRequired: true, userId: user.id, message: 'MFA OTP sent to email.' });
     }
@@ -623,7 +767,7 @@ router.post('/activity', verifyToken, async (req, res) => {
 // VERIFY EMAIL OTP
 // ──────────────────────────────────────────────
 router.post('/verify-email', [
-  body('email').isEmail(),
+  body('email').isEmail().toLowerCase(),
   body('otp').isLength({ min: 6, max: 6 })
 ], async (req, res) => {
   try {
@@ -646,10 +790,48 @@ router.post('/verify-email', [
 });
 
 // ──────────────────────────────────────────────
+// RESEND OTP
+// ──────────────────────────────────────────────
+router.post('/resend-otp', [
+  body('email').isEmail().toLowerCase()
+], async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ error: 'not_found', message: 'User not found' });
+    
+    const emailOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const emailOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { emailOtp, emailOtpExpiry }
+    });
+
+    console.log(`[DEVELOPMENT] Resent OTP for ${email} is ${emailOtp}`);
+    try {
+      await transporter.sendMail({
+        from: `"CareerDream" <${process.env.SMTP_USER || 'noreply@careerdream.in'}>`,
+        to: email,
+        subject: 'Your CareerDream OTP',
+        html: getOtpEmailTemplate(emailOtp, 'resend')
+      });
+    } catch (e) {
+      console.error('Email send error:', e.message);
+    }
+
+    res.json({ message: 'OTP resent successfully.' });
+  } catch (e) {
+    console.error('Resend OTP Error:', e);
+    res.status(500).json({ error: 'server_error', message: 'Failed to resend OTP.' });
+  }
+});
+
+// ──────────────────────────────────────────────
 // MFA LOGIN
 // ──────────────────────────────────────────────
 router.post('/login/mfa', [
-  body('email').isEmail(),
+  body('email').isEmail().toLowerCase(),
   body('otp').isLength({ min: 6, max: 6 })
 ], async (req, res) => {
   try {

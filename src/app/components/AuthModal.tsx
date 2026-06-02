@@ -22,7 +22,46 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [resendTimer, setResendTimer] = useState(0);
   const { login, signup, loginWithGoogle, loginWithGitHub, forgotPassword, verifyEmail, verifyMfa, user, isAdmin } = useApp();
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  useEffect(() => {
+    if (view === 'verify_email' || view === 'verify_mfa') {
+      setResendTimer(15);
+    }
+  }, [view]);
+
+  const handleResendOtp = async () => {
+    if (resendTimer > 0) return;
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      const response = await fetch('/api/auth/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to resend OTP.');
+      setSuccess('A new OTP has been sent to your email.');
+      setResendTimer(15);
+    } catch (err: any) {
+      setError(err.message || 'Failed to resend OTP.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Sync view with defaultTab and reset form when modal opens
   useEffect(() => {
@@ -348,17 +387,36 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Props) {
             <form onSubmit={view === 'verify_email' ? handleVerifyEmail : handleVerifyMfa} className="space-y-4">
               <div className="text-sm text-slate-500 mb-4 text-center">
                 We've sent a 6-digit OTP to <strong>{email}</strong>. Please enter it below.
+                <br />
+                <span className="text-xs text-slate-400 mt-1 block">(Note: Please check your Spam or Junk folder if you don't see it in your Inbox)</span>
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="otp-input" className="text-sm font-medium text-slate-700 dark:text-slate-300 ml-1">One-Time Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input id="otp-input" type="text" placeholder="123456" maxLength={6} value={otp} onChange={e => setOtp(e.target.value.replace(/\\D/g, ''))}
+                  <input id="otp-input" type="text" placeholder="123456" maxLength={6} value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
                     className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-1 focus:ring-primary/20 focus:outline-none text-center tracking-widest text-lg font-mono transition-all" />
                 </div>
               </div>
 
               {error && <ErrorBanner message={error} />}
+              {success && view !== 'forgot' && (
+                <div className="flex gap-2 px-3 py-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-400 text-xs">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{success}</span>
+                </div>
+              )}
+
+              <div className="flex justify-center mt-2">
+                <button
+                  type="button"
+                  disabled={resendTimer > 0 || loading}
+                  onClick={handleResendOtp}
+                  className={`text-sm font-medium ${resendTimer > 0 ? 'text-slate-400 cursor-not-allowed' : 'text-primary hover:underline'}`}
+                >
+                  {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
+                </button>
+              </div>
 
               <SubmitButton loading={loading} label="Verify Account" />
             </form>
