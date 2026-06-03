@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
 import { cacheMiddleware } from '../utils/cache.js';
+import { formatPaginatedResponse } from '../utils/pagination.js';
 
 const router = express.Router();
 
@@ -44,8 +45,7 @@ router.get('/posts', cacheMiddleware(60), async (req, res) => {
         },
         _count: {
           select: {
-            comments: true,
-            likes: true,
+            comments: true
           }
         }
       },
@@ -58,15 +58,7 @@ router.get('/posts', cacheMiddleware(60), async (req, res) => {
 
     const total = await prisma.blogPost.count({ where });
 
-    res.json({
-      posts,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
-    });
+    res.json(formatPaginatedResponse(posts, total, page, limit));
   } catch (error) {
     console.error('Error fetching blog posts:', error);
     res.status(500).json({ message: 'Failed to fetch blog posts' });
@@ -107,7 +99,6 @@ router.get('/posts/:id', cacheMiddleware(60), async (req, res) => {
         _count: {
           select: {
             comments: true,
-            likes: true,
           }
         }
       },
@@ -124,23 +115,21 @@ router.get('/posts/:id', cacheMiddleware(60), async (req, res) => {
     });
 
     let isLiked = false;
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    if (req.header('Authorization')) {
       try {
-        const token = authHeader.split(' ')[1];
-        const jwt = await import('jsonwebtoken');
-        const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'careerdream_secret_key');
-        const userId = parseInt(decoded.id);
-        const like = await prisma.articleLike.findUnique({
-          where: { userId_articleId: { userId, articleId: parseInt(req.params.id) } }
-        });
-        isLiked = !!like;
-      } catch (err) {
+        const token = req.header('Authorization').split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'careerdream_secret_key');
+        // Note: For this implementation, we removed individual user tracking,
+        // so we just return the aggregate likesCount.
+        // If we need user tracking, we would check Redis sets here.
+        isLiked = false; 
+      } catch (e) {
         // Token invalid or expired, ignore isLiked
       }
     }
 
-    res.json({ ...post, isLiked });
+    const { _count, ...postData } = post;
+    res.json({ ...postData, likesCount: _count.likes, isLiked });
   } catch (error) {
     console.error('Error fetching blog post:', error);
     res.status(500).json({ message: 'Failed to fetch blog post' });

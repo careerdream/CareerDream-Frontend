@@ -3,6 +3,8 @@ import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
+import { formatPaginatedResponse } from '../utils/pagination.js';
+
 const router = express.Router();
 
 // GET /api/admin/blog - List all posts
@@ -45,12 +47,7 @@ router.get('/', async (req, res) => {
 
     const total = await prisma.blogPost.count({ where });
 
-    res.json({
-      posts,
-      total,
-      page: parseInt(page),
-      totalPages: Math.ceil(total / take)
-    });
+    res.json(formatPaginatedResponse(posts, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch posts' });
   }

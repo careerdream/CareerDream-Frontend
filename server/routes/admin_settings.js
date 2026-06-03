@@ -3,6 +3,8 @@ import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
+import { formatPaginatedResponse } from '../utils/pagination.js';
+
 const router = express.Router();
 
 // Helper to log audit events
@@ -127,8 +129,7 @@ router.get('/audit-log', async (req, res) => {
     });
     
     const total = await prisma.systemAuditLog.count();
-    
-    res.json({ logs, total, page: parseInt(page), totalPages: Math.ceil(total / parseInt(limit)) });
+    res.json(formatPaginatedResponse(logs, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch audit log' });
   }

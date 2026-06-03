@@ -3,6 +3,8 @@ import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
+import { formatPaginatedResponse } from '../utils/pagination.js';
+
 const router = express.Router();
 
 // GET /api/admin/jobs - List all jobs (with filters, pagination, sort)
@@ -44,12 +46,7 @@ router.get('/', async (req, res) => {
 
     const total = await prisma.job.count({ where });
 
-    res.json({
-      jobs,
-      total,
-      page: parseInt(page),
-      totalPages: Math.ceil(total / take)
-    });
+    res.json(formatPaginatedResponse(jobs, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch jobs' });
   }

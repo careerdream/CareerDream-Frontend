@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma.js';
 import { verifyToken, verifyAdmin } from '../middleware/auth.js';
 import { cacheMiddleware } from '../utils/cache.js';
+import { formatPaginatedResponse } from '../utils/pagination.js';
 
 const router = express.Router();
 
@@ -11,11 +12,14 @@ const router = express.Router();
 // @desc    Get all jobs (with optional employer filter)
 router.get('/', cacheMiddleware(60), async (req, res) => {
   try {
-    const { employerId } = req.query;
+    const { employerId, page = 1, limit = 20 } = req.query;
     const where = {};
     if (employerId) {
       where.employerId = parseInt(employerId);
     }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const take = parseInt(limit);
 
     const jobs = await prisma.job.findMany({
       where,
@@ -23,9 +27,14 @@ router.get('/', cacheMiddleware(60), async (req, res) => {
         employer: true,
         stats: true
       },
-      orderBy: { id: 'desc' }
+      orderBy: { id: 'desc' },
+      skip,
+      take
     });
-    res.json(jobs);
+
+    const total = await prisma.job.count({ where });
+
+    res.json(formatPaginatedResponse(jobs, total, page, limit));
   } catch (error) {
     console.error('Fetch Jobs Error:', error);
     res.status(500).json({ message: 'Server error fetching jobs' });

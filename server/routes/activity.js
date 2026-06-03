@@ -1,6 +1,7 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
+import redisClient from '../lib/redis.js';
 
 const router = express.Router();
 
@@ -18,25 +19,23 @@ router.post('/', verifyToken, async (req, res) => {
     switch (type) {
       case 'like':
         if (!articleId) return res.status(400).json({ error: 'Article ID required' });
+        
         const targetArticle = await prisma.blogPost.findUnique({ where: { id: parseInt(articleId) } });
         if (!targetArticle) return res.status(404).json({ error: 'Article not found in database' });
-        
-        const existingLike = await prisma.articleLike.findUnique({
-          where: { userId_articleId: { userId, articleId: parseInt(articleId) } }
-        });
 
-        if (existingLike) {
-          await prisma.articleLike.delete({
-            where: { userId_articleId: { userId, articleId: parseInt(articleId) } }
-          });
-          const newCount = await prisma.articleLike.count({ where: { articleId: parseInt(articleId) } });
-          result = { liked: false, likeCount: newCount };
+        // Since we are moving to aggregate counts in Redis to avoid DB load, 
+        // we'll just increment. If Redis is down, we fallback to DB update.
+        if (redisClient.isReady) {
+          const newCount = await redisClient.incr(`article:likes:${articleId}`);
+          // Note: We don't track 'isLiked' state here because it's purely aggregate
+          result = { liked: true, likeCount: newCount + targetArticle.likesCount };
         } else {
-          await prisma.articleLike.create({
-            data: { userId, articleId: parseInt(articleId) }
+          // Fallback to direct DB update if Redis is unavailable
+          await prisma.blogPost.update({
+            where: { id: parseInt(articleId) },
+            data: { likesCount: { increment: 1 } }
           });
-          const newCount = await prisma.articleLike.count({ where: { articleId: parseInt(articleId) } });
-          result = { liked: true, likeCount: newCount };
+          result = { liked: true, likeCount: targetArticle.likesCount + 1 };
         }
         break;
 

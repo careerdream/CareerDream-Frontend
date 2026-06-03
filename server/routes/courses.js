@@ -1,6 +1,7 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
 import { cacheMiddleware } from '../utils/cache.js';
+import { formatPaginatedResponse } from '../utils/pagination.js';
 
 const router = express.Router();
 
@@ -8,8 +9,17 @@ const router = express.Router();
 // @desc    Get all courses
 router.get('/', cacheMiddleware(60), async (req, res) => {
   try {
-    const courses = await prisma.course.findMany();
-    res.json(courses);
+    const { page = 1, limit = 20 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const take = parseInt(limit);
+
+    const courses = await prisma.course.findMany({
+      skip,
+      take
+    });
+    const total = await prisma.course.count();
+
+    res.json(formatPaginatedResponse(courses, total, page, limit));
   } catch (error) {
     console.error('Fetch Courses Error:', error);
     res.status(500).json({ message: 'Server error fetching courses' });

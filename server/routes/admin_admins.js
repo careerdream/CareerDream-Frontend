@@ -3,6 +3,8 @@ import pkg from '@prisma/client';
 import bcrypt from 'bcryptjs';
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
+import { formatPaginatedResponse } from '../utils/pagination.js';
+
 const router = express.Router();
 
 // ── DEFAULT ROLE PERMISSIONS ──────────────────────────────────────────────────
@@ -161,7 +163,7 @@ router.get('/', async (req, res) => {
     }));
 
     const total = await prisma.adminProfile.count({ where: { ...(roleId && { roleId: parseInt(roleId) }) } });
-    res.json({ admins: enriched, total, page: parseInt(page), totalPages: Math.ceil(total / parseInt(limit)) });
+    res.json(formatPaginatedResponse(enriched, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch admins' });
   }
@@ -316,7 +318,7 @@ router.get('/audit-log', async (req, res) => {
       prisma.adminAuditLog.count({ where })
     ]);
 
-    res.json({ logs, total, page: parseInt(page), totalPages: Math.ceil(total / parseInt(limit)) });
+    res.json(formatPaginatedResponse(logs, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch audit log' });
   }

@@ -3,6 +3,8 @@ import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
+import { formatPaginatedResponse } from '../utils/pagination.js';
+
 const router = express.Router();
 
 // GET /api/admin/courses - List all courses (with filters)
@@ -46,12 +48,7 @@ router.get('/', async (req, res) => {
 
     const total = await prisma.course.count({ where });
 
-    res.json({
-      courses,
-      total,
-      page: parseInt(page),
-      totalPages: Math.ceil(total / take)
-    });
+    res.json(formatPaginatedResponse(courses, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch courses' });
   }

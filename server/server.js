@@ -9,6 +9,10 @@ import { performDatabaseSetup } from './utils/setup.js';
 import { apiLimiter, authLimiter, testLimiter } from './middleware/rateLimiter.js';
 import { securityHeaders } from './middleware/securityHeaders.js';
 import { verifyToken, verifyAdmin } from './middleware/auth.js';
+import { setupLogger } from './utils/logger.js';
+
+// Setup environment-based logging first
+setupLogger();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -105,7 +109,7 @@ app.use('/api/admin/settings', verifyToken, verifyAdmin, adminSettingsRoutes);
 app.use('/api/admin/bulk', verifyToken, verifyAdmin, adminBulkRoutes);
 app.use('/api/admin/admins', verifyToken, verifyAdmin, adminAdminsRoutes);
 app.use('/api/admin', verifyToken, verifyAdmin, adminRoutes);
-app.use('/api/admin/playground', adminPlaygroundRoutes);
+app.use('/api/admin/playground', verifyToken, verifyAdmin, adminPlaygroundRoutes);
 
 // Serve uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -206,6 +210,9 @@ app.use(express.static(path.join(__dirname, '../dist')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
+
+// Start the background likes sync service (flushes every 5 minutes)
+startLikesSyncService();
 
 // Start Server
 const PORT = process.env.PORT || 5000;

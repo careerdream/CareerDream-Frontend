@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
+import { tokenBucketLimiter } from '../middleware/tokenBucketLimiter.js';
 import axios from 'axios';
 
 import path from 'path';
@@ -237,6 +238,7 @@ router.post('/register', [
 // LOGIN
 // ──────────────────────────────────────────────
 router.post('/login', [
+  tokenBucketLimiter({ capacity: 10, refillRate: 1 }),
   body('email').trim().isEmail().withMessage('Invalid email').toLowerCase(),
   body('password').notEmpty().withMessage('Password is required')
 ], async (req, res) => {
@@ -339,7 +341,9 @@ router.post('/recruiter/register', async (req, res) => {
 // ──────────────────────────────────────────────
 // RECRUITER LOGIN
 // ──────────────────────────────────────────────
-router.post('/recruiter/login', async (req, res) => {
+router.post('/recruiter/login', [
+  tokenBucketLimiter({ capacity: 10, refillRate: 1 })
+], async (req, res) => {
   try {
     const { email, password } = req.body;
 

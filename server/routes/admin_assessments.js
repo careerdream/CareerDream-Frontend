@@ -3,6 +3,8 @@ import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
+import { formatPaginatedResponse } from '../utils/pagination.js';
+
 const router = express.Router();
 
 // GET /api/admin/assessments - List all assessments
@@ -34,12 +36,7 @@ router.get('/', async (req, res) => {
 
     const total = await prisma.assessment.count({ where });
 
-    res.json({
-      assessments,
-      total,
-      page: parseInt(page),
-      totalPages: Math.ceil(total / take)
-    });
+    res.json(formatPaginatedResponse(assessments, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch assessments' });
   }

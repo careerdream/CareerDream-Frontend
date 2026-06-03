@@ -3,6 +3,8 @@ import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
+import { formatPaginatedResponse } from '../utils/pagination.js';
+
 const router = express.Router();
 
 // GET /api/admin/recruiters - List all recruiters (users with role 'recruiter' and their company)
@@ -65,12 +67,7 @@ router.get('/', async (req, res) => {
     // Post-query sorting if needed
     if (sort === 'jobs_desc') formatted.sort((a, b) => b.jobsPosted - a.jobsPosted);
 
-    res.json({
-      recruiters: formatted,
-      total,
-      page: parseInt(page),
-      totalPages: Math.ceil(total / take)
-    });
+    res.json(formatPaginatedResponse(formatted, total, page, limit));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch recruiters' });
   }
