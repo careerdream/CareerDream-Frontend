@@ -303,11 +303,27 @@ export function NewsDetailPage() {
 
             <div className="flex flex-wrap items-center justify-between gap-6 pb-12 border-b border-white/10 mb-12">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xl shadow-lg">
-                  {post.author.avatar ? (
-                    <img src={post.author.avatar} alt={post.author.name} className="w-full h-full rounded-2xl object-cover" />
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xl shadow-lg overflow-hidden">
+                  {post.author.name === 'CareerDream Admin' ? (
+                    <span className="text-white font-bold">CD</span>
+                  ) : post.author.avatar ? (
+                    <>
+                      <img 
+                        src={post.author.avatar.startsWith('http') || post.author.avatar.startsWith('/') ? post.author.avatar : `/${post.author.avatar}`} 
+                        alt={post.author.name} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          const nextSibling = (e.target as HTMLImageElement).nextElementSibling;
+                          if (nextSibling) {
+                            (nextSibling as HTMLElement).style.display = 'flex';
+                          }
+                        }}
+                      />
+                      <span className="text-white font-bold hidden">{post.author.name.charAt(0)}</span>
+                    </>
                   ) : (
-                    post.author.name.charAt(0)
+                    <span className="text-white font-bold">{post.author.name.charAt(0)}</span>
                   )}
                 </div>
                 <div>

@@ -10,6 +10,7 @@ import { apiLimiter, authLimiter, testLimiter } from './middleware/rateLimiter.j
 import { securityHeaders } from './middleware/securityHeaders.js';
 import { verifyToken, verifyAdmin } from './middleware/auth.js';
 import { setupLogger } from './utils/logger.js';
+import { startLikesSyncService } from './services/likesSync.js';
 
 // Setup environment-based logging first
 setupLogger();
@@ -85,6 +86,7 @@ import adminBulkRoutes from './routes/admin_bulk.js';
 import adminAdminsRoutes from './routes/admin_admins.js';
 import resumeRoutes from './routes/resume.js';
 import playgroundRoutes from './routes/playground.js';
+import subscribeRoutes from './routes/subscribe.js';
 
 // Apply stricter rate limiting to authentication routes
 app.use('/api/auth', authLimiter, authRoutes);
@@ -97,6 +99,7 @@ app.use('/api/blog', blogRoutes);
 app.use('/api/recruiter', recruiterRoutes);
 app.use('/api/issues', issuesRoutes);
 app.use('/api/activity', activityRoutes);
+app.use('/api/subscribe', subscribeRoutes);
 // Protected Admin Routes
 app.use('/api/admin/jobs', verifyToken, verifyAdmin, adminJobRoutes);
 app.use('/api/admin/courses', verifyToken, verifyAdmin, adminCourseRoutes);

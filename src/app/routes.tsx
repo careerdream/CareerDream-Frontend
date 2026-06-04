@@ -18,6 +18,7 @@ const AboutPage = React.lazy(() => import("./components/AboutPage").then(module 
 const PrivacyPolicyPage = React.lazy(() => import("./components/PrivacyPolicyPage").then(module => ({ default: module.PrivacyPolicyPage })));
 const TermsOfServicePage = React.lazy(() => import("./components/TermsOfServicePage").then(module => ({ default: module.TermsOfServicePage })));
 const CookiePolicyPage = React.lazy(() => import("./components/CookiePolicyPage").then(module => ({ default: module.CookiePolicyPage })));
+const UnsubscribePage = React.lazy(() => import("./components/UnsubscribePage").then(module => ({ default: module.UnsubscribePage })));
 const SecurityPage = React.lazy(() => import("./components/SecurityPage").then(module => ({ default: module.SecurityPage })));
 const FraudAlertPage = React.lazy(() => import("./components/FraudAlertPage").then(module => ({ default: module.FraudAlertPage })));
 const CourseMaterialPage = React.lazy(() => import("./components/CourseMaterialPage").then(module => ({ default: module.CourseMaterialPage })));
@@ -33,11 +34,13 @@ const ReportIssuePage = React.lazy(() => import("./components/ReportIssuePage").
 const AdminIssuesPage = React.lazy(() => import("./components/AdminIssuesPage").then(module => ({ default: module.AdminIssuesPage })));
 const SettingsPage = React.lazy(() => import("./components/SettingsPage").then(module => ({ default: module.SettingsPage })));
 import { AdminRoute } from "./components/AdminRoute";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 const AdminDashboard = React.lazy(() => import("./components/AdminDashboard").then(module => ({ default: module.AdminDashboard })));
 const CertificatePage = React.lazy(() => import("./components/CertificatePage").then(module => ({ default: module.CertificatePage })));
 const CertificatesPage = React.lazy(() => import("./components/CertificatesPage").then(module => ({ default: module.CertificatesPage })));
 const CareersPage = React.lazy(() => import("./components/CareersPage").then(module => ({ default: module.CareersPage })));
 const ContactPage = React.lazy(() => import("./components/ContactPage").then(module => ({ default: module.ContactPage })));
+const PricingPage = React.lazy(() => import("./components/PricingPage").then(module => ({ default: module.PricingPage })));
 
 export const router = createBrowserRouter([
   {
@@ -45,12 +48,14 @@ export const router = createBrowserRouter([
     Component: Root,
     children: [
       { index: true, Component: LandingPage },
-      { path: "playground", Component: PlaygroundPage },
-      { path: "playground/:slug", Component: CodingWorkspace },
+      { path: "pricing", Component: PricingPage },
+      { path: "playground", element: <ProtectedRoute><PlaygroundPage /></ProtectedRoute> },
+      { path: "playground/:slug", element: <ProtectedRoute><CodingWorkspace /></ProtectedRoute> },
       { path: "about", Component: AboutPage },
       { path: "privacy-policy", Component: PrivacyPolicyPage },
       { path: "terms-of-service", Component: TermsOfServicePage },
       { path: "cookie-policy", Component: CookiePolicyPage },
+      { path: "unsubscribe", Component: UnsubscribePage },
       { path: "security", Component: SecurityPage },
       { path: "fraud-alert", Component: FraudAlertPage },
       { path: "jobs", Component: JobsPage },
@@ -59,16 +64,16 @@ export const router = createBrowserRouter([
       { path: "admin/issues", element: <AdminRoute><AdminIssuesPage /></AdminRoute> },
       { path: "admin/dashboard", element: <AdminRoute><AdminDashboard /></AdminRoute> },
       { path: "learn", Component: LearningHub },
-      { path: "learn/:id", Component: CoursePage },
-      { path: "learn-path/:courseId", Component: CourseMaterialPage },
+      { path: "learn/:id", element: <ProtectedRoute><CoursePage /></ProtectedRoute> },
+      { path: "learn-path/:courseId", element: <CourseMaterialPage /> },
       { path: "assessments", Component: AssessmentsPage },
-      { path: "assessments/:id", Component: TestPage },
-      { path: "assessments/:id/leaderboard", Component: LeaderboardPage },
-      { path: "dashboard", Component: Dashboard },
-      { path: "certificates", Component: CertificatesPage },
-      { path: "ai-match", Component: AIResumePage },
-      { path: "profile", Component: ProfilePage },
-      { path: "settings", Component: SettingsPage },
+      { path: "assessments/:id", element: <TestPage /> },
+      { path: "assessments/:id/leaderboard", element: <ProtectedRoute><LeaderboardPage /></ProtectedRoute> },
+      { path: "dashboard", element: <ProtectedRoute><Dashboard /></ProtectedRoute> },
+      { path: "certificates", element: <ProtectedRoute><CertificatesPage /></ProtectedRoute> },
+      { path: "ai-match", element: <ProtectedRoute><AIResumePage /></ProtectedRoute> },
+      { path: "profile", element: <ProtectedRoute><ProfilePage /></ProtectedRoute> },
+      { path: "settings", element: <ProtectedRoute><SettingsPage /></ProtectedRoute> },
       { path: "news", Component: NewsPage },
       { path: "news/:id", Component: NewsDetailPage },
       { path: "report-issue", Component: ReportIssuePage },

@@ -9,10 +9,8 @@ export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { user, isLoggedIn, isAdmin, logout, notifications, markAsRead, clearNotifications } = useApp();
+  const { user, isLoggedIn, isAdmin, logout, notifications, markAsRead, clearNotifications, setAuthOpen, setAuthTab } = useApp();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authTab, setAuthTab] = useState<'login' | 'signup'>('login');
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
   
@@ -23,6 +21,7 @@ export function Navbar() {
     { path: '/learn', label: 'Courses', icon: BookOpen },
     { path: '/assessments', label: 'Assessments', icon: ClipboardCheck },
     { path: '/playground', label: 'Playground', icon: Code },
+    // { path: '/pricing', label: 'Pricing', icon: TrendingUp },
     { path: '/ai-match', label: 'AI Match', icon: Brain, badge: 'AI' },
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   ];
@@ -382,12 +381,6 @@ export function Navbar() {
           </div>
         </div>
       )}
-
-      <AuthModal 
-        isOpen={authOpen} 
-        onClose={() => setAuthOpen(false)} 
-        defaultTab={authTab}
-      />
 
       {/* Sticky Bottom Navigation Bar (Mobile View) */}
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border/40 h-16 flex items-center justify-around px-2 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] select-none">

@@ -109,6 +109,12 @@ interface AppContextType extends AppState {
   logout: () => Promise<void>;
   addCertificate: (name: string, authority: string, issuedAt: string, expiryDate?: string) => Promise<void>;
   updateSkillProficiency: (skillName: string, level: number) => Promise<void>;
+  isAuthOpen: boolean;
+  setAuthOpen: (open: boolean) => void;
+  authTab: 'login' | 'signup';
+  setAuthTab: (tab: 'login' | 'signup') => void;
+  isUnlockModalOpen: boolean;
+  setUnlockModalOpen: (open: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -155,6 +161,10 @@ const DEFAULT_STATE: AppState = {
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const [isAuthOpen, setAuthOpen] = useState(false);
+  const [authTab, setAuthTab] = useState<'login' | 'signup'>('login');
+  const [isUnlockModalOpen, setUnlockModalOpen] = useState(false);
+
   const [state, setState] = useState<AppState>(() => {
     try {
       const saved = localStorage.getItem('careerdream-state');
@@ -213,11 +223,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           api.get('/assessments')
         ]);
         
+        const extractData = (res: any) => Array.isArray(res) ? res : (res?.data || []);
         setState(prev => ({ 
           ...prev, 
-          jobs: jobsData, 
-          courses: coursesData, 
-          assessments: assessmentsData,
+          jobs: extractData(jobsData), 
+          courses: extractData(coursesData), 
+          assessments: extractData(assessmentsData),
           isLoading: false
         }));
       } catch (error) {
@@ -715,6 +726,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={{
       ...state,
+      isAuthOpen,
+      setAuthOpen,
+      authTab,
+      setAuthTab,
+      isUnlockModalOpen,
+      setUnlockModalOpen,
       login,
       signup,
       loginWithGoogle,

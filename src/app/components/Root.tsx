@@ -15,6 +15,24 @@ function ScrollToTop() {
   return null;
 }
 
+import { AuthModal } from './AuthModal';
+import { UnlockModal } from './UnlockModal';
+import { useApp } from '../context/AppContext';
+
+function GlobalModals() {
+  const { isAuthOpen, setAuthOpen, authTab, isUnlockModalOpen, setUnlockModalOpen } = useApp();
+  return (
+    <>
+      <AuthModal 
+        isOpen={isAuthOpen} 
+        onClose={() => setAuthOpen(false)} 
+        defaultTab={authTab}
+      />
+      <UnlockModal />
+    </>
+  );
+}
+
 function AppShell() {
   const { pathname } = useLocation();
   const isWorkspace = pathname.startsWith('/playground/');
@@ -24,6 +42,7 @@ function AppShell() {
     return (
       <div className="h-screen bg-background flex flex-col overflow-hidden">
         <ScrollToTop />
+        <GlobalModals />
         <main className="flex-1 overflow-hidden">
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>}><Outlet /></Suspense>
         </main>
@@ -34,6 +53,7 @@ function AppShell() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <ScrollToTop />
+      <GlobalModals />
       <Navbar />
       <main className="flex-1 pb-16 lg:pb-0">
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>}><Outlet /></Suspense>

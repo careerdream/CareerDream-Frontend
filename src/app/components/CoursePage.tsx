@@ -107,9 +107,8 @@ export function CoursePage() {
             {/* Progress bar (if enrolled) */}
             {isEnrolled && (
               <div className="p-5 rounded-2xl border border-border bg-card">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">Your Progress</h3>
-                  <span className="text-primary font-bold">{progress}%</span>
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 bg-green-500/20 text-green-600 dark:text-green-400 text-xs font-black uppercase tracking-widest rounded-md">CareerDream Original</span>
                 </div>
                 <div className="h-3 bg-muted rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all" style={{ width: `${progress}%` }} />
@@ -248,8 +247,7 @@ export function CoursePage() {
               <div className={`h-40 bg-gradient-to-br ${course.color} flex items-center justify-center text-6xl`}>{course.image}</div>
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-5">
-                  <span className="text-4xl font-black bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">FREE</span>
-                  <span className="text-muted-foreground line-through text-sm opacity-50">$199.99</span>
+                  <span className="px-3 py-1 bg-green-500/20 text-green-600 dark:text-green-400 text-xs font-black uppercase tracking-widest rounded-md">CareerDream Original</span>
                 </div>
                 {isEnrolled ? (
                   <div className="space-y-3">

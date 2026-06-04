@@ -62,9 +62,7 @@ export function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const categories = [
-    'Indian IT', 'Global Tech', 'Career Advice', 
-    'AI/ML', 'Cloud', 'Full Stack', 
-    'Data Science', 'DevOps', 'Cybersecurity', 'IT Career'
+    'Career', 'IT/Tech', 'Lifestyle', 'Events'
   ];
 
   useEffect(() => {
@@ -78,8 +76,14 @@ export function NewsPage() {
       const response = await api.get(
         `/blog/posts?page=${currentPage}&limit=6${categoryParam}`
       );
-      setPosts(response.posts);
-      setTotalPages(response.pagination.pages || 1);
+      
+      const fetchedPosts = response.posts || response.data || [];
+      if (fetchedPosts.length === 0) {
+        throw new Error('No posts returned from API, using fallback data');
+      }
+
+      setPosts(fetchedPosts);
+      setTotalPages(response.pagination?.pages || 1);
     } catch (error) {
       console.error('Failed to fetch blog posts from API, falling back to static posts:', error);
       let filtered = fallbackPosts;

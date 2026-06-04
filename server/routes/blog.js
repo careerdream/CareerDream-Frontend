@@ -4,6 +4,7 @@ import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
 import { cacheMiddleware } from '../utils/cache.js';
 import { formatPaginatedResponse } from '../utils/pagination.js';
+import { notifySubscribers } from '../services/emailService.js';
 
 const router = express.Router();
 
@@ -179,6 +180,9 @@ router.post('/posts', verifyToken, async (req, res) => {
       },
     });
 
+    // Notify subscribers
+    notifySubscribers(title, `https://careerdream.in/news/${post.id}`, excerpt);
+
     res.status(201).json(post);
   } catch (error) {
     console.error('Error creating blog post:', error);
@@ -340,29 +344,35 @@ router.post('/subscribe', async (req, res) => {
 <div style="background:#f4f4f5;padding:24px 0;">
   <div class="container">
     <div class="header">
-      <div class="logo-box"><span class="logo-text">CD</span></div>
-      <p class="brand">CareerDream</p>
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td align="center">
+            <div class="logo-box" style="margin-bottom:0; display:inline-block; vertical-align:middle; margin-right:15px;"><span class="logo-text">CD</span></div>
+            <p class="brand" style="display:inline-block; vertical-align:middle; margin:0;">CareerDream</p>
+          </td>
+        </tr>
+      </table>
     </div>
     <div class="content">
       <h2 class="title">You're on the list!</h2>
       <p class="subtitle">Welcome to the CareerDream newsletter. You'll be the first to know about exciting updates from India's fastest-growing IT career platform.</p>
       <div class="features">
         <div class="feature">
-          <div class="feature-icon" style="background:#ecfdf5;"><img src="https://img.icons8.com/ios-filled/50/10b981/news.png" alt="Blog" width="24" height="24" style="vertical-align:middle;border:none;" /></div>
+          <div class="feature-icon" style="background:#ecfdf5;"><img src="https://cdn-icons-png.flaticon.com/512/1043/1043305.png" alt="Blog" width="20" height="20" style="vertical-align:middle;border:none;" /></div>
           <div class="feature-text">
             <h4>Blog &amp; Articles</h4>
             <p>Expert career advice, IT industry insights, and how-to guides delivered to your inbox.</p>
           </div>
         </div>
         <div class="feature">
-          <div class="feature-icon" style="background:#eff6ff;"><img src="https://img.icons8.com/ios-filled/50/3b82f6/new-job.png" alt="Jobs" width="24" height="24" style="vertical-align:middle;border:none;" /></div>
+          <div class="feature-icon" style="background:#eff6ff;"><img src="https://cdn-icons-png.flaticon.com/512/2910/2910791.png" alt="Jobs" width="20" height="20" style="vertical-align:middle;border:none;" /></div>
           <div class="feature-text">
             <h4>New Job Alerts</h4>
             <p>Be the first to know about top remote, government, and global IT job opportunities.</p>
           </div>
         </div>
         <div class="feature">
-          <div class="feature-icon" style="background:#faf5ff;"><img src="https://img.icons8.com/ios-filled/50/a855f7/graduation-cap.png" alt="Courses" width="24" height="24" style="vertical-align:middle;border:none;" /></div>
+          <div class="feature-icon" style="background:#faf5ff;"><img src="https://cdn-icons-png.flaticon.com/512/3362/3362095.png" alt="Courses" width="20" height="20" style="vertical-align:middle;border:none;" /></div>
           <div class="feature-text">
             <h4>New Courses</h4>
             <p>Get notified when new AI/ML, Cloud, Full Stack, and DevOps courses go live.</p>
@@ -383,42 +393,42 @@ router.post('/subscribe', async (req, res) => {
               <tr>
                 <td style="padding:0 8px;">
                   <a href="https://whatsapp.com/channel/0029VbCUhAq2kNFsL5vFwE1N" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/whatsapp--v1.png" alt="WhatsApp" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" width="20" height="20" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <td style="padding:0 8px;">
                   <a href="mailto:info@careerdream.in" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/new-post.png" alt="Email" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="Email" width="20" height="20" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <td style="padding:0 8px;">
                   <a href="https://www.instagram.com/careerdream.in/" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new--v1.png" alt="Instagram" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" width="20" height="20" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <td style="padding:0 8px;">
                   <a href="https://t.me/careerdream365" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/telegram-app.png" alt="Telegram" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram" width="20" height="20" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <td style="padding:0 8px;">
                   <a href="https://www.facebook.com/profile.php?id=61572023950143" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/facebook-new.png" alt="Facebook" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" width="20" height="20" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <td style="padding:0 8px;">
                   <a href="https://x.com/CDream85874" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/twitterx--v1.png" alt="Twitter" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" width="20" height="20" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <td style="padding:0 8px;">
                   <a href="https://youtube.com/@careerdream365" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/youtube-play.png" alt="YouTube" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube" width="20" height="20" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
                 <td style="padding:0 8px;">
                   <a href="https://linkedin.com/company/careerdream.in" style="display:block; width:40px; height:40px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; text-align:center; text-decoration:none; line-height:40px;">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/linkedin.png" alt="LinkedIn" width="22" height="22" style="display:inline-block;vertical-align:middle;border:none;" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/733/733561.png" alt="LinkedIn" width="20" height="20" style="display:inline-block;vertical-align:middle;border:none;" />
                   </a>
                 </td>
               </tr>

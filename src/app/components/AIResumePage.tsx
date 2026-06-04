@@ -12,31 +12,81 @@ export function AIResumePage() {
   const [dragging, setDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);
+  const [parsingProgress, setParsingProgress] = useState(0);
+  const [parsingStep, setParsingStep] = useState('Analyzing Resume...');
   const [parsed, setParsed] = useState(false);
   const [extractedSkills, setExtractedSkills] = useState<string[]>(resumeSkills);
   const [resumeDetails, setResumeDetails] = useState<ResumeDetails | null>(null);
   const [matchResults, setMatchResults] = useState<ReturnType<typeof matchJobsToResume>>([]);
   const [careerInsights, setCareerInsights] = useState<ReturnType<typeof getCareerInsights>>([]);
 
-  const processResume = async (text: string) => {
-    const details = parseResumeDetails(text);
-    const matches = matchJobsToResume(details.skills, jobs.map(j => ({ id: j.id, title: j.title, company: j.company, skills: j.skills })));
-    const insights = getCareerInsights(details.skills);
-    
-    setResumeDetails(details);
-    setExtractedSkills(details.skills);
-    setMatchResults(matches);
-    setCareerInsights(insights);
-    setResumeSkills(details.skills);
-    setParsed(true);
+  const handleFile = (f: File) => {
+    setFile(f);
   };
 
-  const handleFile = async (f: File) => {
-    setFile(f);
+  const analyzeResume = async () => {
+    if (!file) return;
     setParsing(true);
-    const text = await simulateResumeParse(f);
-    await processResume(text);
-    setParsing(false);
+    setParsingProgress(0);
+    setParsingStep('Analyzing Resume...');
+
+    const steps = [
+      { text: 'Analyzing Resume...', progress: 25 },
+      { text: 'Extracting Skills...', progress: 50 },
+      { text: 'Fetching Job Matches...', progress: 75 },
+      { text: 'Recommending Relevant Courses...', progress: 90 }
+    ];
+
+    let currentStep = 0;
+    const progressInterval = setInterval(() => {
+      currentStep++;
+      if (currentStep < steps.length) {
+        setParsingStep(steps[currentStep].text);
+        setParsingProgress(steps[currentStep].progress);
+      }
+    }, 1500);
+    
+    try {
+      const formData = new FormData();
+      formData.append('resume', file);
+
+      const token = localStorage.getItem('authToken');
+      const { BASE_URL } = await import('../utils/api');
+      
+      const response = await fetch(`${BASE_URL}/resume/analyze`, {
+        method: 'POST',
+        body: formData,
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to analyze resume');
+      }
+
+      const data = await response.json();
+      
+      clearInterval(progressInterval);
+      setParsingStep('Finalizing Results...');
+      setParsingProgress(100);
+
+      setTimeout(() => {
+        if (data.success) {
+          setResumeDetails(data.resumeDetails);
+          setExtractedSkills(data.resumeDetails.skills);
+          setMatchResults(data.matchResults);
+          setCareerInsights(data.careerInsights);
+          setResumeSkills(data.resumeDetails.skills);
+          setParsed(true);
+          setParsing(false);
+        }
+      }, 500);
+    } catch (error) {
+      clearInterval(progressInterval);
+      setParsing(false);
+      console.error('Error analyzing resume:', error);
+      alert('Failed to analyze resume. Please try again.');
+    }
   };
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -100,11 +150,14 @@ export function AIResumePage() {
                     <Loader2 className="w-8 h-8 text-primary animate-spin" />
                   </div>
                   <div>
-                    <p className="font-semibold text-lg mb-1">Analyzing your resume...</p>
-                    <p className="text-muted-foreground text-sm">Extracting skills, experience, and matching to jobs</p>
+                    <p className="font-semibold text-lg mb-1">{parsingStep}</p>
+                    <p className="text-muted-foreground text-sm">Please wait while our AI processes your document</p>
                   </div>
-                  <div className="w-full bg-muted rounded-full h-2 max-w-xs mx-auto overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-primary to-accent rounded-full animate-pulse w-3/4" />
+                  <div className="w-full bg-muted rounded-full h-2 max-w-xs mx-auto overflow-hidden relative">
+                    <div 
+                      className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500 ease-out"
+                      style={{ width: `${parsingProgress}%` }}
+                    />
                   </div>
                 </div>
               ) : (
@@ -117,9 +170,18 @@ export function AIResumePage() {
                     <p className="text-muted-foreground">PDF, DOCX, or TXT • Up to 5MB</p>
                   </div>
                   {file && (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm">
-                      <FileText className="w-4 h-4" />
-                      {file.name}
+                    <div className="flex flex-col items-center gap-4 mt-4">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm">
+                        <FileText className="w-4 h-4" />
+                        {file.name}
+                      </div>
+                      <button 
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); analyzeResume(); }}
+                        className="relative z-10 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 flex items-center gap-2"
+                      >
+                        <Brain className="w-5 h-5" />
+                        Analyze Resume
+                      </button>
                     </div>
                   )}
                 </div>

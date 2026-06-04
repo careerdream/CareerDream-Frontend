@@ -14,7 +14,14 @@ const leaderboard = [
 ];
 
 export function AssessmentsPage() {
-  const { testResults, assessments: apiAssessments, isLoading: isAppLoading } = useApp();
+  const { testResults, assessments: apiAssessments, isLoading: isAppLoading, isLoggedIn, setUnlockModalOpen } = useApp();
+
+  const handleProtectedClick = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      setUnlockModalOpen(true);
+    }
+  };
 
   const avgScore = testResults.length
     ? Math.round(testResults.reduce((s, r) => s + r.score, 0) / testResults.length)
@@ -200,7 +207,7 @@ export function AssessmentsPage() {
 
             {/* View Certificates Button */}
             <div className="space-y-3">
-              <Link to="/certificates" className="flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all">
+              <Link to="/certificates" onClick={handleProtectedClick} className="flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all">
                 <Trophy className="w-5 h-5" />
                 View My Certificates
               </Link>

@@ -1,6 +1,6 @@
 import { SEO } from "./SEO";
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router';
+import { useState, useMemo, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router';
 import { Filter, MapPin, DollarSign, Briefcase, Clock, Bookmark, Search, ChevronDown, X, SlidersHorizontal, Loader2, Share2, Check, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { JobType, ExperienceLevel } from '../data/jobs';
@@ -21,8 +21,15 @@ const difficultyColor: Record<string, string> = {
 };
 
 export function JobsPage() {
-  const { savedJobIds, appliedJobIds, toggleSaveJob, jobs, isLoading, isLoggedIn } = useApp();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const { savedJobIds, appliedJobIds, toggleSaveJob, jobs, isLoading, isLoggedIn, setUnlockModalOpen } = useApp();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q) setSearchQuery(q);
+  }, [searchParams]);
+
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [selectedLevels, setSelectedLevels] = useState<Set<string>>(new Set());
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -348,7 +355,16 @@ export function JobsPage() {
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                           <div>
                             <div className="flex items-center gap-3 mb-2">
-                              <Link to={`/jobs/${job.id}`} className="text-2xl font-black tracking-tight hover:text-primary transition-colors leading-tight">
+                              <Link 
+                                to={`/jobs/${job.id}`} 
+                                onClick={(e) => {
+                                  if (!isLoggedIn) {
+                                    e.preventDefault();
+                                    setUnlockModalOpen(true);
+                                  }
+                                }}
+                                className="text-2xl font-black tracking-tight hover:text-primary transition-colors leading-tight"
+                              >
                                 {job.title}
                               </Link>
                               {appliedJobIds.includes(job.id) && (
@@ -415,6 +431,12 @@ export function JobsPage() {
                           </div>
                           <Link
                             to={`/jobs/${job.id}`}
+                            onClick={(e) => {
+                              if (!isLoggedIn) {
+                                e.preventDefault();
+                                setUnlockModalOpen(true);
+                              }
+                            }}
                             className="ml-auto px-8 py-3 rounded-2xl bg-foreground text-background font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform group-hover:translate-x-1 shadow-xl whitespace-nowrap"
                           >
                             View Role Details

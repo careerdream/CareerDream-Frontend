@@ -25,7 +25,14 @@ export function LearningHub() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [level, setLevel] = useState('All');
-  const { enrolledCourseIds, enrollInCourse, courseProgress, courses, isLoading } = useApp();
+  const { enrolledCourseIds, enrollInCourse, courseProgress, courses, isLoading, isLoggedIn, setUnlockModalOpen } = useApp();
+
+  const handleProtectedClick = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      setUnlockModalOpen(true);
+    }
+  };
 
   const filtered = courses.filter(c => {
     const matchSearch = !search || c.title.toLowerCase().includes(search.toLowerCase()) || c.instructor.toLowerCase().includes(search.toLowerCase());
@@ -92,7 +99,11 @@ export function LearningHub() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {learningPaths.map(path => (
-              <div key={path.name} className="group p-6 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
+              <Link 
+                key={path.name} 
+                to={`/learn-path/${path.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} 
+                className="group p-6 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 block"
+              >
                 <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${path.color} flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform shadow-lg`}>
                   {path.icon}
                 </div>
@@ -106,10 +117,10 @@ export function LearningHub() {
                     <span key={s} className="px-2 py-0.5 text-xs rounded-full bg-primary/10 text-primary">{s}</span>
                   ))}
                 </div>
-                <Link to={`/learn-path/${path.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="w-full py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all text-sm font-medium flex items-center justify-center gap-1 group-hover:shadow-lg">
+                <div className="w-full py-2 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all text-sm font-medium flex items-center justify-center gap-1 group-hover:shadow-lg">
                   View Path <ChevronRight className="w-4 h-4" />
-                </Link>
-              </div>
+                </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -122,7 +133,7 @@ export function LearningHub() {
               {courses.filter(c => enrolledCourseIds.includes(c.id)).map(course => {
                 const progress = courseProgress[course.id] ?? 0;
                 return (
-                  <Link key={course.id} to={`/learn/${course.id}`}
+                  <Link key={course.id} to={`/learn/${course.id}`} onClick={handleProtectedClick}
                     className="group rounded-2xl border border-border bg-card hover:border-primary hover:shadow-xl hover:shadow-primary/10 transition-all overflow-hidden">
                     <div className={`h-32 bg-gradient-to-br ${course.color} flex items-center justify-center text-5xl relative`}>
                       {course.image}
@@ -175,7 +186,7 @@ export function LearningHub() {
                 const isEnrolled = enrolledCourseIds.includes(course.id);
                 const progress = courseProgress[course.id];
                 return (
-                  <Link key={course.id} to={`/learn/${course.id}`}
+                  <Link key={course.id} to={`/learn/${course.id}`} onClick={handleProtectedClick}
                     className="group rounded-2xl border border-border bg-card overflow-hidden hover:border-primary hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
                     {/* Thumbnail */}
                     <div className={`relative h-48 bg-gradient-to-br ${course.color} flex items-center justify-center`}>
@@ -238,10 +249,9 @@ export function LearningHub() {
                             {isEnrolled ? (
                               <span className="text-sm font-bold text-green-500">Enrolled ✓</span>
                             ) : (
-                              <>
-                                <span className="text-[10px] font-black text-muted-foreground line-through opacity-50">$199.99</span>
-                                <span className="text-lg font-black bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">FREE</span>
-                              </>
+                              <div className="flex items-center gap-2">
+                                <span className="px-2 py-1 bg-green-500/20 text-green-600 dark:text-green-400 text-[10px] font-black uppercase tracking-widest rounded-md">Free</span>
+                              </div>
                             )}
                           </div>
                       </div>
@@ -265,7 +275,7 @@ export function LearningHub() {
               </div>
             ))}
           </div>
-          <Link to="/assessments" className="px-10 py-4 bg-white text-primary rounded-xl hover:bg-white/90 font-bold text-lg shadow-xl hover:shadow-2xl transition-all inline-block">
+          <Link to="/assessments" onClick={handleProtectedClick} className="px-10 py-4 bg-white text-primary rounded-xl hover:bg-white/90 font-bold text-lg shadow-xl hover:shadow-2xl transition-all inline-block">
             Start a Test Now
           </Link>
         </section>

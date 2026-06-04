@@ -14,7 +14,8 @@ const path = require('path');
   for (const vp of viewports) {
     const page = await browser.newPage();
     await page.setViewport({ width: vp.width, height: vp.height });
-    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.goto(url, { waitUntil: 'networkidle2' });
+    await new Promise(r => setTimeout(r, 2000));
     const screenshotPath = path.join(__dirname, `screenshot_${vp.name}.png`);
     await page.screenshot({ path: screenshotPath, fullPage: true });
     console.log(`Saved ${vp.name} screenshot to ${screenshotPath}`);

@@ -7,7 +7,7 @@ import { api } from '../utils/api';
 
 export function TestPage() {
   const { id } = useParams();
-  const { addTestResult, addCheckpointScore, user } = useApp();
+  const { addTestResult, addCheckpointScore, user, isLoggedIn, setUnlockModalOpen } = useApp();
   
   const [assessmentData, setAssessmentData] = useState<any>(null);
   const [isLoadingData, setIsLoadingData] = useState(true);
@@ -140,7 +140,7 @@ export function TestPage() {
   };
 
   const saveCheckpointIfNeeded = (checkpoint: number) => {
-    if (savedCheckpoints.includes(checkpoint)) return;
+    if (!isLoggedIn || savedCheckpoints.includes(checkpoint)) return;
     const score = computeBlockScore(checkpoint);
     addCheckpointScore({
       assessmentId: assessment.id,
@@ -156,16 +156,19 @@ export function TestPage() {
 
   const handleSubmit = () => {
     const finalCheckpoint = Math.ceil(shuffledQuestions.length / 10);
-    saveCheckpointIfNeeded(finalCheckpoint);
     setSubmitted(true);
     const score = calculateScore();
-    addTestResult({
-      assessmentId: assessment.id,
-      title: assessment.title,
-      score,
-      date: 'Just now',
-      timeTaken: Math.floor(timeTaken / 60),
-    });
+    
+    if (isLoggedIn) {
+      saveCheckpointIfNeeded(finalCheckpoint);
+      addTestResult({
+        assessmentId: assessment.id,
+        title: assessment.title,
+        score,
+        date: 'Just now',
+        timeTaken: Math.floor(timeTaken / 60),
+      });
+    }
   };
 
   const calculateScore = () => {
@@ -324,9 +327,19 @@ export function TestPage() {
               <h1 className="text-4xl font-bold mb-1">{score}%</h1>
               <p className="text-xl font-semibold mb-1">{passed ? 'Excellent Work!' : 'Keep Practicing!'}</p>
               <p className="opacity-90">{assessment.title} Assessment</p>
-              {passed && (
+              {passed && isLoggedIn && (
                 <div className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-full bg-white/20 border border-white/30 text-sm font-semibold">
                   🏆 Certificate Earned!
+                </div>
+              )}
+              {passed && !isLoggedIn && (
+                <div className="mt-6 inline-flex flex-col items-center">
+                  <div className="px-5 py-2.5 rounded-full bg-white/20 border border-white/30 text-sm font-semibold mb-3">
+                    🎯 You passed!
+                  </div>
+                  <button onClick={() => setUnlockModalOpen(true)} className="px-6 py-2.5 rounded-xl bg-white text-black font-bold text-sm hover:scale-105 transition-transform shadow-xl">
+                    Log in to Save Score & Get Certificate
+                  </button>
                 </div>
               )}
             </div>

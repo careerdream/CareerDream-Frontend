@@ -1,5 +1,5 @@
 import { SEO } from "./SEO";
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { 
   Search, ArrowRight, TrendingUp, Users, 
   Award, Briefcase, BookOpen, Target, 
@@ -24,10 +24,10 @@ const categories = [
 ];
 
 const stats = [
-  { label: 'Annual Opportunities', value: 50000, display: '50K+', icon: Briefcase, color: 'primary' },
-  { label: 'Global Talents', value: 200000, display: '200K+', icon: Users, color: 'accent' },
-  { label: 'Premium Modules', value: 1500, display: '1,500+', icon: BookOpen, color: 'primary' },
-  { label: 'Industry Badges', value: 500, display: '500+', icon: Award, color: 'accent' },
+  { label: 'Active Opportunities', value: 55, display: '55+', icon: Briefcase, color: 'primary' },
+  { label: 'Global Talents', value: 2000, display: '2,000+', icon: Users, color: 'accent' },
+  { label: 'Premium Modules', value: 15, display: '15+', icon: BookOpen, color: 'primary' },
+  { label: 'Industry Badges', value: 5, display: '5+', icon: Award, color: 'accent' },
 ];
 
 const testimonials = [
@@ -100,9 +100,10 @@ function FeaturedBlogSection() {
     const fetchFeaturedPosts = async () => {
       try {
         const response = await api.get('/blog/posts?limit=3');
-        setFeaturedPosts(response.posts);
+        setFeaturedPosts(response.posts || response.data || []);
       } catch (error) {
         console.error('Failed to fetch blog posts:', error);
+        setFeaturedPosts([]);
       } finally {
         setIsLoading(false);
       }
@@ -111,7 +112,7 @@ function FeaturedBlogSection() {
     fetchFeaturedPosts();
   }, []);
 
-  const postsToShow = featuredPosts.length > 0 ? featuredPosts : fallbackPosts.slice(0, 3);
+  const postsToShow = featuredPosts && featuredPosts.length > 0 ? featuredPosts : fallbackPosts.slice(0, 3);
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -244,6 +245,14 @@ function FeaturedBlogSection() {
 export function LandingPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const { jobs, courses, isLoading } = useApp();
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/jobs?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
   const { scrollYProgress } = useScroll();
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
 
@@ -310,7 +319,7 @@ export function LandingPage() {
                variants={itemVariants}
                className="relative max-w-3xl mx-auto mb-16 p-2 bg-white dark:bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.15)] focus-within:ring-2 ring-primary/20 transition-all duration-500"
             >
-              <div className="flex flex-col md:flex-row gap-2">
+              <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-2">
                  <div className="flex-1 relative group">
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <input
@@ -321,14 +330,14 @@ export function LandingPage() {
                       className="w-full pl-16 pr-6 py-5 bg-transparent focus:outline-none text-lg font-bold placeholder:text-muted-foreground/50 placeholder:font-medium"
                     />
                  </div>
-                 <Link
-                   to={`/jobs?q=${searchQuery}`}
+                 <button
+                   type="submit"
                    className="px-10 py-5 bg-gradient-to-r from-primary to-accent text-white rounded-[1.8rem] font-black tracking-tight hover:shadow-[0_10px_30px_rgba(79,70,229,0.4)] transition-all flex items-center justify-center gap-2 group overflow-hidden relative"
                  >
                    <span className="relative z-10 flex items-center gap-2">Search Network <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" /></span>
                    <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                 </Link>
-              </div>
+                 </button>
+              </form>
             </motion.div>
 
             {/* Bottom Meta Stats */}
@@ -336,7 +345,7 @@ export function LandingPage() {
                variants={itemVariants}
                className="flex flex-wrap items-center justify-center gap-10 text-[10px] uppercase font-black tracking-[0.3em] text-muted-foreground/60"
             >
-               <span className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30"><Laptop className="w-4 h-4 text-primary" /> 50K+ Active Roles</span>
+               <span className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30"><Laptop className="w-4 h-4 text-primary" /> 55+ Active Roles</span>
                <span className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30"><Brain className="w-4 h-4 text-accent" /> AI Calibration</span>
                <span className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30"><Globe className="w-4 h-4 text-primary" /> Global Tier 1</span>
             </motion.div>

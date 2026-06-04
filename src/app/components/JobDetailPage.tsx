@@ -7,7 +7,7 @@ import { getWatermark, formatShareMessage } from '../utils/watermark';
 
 export function JobDetailPage() {
   const { id } = useParams();
-  const { user, savedJobIds, toggleSaveJob, applyToJob, appliedJobIds, jobs, isLoading, isLoggedIn } = useApp();
+  const { user, savedJobIds, toggleSaveJob, applyToJob, appliedJobIds, jobs, isLoading, isLoggedIn, setUnlockModalOpen } = useApp();
   const [showApply, setShowApply] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
@@ -40,7 +40,7 @@ export function JobDetailPage() {
 
   const handleOpenApplyModal = () => {
     if (!isLoggedIn) {
-      alert('Please log in to apply for this job.');
+      setUnlockModalOpen(true);
       return;
     }
     if (job.externalUrl) {

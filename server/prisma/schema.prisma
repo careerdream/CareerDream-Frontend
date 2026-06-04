@@ -512,3 +512,20 @@ model UserCodeProgress {
 
   @@unique([userId, problemId])
 }
+
+model Article {
+  id           Int      @id @default(autoincrement())
+  title        String
+  url          String   @db.Text
+  category     String
+  published_at DateTime
+  createdAt    DateTime @default(now())
+}
+
+model Subscriber {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+}
+
+

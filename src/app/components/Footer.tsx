@@ -44,7 +44,7 @@ export function Footer() {
     if (!email || !email.includes('@')) return;
     setSubStatus('loading');
     try {
-      await api.post('/blog/subscribe', { email });
+      await api.post('/subscribe', { email });
       setSubStatus('success');
       setEmail('');
       setTimeout(() => setSubStatus('idle'), 4000);
@@ -112,7 +112,7 @@ export function Footer() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     disabled={subStatus === 'loading' || subStatus === 'success'}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-border bg-input-background focus:border-primary focus:outline-none transition-colors disabled:opacity-60"
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-border bg-white text-black placeholder-gray-500 focus:border-primary focus:outline-none transition-colors disabled:opacity-60"
                   />
                 </div>
                 <button
@@ -124,7 +124,8 @@ export function Footer() {
                   {subStatus === 'success' ? 'Subscribed!' : 'Subscribe'}
                 </button>
               </div>
-              {subStatus === 'error' && <p className="text-xs text-red-500">Failed to subscribe. Try again.</p>}
+              {subStatus === 'success' && <p className="text-xs text-green-500 mt-1">Thank you for subscribing! Please check your email.</p>}
+              {subStatus === 'error' && <p className="text-xs text-red-500 mt-1">Invalid email or already subscribed.</p>}
             </form>
           </div>
 

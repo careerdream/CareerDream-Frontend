@@ -20,9 +20,9 @@ export function NewsletterForm() {
 
     try {
       setIsSubmitting(true);
-      await api.post('/blog/subscribe', { email });
+      await api.post('/subscribe', { email });
       setStatus('success');
-      setMessage('Successfully subscribed! Check your email for confirmation.');
+      setMessage('Thank you for subscribing! Please check your email.');
       setEmail('');
 
       setTimeout(() => {
@@ -31,7 +31,7 @@ export function NewsletterForm() {
       }, 5000);
     } catch (error) {
       setStatus('error');
-      setMessage('Failed to subscribe. Please try again.');
+      setMessage('Invalid email or already subscribed.');
       console.error('Newsletter subscription error:', error);
     } finally {
       setIsSubmitting(false);

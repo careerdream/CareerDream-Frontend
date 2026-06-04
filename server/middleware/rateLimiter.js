@@ -51,7 +51,11 @@ export const testLimiter = rateLimit({
 export const playgroundLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 100,
-  keyGenerator: (req) => req.user?.id?.toString() || req.ip,
+  keyGenerator: (req) => {
+    let ip = req.ip || '127.0.0.1';
+    if (ip === '::1') ip = '127.0.0.1';
+    return req.user?.id?.toString() || ip;
+  },
   message: { status: 429, message: 'Too many code submissions. Please wait 1 minute.' },
   standardHeaders: true,
   legacyHeaders: false,

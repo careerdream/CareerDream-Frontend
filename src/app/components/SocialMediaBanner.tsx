@@ -17,9 +17,9 @@ export function SocialMediaBanner() {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-sm font-black uppercase tracking-[0.3em] text-muted-foreground/60 mb-8"
+          className="text-2xl md:text-3xl font-black uppercase tracking-[0.3em] text-foreground mb-12 leading-relaxed"
         >
-          Join our Official Careerdream Channel
+          GET INSTANT JOB ALERTS
         </motion.p>
         
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
@@ -41,12 +41,26 @@ export function SocialMediaBanner() {
                   stiffness: 260,
                   damping: 20
                 }}
-                className={`group flex flex-col items-center gap-3 transition-colors ${social.color}`}
+                className={`group flex flex-col items-center gap-4 transition-colors ${social.color}`}
               >
-                <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center group-hover:bg-white group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:group-hover:bg-white/5 transition-all duration-300">
+                <motion.div 
+                  className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center group-hover:bg-white dark:group-hover:bg-white/5 transition-colors duration-300 relative"
+                  animate={{
+                    boxShadow: [
+                      "0px 0px 0px 0px rgba(79, 70, 229, 0)",
+                      "0px 0px 25px 10px rgba(79, 70, 229, 0.5)",
+                      "0px 0px 0px 0px rgba(79, 70, 229, 0)"
+                    ]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
                   <Icon className="w-8 h-8 transition-transform group-hover:scale-110" />
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 group-hover:text-foreground transition-colors">
+                </motion.div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 group-hover:text-foreground transition-colors">
                   {social.name}
                 </span>
               </motion.a>
