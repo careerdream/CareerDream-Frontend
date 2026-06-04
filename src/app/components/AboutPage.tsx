@@ -1,3 +1,4 @@
+import { SEO } from "./SEO";
 import { Link } from 'react-router';
 import { SocialLinks } from './SocialLinks';
 
@@ -47,6 +48,7 @@ export function AboutPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="About CareerDream | Our Mission" description="Learn about CareerDream and our mission to bridge the gap between fresh IT talent and the tech industry." keywords="About CareerDream, Our Mission, IT Education" />
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-border">
         <div className="container mx-auto px-4 py-16 md:py-24">

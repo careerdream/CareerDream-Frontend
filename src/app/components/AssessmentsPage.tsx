@@ -1,3 +1,4 @@
+import { SEO } from "./SEO";
 import { Link } from 'react-router';
 import { Trophy, Target, Clock, TrendingUp, Star, Users, CheckCircle, Lock, Loader2 } from 'lucide-react';
 
@@ -32,6 +33,7 @@ export function AssessmentsPage() {
   if (isAppLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
+      <SEO title="Skill Assessments & Coding Tests | CareerDream" description="Test your coding skills and get certified. Take our technical assessments to prove your knowledge to employers." keywords="Coding Tests, Skill Assessment, Technical Interview Prep" />
         <Loader2 className="w-12 h-12 text-primary animate-spin" />
       </div>
     );

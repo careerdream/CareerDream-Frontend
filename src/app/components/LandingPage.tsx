@@ -1,3 +1,4 @@
+import { SEO } from "./SEO";
 import { Link } from 'react-router';
 import { 
   Search, ArrowRight, TrendingUp, Users, 
@@ -249,6 +250,7 @@ export function LandingPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#030213]">
+      <SEO title="CareerDream | Best IT Jobs & Learning Platform for Freshers" description="CareerDream.in - The ultimate career platform for IT freshers in India. Find verified jobs, internships, free courses, and skill assessments to land your dream IT role." keywords="IT Jobs India, Freshers Jobs, Software Engineer Internships, Free Coding Courses, Skill Assessments, Resume Screening, CareerDream" />
          <div className="relative">
             <motion.div 
                animate={{ rotate: 360 }}

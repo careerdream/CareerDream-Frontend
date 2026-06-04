@@ -1,3 +1,4 @@
+import { SEO } from "./SEO";
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { Search, Star, Clock, Award, TrendingUp, BookOpen, Play, ChevronRight, Filter, Users, Loader2, Trophy, CheckCircle } from 'lucide-react';
@@ -38,6 +39,7 @@ export function LearningHub() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
+      <SEO title="Free IT Courses & Coding Tutorials | CareerDream" description="Learn programming, web development, and data science for free. Build your skills with our interactive Learning Hub." keywords="Free Coding Courses, Learn Programming, IT Training" />
         <Loader2 className="w-12 h-12 text-primary animate-spin" />
       </div>
     );

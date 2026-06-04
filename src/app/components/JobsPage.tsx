@@ -1,3 +1,4 @@
+import { SEO } from "./SEO";
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router';
 import { Filter, MapPin, DollarSign, Briefcase, Clock, Bookmark, Search, ChevronDown, X, SlidersHorizontal, Loader2, Share2, Check, Users } from 'lucide-react';
@@ -120,6 +121,7 @@ export function JobsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
+      <SEO title="Find IT Jobs & Internships | CareerDream" description="Browse the latest verified IT jobs and internships for freshers. Kickstart your career with top tech companies." keywords="IT Jobs, Internships, Fresher Jobs, Tech Careers" />
         <Loader2 className="w-12 h-12 text-primary animate-spin" />
       </div>
     );

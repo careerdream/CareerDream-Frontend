@@ -1,8 +1,10 @@
+import { SEO } from "./SEO";
 import { Link } from 'react-router';
 
 export function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Privacy Policy | CareerDream" description="Read the Privacy Policy of CareerDream. Learn how we handle your data securely." keywords="Privacy Policy, Data Protection" />
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-border">
         <div className="container mx-auto px-4 py-16 md:py-24">
