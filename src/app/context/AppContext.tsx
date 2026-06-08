@@ -328,7 +328,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
 
   const processAuthResponse = async (data: any) => {
-    // Token is now managed securely via HttpOnly cookies by the backend
+    // Save the token to localStorage so apiFetch can use it (especially for cross-origin local dev where cookies might fail)
+    if (data.token) {
+      localStorage.setItem('authToken', data.token);
+    }
 
     // Fetch user profile with token to get complete user data
     let userData = { ...data };
@@ -480,6 +483,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try { await api.post('/auth/logout', {}); } catch(e) {}
     localStorage.removeItem('careerdream-state');
+    localStorage.removeItem('authToken'); // Clear the token!
     setState({ ...DEFAULT_STATE, isLoading: false });
     window.location.href = '/';
   };

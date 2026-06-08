@@ -16,6 +16,11 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
     });
   };
 
+  const stripMarkdown = (text: string) => {
+    if (!text) return '';
+    return text.replace(/[*_#`~>]/g, '').trim();
+  };
+
   return (
     <motion.div
       whileHover={{ y: -4 }}
@@ -27,7 +32,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
           <div className="relative h-48 -mx-6 -mt-6 mb-4 overflow-hidden">
             <img 
               src={post.image} 
-              alt={post.title} 
+              alt={stripMarkdown(post.title)} 
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a] to-transparent opacity-60" />
@@ -51,13 +56,13 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
         {/* Title */}
         <Link to={`/news/${post.id}`}>
           <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors cursor-pointer">
-            {post.title}
+            {stripMarkdown(post.title)}
           </h3>
         </Link>
 
         {/* Excerpt */}
         <p className="text-gray-300 text-sm mb-4 line-clamp-3 flex-grow">
-          {post.excerpt}
+          {stripMarkdown(post.excerpt)}
         </p>
 
         {/* Meta Information */}

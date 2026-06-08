@@ -11,6 +11,8 @@ const openai = new OpenAI({
 export async function parseResumeWithAI(resumeText) {
   const modelsToTry = [
     'google/gemini-2.0-flash-lite-preview-02-05:free', // Extremely fast model
+    'openrouter/free',
+    'openrouter/free',
     'openrouter/free'
   ];
 
@@ -48,11 +50,15 @@ ${resumeText.substring(0, 4000)}
 
       let content = response.choices[0].message.content;
       
-      // Clean markdown if the model hallucinated it
-      if (content.startsWith('```json')) {
-        content = content.replace(/^```json/, '').replace(/```$/, '').trim();
-      } else if (content.includes('```json')) {
-        content = content.split('```json')[1].split('```')[0].trim();
+      if (!content) {
+        throw new Error('AI returned an empty or blocked response.');
+      }
+      
+      // Clean markdown and extra text
+      const firstBrace = content.indexOf('{');
+      const lastBrace = content.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        content = content.substring(firstBrace, lastBrace + 1);
       }
       
       const parsedData = JSON.parse(content);
@@ -139,4 +145,140 @@ export async function matchJobsAndAnalyzeGaps(userSkills) {
   matches.sort((a, b) => b.matchScore - a.matchScore);
   
   return matches.slice(0, 10); // Return top 10 matches
+}
+
+export async function generateBlogPost(userPrompt) {
+  const modelsToTry = [
+    'google/gemini-2.0-flash-lite-preview-02-05:free',
+    'openrouter/free',
+    'openrouter/free',
+    'openrouter/free'
+  ];
+
+  const prompt = `
+You are an expert technical blog writer and IT professional.
+A user has provided the following brief idea/prompt for a blog post:
+"${userPrompt}"
+
+Write a comprehensive, engaging IT/Tech blog post based on this idea.
+Return the result STRICTLY as a JSON object with the following structure:
+{
+  "title": "A catchy, engaging title (max 100 chars)",
+  "category": "Must be exactly one of: Indian IT, Global Tech, Career Advice, AI/ML, Cloud, Full Stack, Data Science, DevOps, Cybersecurity, IT Career, Others",
+  "excerpt": "A short summary of the post (50-150 characters)",
+  "content": "The detailed content of the blog post (in plain text or simple markdown, min 100 characters)"
+}
+
+Guidelines:
+1. Ensure the JSON is valid and well-formed.
+2. Return ONLY the JSON object, no markdown code blocks wrapping the JSON (e.g., no \`\`\`json), and no conversational text.
+3. Make the content professional yet engaging, suitable for a tech career platform.
+  `;
+
+  let lastError;
+  for (const model of modelsToTry) {
+    try {
+      console.log(`Trying model: ${model} for blog generation`);
+      const response = await openai.chat.completions.create({
+        model: model,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      let content = response.choices[0].message.content;
+      
+      if (!content) {
+        throw new Error('AI returned an empty or blocked response.');
+      }
+      
+      // Clean markdown and extra text
+      const firstBrace = content.indexOf('{');
+      const lastBrace = content.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        content = content.substring(firstBrace, lastBrace + 1);
+      }
+      
+      const parsedData = JSON.parse(content);
+      return parsedData;
+    } catch (error) {
+      console.warn(`Model ${model} failed for blog generation: ${error.message}`);
+      lastError = error;
+      // Continue to next model
+    }
+  }
+
+  throw new Error(lastError ? `AI Error: ${lastError.message}` : 'AI models are currently unavailable. Please try again later.');
+}
+
+export async function generateJobPost(userPrompt) {
+  const modelsToTry = [
+    'google/gemini-2.0-flash-lite-preview-02-05:free',
+    'openrouter/free',
+    'openrouter/free',
+    'openrouter/free'
+  ];
+
+  const prompt = `
+You are an expert technical recruiter and HR specialist.
+A user has provided the following brief requirement for a job posting:
+"${userPrompt}"
+
+Write a comprehensive, professional job posting based on this idea.
+Return the result STRICTLY as a JSON object with the following structure:
+{
+  "title": "A professional job title (e.g., Senior Full Stack Developer)",
+  "description": "A brief overview of the role (min 200 characters). Do NOT include responsibilities or requirements here.",
+  "responsibilities": ["List", "of", "key", "responsibilities"],
+  "requirements": ["List", "of", "key", "requirements", "and", "qualifications"],
+  "benefits": ["List", "of", "perks", "and", "benefits"],
+  "skills": ["Array", "of", "5-8", "relevant", "technical", "skills"],
+  "experienceLevel": "Must be exactly one of: 'Fresher', '0-2 years', '2-5 years', '5-10 years', '10+ years'",
+  "salaryMin": "Estimated minimum salary in numbers (e.g., 500000)",
+  "salaryMax": "Estimated maximum salary in numbers (e.g., 1500000)"
+}
+
+Guidelines:
+1. Ensure the JSON is valid and well-formed.
+2. Return ONLY the JSON object, no markdown code blocks wrapping the JSON (e.g., no \`\`\`json), and no conversational text.
+3. Make the description professional and engaging.
+4. Base salary estimates on typical Indian tech industry standards (INR) if not provided by the user. If the user provides a figure like "12 LPA", translate it to 1200000.
+  `;
+
+  let lastError;
+  for (const model of modelsToTry) {
+    try {
+      console.log(`Trying model: ${model} for job generation`);
+      const response = await openai.chat.completions.create({
+        model: model,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      let content = response.choices[0].message.content;
+      
+      if (!content) {
+        throw new Error('AI returned an empty or blocked response.');
+      }
+      
+      // Clean markdown and extra text
+      const firstBrace = content.indexOf('{');
+      const lastBrace = content.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        content = content.substring(firstBrace, lastBrace + 1);
+      }
+      
+      const parsedData = JSON.parse(content);
+      
+      // Ensure arrays are arrays
+      if (!Array.isArray(parsedData.skills)) parsedData.skills = [];
+      if (!Array.isArray(parsedData.responsibilities)) parsedData.responsibilities = [];
+      if (!Array.isArray(parsedData.requirements)) parsedData.requirements = [];
+      if (!Array.isArray(parsedData.benefits)) parsedData.benefits = [];
+      
+      return parsedData;
+    } catch (error) {
+      console.warn(`Model ${model} failed for job generation: ${error.message}`);
+      lastError = error;
+    }
+  }
+
+  throw new Error(lastError ? `AI Error: ${lastError.message}` : 'AI models are currently unavailable. Please try again later.');
 }

@@ -11,7 +11,7 @@ export function getWatermark(userName: string = 'User'): string {
  * Appends a professional watermark to a social sharing message.
  */
 export function formatShareMessage(title: string, userName: string): string {
-  return title;
+  return `${title}\n\nShared by ${userName} on CareerDream.in`;
 }
 
 /**

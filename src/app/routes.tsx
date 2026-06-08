@@ -33,6 +33,7 @@ const NotFound = React.lazy(() => import("./components/NotFound").then(module =>
 const ReportIssuePage = React.lazy(() => import("./components/ReportIssuePage").then(module => ({ default: module.ReportIssuePage })));
 const AdminIssuesPage = React.lazy(() => import("./components/AdminIssuesPage").then(module => ({ default: module.AdminIssuesPage })));
 const SettingsPage = React.lazy(() => import("./components/SettingsPage").then(module => ({ default: module.SettingsPage })));
+const ResetPasswordPage = React.lazy(() => import("./components/ResetPasswordPage").then(module => ({ default: module.ResetPasswordPage })));
 import { AdminRoute } from "./components/AdminRoute";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 const AdminDashboard = React.lazy(() => import("./components/AdminDashboard").then(module => ({ default: module.AdminDashboard })));
@@ -80,6 +81,7 @@ export const router = createBrowserRouter([
       { path: "certificate/:courseId", Component: CertificatePage },
       { path: "careers", Component: CareersPage },
       { path: "contact", Component: ContactPage },
+      { path: "reset-password", Component: ResetPasswordPage },
       { path: "*", Component: NotFound },
     ],
   },
@@ -98,5 +100,9 @@ export const router = createBrowserRouter([
   {
     path: "/recruiter/post-job",
     element: <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>}><JobPostingForm /></React.Suspense>,
-  }
+  },
+  {
+    path: "/recruiter/edit-job/:id",
+    element: <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>}><JobPostingForm /></React.Suspense>,
+  },
 ]);

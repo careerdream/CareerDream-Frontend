@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router';
+import { useParams, Link, useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
 import { 
   Calendar, User, Eye, ArrowLeft, ArrowRight, 
@@ -11,45 +11,84 @@ import { useApp } from '../context/AppContext';
 import { formatShareMessage } from '../utils/watermark';
 import { fallbackPosts } from '../data/newsFallback';
 import { toast } from 'sonner';
+import { BlogSubmissionForm } from './BlogSubmissionForm';
+import { Edit2, Trash2 } from 'lucide-react';
 
-// Simple helper to parse inline **bold** syntax and dynamic title/label bolding
+// Simple helper to parse inline **bold** syntax, markdown links, bare URLs, and dynamic title/label bolding
 const parseInlineStyles = (text: string) => {
-  // Safe split for any residual double asterisks
-  const parts = text.split(/(\*\*.*?\*\*)/g);
-  let parsedElements = parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i} className="text-white font-extrabold">{part.slice(2, -2)}</strong>;
+  // Convert ***text*** to **text** so we handle it as bold
+  let processedText = text.replace(/\*\*\*(.*?)\*\*\*/g, '**$1**');
+  // Convert *text* to text (just remove italics for clean UI, or you could use <em>)
+  processedText = processedText.replace(/(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)/g, '$1');
+
+  // Regex to match [text](url) OR bare http/https URLs
+  const linkRegex = /(\[[^\]]+\]\([^)]+\)|https?:\/\/[^\s]+)/g;
+  const parts = processedText.split(linkRegex);
+
+  const elements = parts.map((part, i) => {
+    if (!part) return null;
+
+    // Check if it's a markdown link [text](url)
+    const mdLinkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (mdLinkMatch) {
+      return (
+        <a key={`link-${i}`} href={mdLinkMatch[2]} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-bold">
+          {mdLinkMatch[1]}
+        </a>
+      );
     }
-    return part;
+
+    // Check if it's a bare URL
+    const bareUrlMatch = part.match(/^https?:\/\/[^\s]+$/);
+    if (bareUrlMatch) {
+      return (
+        <a key={`link-${i}`} href={part} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-bold">
+          {part}
+        </a>
+      );
+    }
+
+    // Process bold
+    const boldParts = part.split(/(\*\*.*?\*\*)/g);
+    return boldParts.map((boldPart, j) => {
+      if (boldPart.startsWith('**') && boldPart.endsWith('**')) {
+        return <strong key={`bold-${i}-${j}`} className="text-white font-extrabold">{boldPart.slice(2, -2)}</strong>;
+      }
+      return boldPart;
+    });
   });
 
+  const flatElements = elements.flat().filter(Boolean);
+
   // Smart prefix colon bolding (e.g. "Role Focus: Designing distributed..." -> bold "Role Focus:")
-  // Apply only if it contains a colon in the first 45 characters and doesn't look like a URL
-  const firstPart = parsedElements[0];
-  if (typeof firstPart === 'string' && firstPart.includes(':') && !firstPart.includes('://')) {
-    const colonIdx = firstPart.indexOf(':');
+  const firstElem = flatElements[0];
+  if (typeof firstElem === 'string' && firstElem.includes(':') && !firstElem.includes('://')) {
+    const colonIdx = firstElem.indexOf(':');
     if (colonIdx > 0 && colonIdx < 45) {
-      const boldPrefix = firstPart.substring(0, colonIdx + 1);
-      const rest = firstPart.substring(colonIdx + 1);
-      parsedElements[0] = rest;
-      parsedElements.unshift(
+      const boldPrefix = firstElem.substring(0, colonIdx + 1);
+      const rest = firstElem.substring(colonIdx + 1);
+      flatElements[0] = rest;
+      flatElements.unshift(
         <strong key="prefix-bold" className="text-white font-extrabold">{boldPrefix}</strong>
       );
     }
   }
 
-  return parsedElements;
+  return flatElements;
 };
 
 const renderParagraph = (paragraph: string, index: number) => {
   let trimmed = paragraph.trim();
   if (!trimmed) return null;
 
+  // Handle horizontal rules
+  if (trimmed === '***' || trimmed === '---' || trimmed === '___') {
+    return <hr key={index} className="border-white/10 my-8" />;
+  }
+
   // Clean any leftover raw markdown symbols to guarantee 100% human-looking articles
-  trimmed = trimmed.replace(/^\s*####\s*/, '');
-  trimmed = trimmed.replace(/^\s*###\s*/, '');
-  trimmed = trimmed.replace(/^\s*##\s*/, '');
-  trimmed = trimmed.replace(/^\s*#\s*/, '');
+  trimmed = trimmed.replace(/^\s*#{1,6}\s*/, '');
+  trimmed = trimmed.replace(/^\s*\*\*\*\s*$/, '');
 
   // Handle lists starting with unicode bullet, dash, or asterisk
   if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
@@ -91,9 +130,51 @@ export function NewsDetailPage() {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [comments, setComments] = useState<{id: number, user: {name: string}, comment_text: string, created_at: string}[]>([]);
+  const [comments, setComments] = useState<{id: number, user: {id: number, name: string}, comment_text: string, created_at: string}[]>([]);
   const [newComment, setNewComment] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingCommentText, setEditingCommentText] = useState('');
   const [timeAgo, setTimeAgo] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
+
+  const isAuthor = currentUser && String(post?.author?.id) === String(currentUser.id);
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this article?")) {
+      try {
+        await api.delete(`/blog/posts/${post?.id}`);
+        toast.success("Article deleted successfully");
+        navigate('/news');
+      } catch (err) {
+        toast.error("Failed to delete article");
+      }
+    }
+  };
+
+  const handleEditComment = async (commentId: number) => {
+    if (!editingCommentText.trim()) return;
+    try {
+      await api.put(`/blog/comments/${commentId}`, { comment_text: editingCommentText });
+      setComments(prev => prev.map(c => c.id === commentId ? { ...c, comment_text: editingCommentText } : c));
+      setEditingCommentId(null);
+      setEditingCommentText('');
+      toast.success("Comment updated");
+    } catch (err) {
+      toast.error("Failed to update comment");
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    try {
+      await api.delete(`/blog/comments/${commentId}`);
+      setComments(prev => prev.filter(c => c.id !== commentId));
+      toast.success("Comment deleted");
+    } catch (err) {
+      toast.error("Failed to delete comment");
+    }
+  };
 
   useEffect(() => {
     if (!post?.createdAt) return;
@@ -226,10 +307,12 @@ export function NewsDetailPage() {
     }
   };
 
+  const socialFooter = `\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`;
+
   const shareLinks = [
-    { name: 'WhatsApp', icon: MessageCircle, color: 'hover:text-green-500', url: `https://wa.me/?text=${encodeURIComponent(formatShareMessage(post?.title || '', currentUser?.name || 'A user') + ' ' + window.location.href)}` },
+    { name: 'WhatsApp', icon: MessageCircle, color: 'hover:text-green-500', url: `https://wa.me/?text=${encodeURIComponent(formatShareMessage(post?.title || '', currentUser?.name || 'A user') + '\nArticle ' + window.location.href + socialFooter)}` },
     { name: 'LinkedIn', icon: Linkedin, color: 'hover:text-blue-600', url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}` },
-    { name: 'Twitter', icon: Twitter, color: 'hover:text-sky-400', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(formatShareMessage(post?.title || '', currentUser?.name || 'A user'))}&url=${encodeURIComponent(window.location.href)}` },
+    { name: 'Twitter', icon: Twitter, color: 'hover:text-sky-400', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(formatShareMessage(post?.title || '', currentUser?.name || 'A user') + '\nArticle ' + window.location.href + socialFooter)}` },
     { name: 'Facebook', icon: Facebook, color: 'hover:text-blue-700', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}` },
   ];
 
@@ -239,6 +322,20 @@ export function NewsDetailPage() {
       month: 'long',
       day: 'numeric',
     });
+  };
+
+  const cleanTextForClipboard = (text: string) => {
+    if (!text) return '';
+    return text
+      .replace(/^#{1,6}\s*/gm, '') // Remove heading hashes
+      .replace(/\*\*\*(.*?)\*\*\*/g, '$1') // Remove ***
+      .replace(/\*\*(.*?)\*\*/g, '$1')     // Remove **
+      .replace(/^\s*\*\s+/gm, '• ')        // Convert asterisk bullets to real bullets
+      .replace(/^\s*-\s+/gm, '• ')         // Convert dash bullets to real bullets
+      .replace(/\*/g, '')                  // Strip any remaining asterisks (horizontal rules, italics)
+      .replace(/__/g, '')                  // Strip underscores
+      .replace(/`/g, '')                   // Strip backticks
+      .trim();
   };
 
   if (isLoading) {
@@ -381,6 +478,22 @@ export function NewsDetailPage() {
                 <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
                   <MessageCircle className="w-4 h-4" /> <span className="text-xs font-bold">{comments.length}</span>
                 </button>
+                {isAuthor && (
+                  <>
+                    <button 
+                      onClick={() => setIsEditing(true)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary transition-all"
+                    >
+                      <Edit2 className="w-4 h-4" /> <span className="text-xs font-bold hidden sm:inline">Edit</span>
+                    </button>
+                    <button 
+                      onClick={handleDelete}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" /> <span className="text-xs font-bold hidden sm:inline">Delete</span>
+                    </button>
+                  </>
+                )}
               </div>
               <button 
                 onClick={() => setShowShareModal(true)}
@@ -416,7 +529,9 @@ export function NewsDetailPage() {
               </form>
 
               <div className="space-y-6 mt-8">
-                {comments.map(comment => (
+                {comments.map(comment => {
+                  const isCommentAuthor = currentUser && String(comment.user?.id) === String(currentUser.id);
+                  return (
                   <div key={comment.id} className="flex gap-4 group">
                     <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-sm font-bold shrink-0">
                       {(comment.user?.name || 'U').charAt(0)}
@@ -428,10 +543,60 @@ export function NewsDetailPage() {
                           {comment.created_at ? new Date(comment.created_at).toLocaleDateString() : 'Just now'}
                         </span>
                       </div>
-                      <p className="text-gray-300 text-sm leading-relaxed">{comment.comment_text}</p>
+                      
+                      {editingCommentId === comment.id ? (
+                        <div className="space-y-2 mt-2">
+                          <textarea
+                            value={editingCommentText}
+                            onChange={(e) => setEditingCommentText(e.target.value)}
+                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors resize-none text-sm"
+                            rows={2}
+                          />
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => handleEditComment(comment.id)}
+                              className="px-4 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:opacity-90 transition-opacity"
+                            >
+                              Save
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setEditingCommentId(null);
+                                setEditingCommentText('');
+                              }}
+                              className="px-4 py-1.5 rounded-lg bg-white/5 text-white text-xs font-bold hover:bg-white/10 transition-opacity"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-gray-300 text-sm leading-relaxed">{comment.comment_text}</p>
+                          {isCommentAuthor && (
+                            <div className="flex items-center gap-3 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button 
+                                onClick={() => {
+                                  setEditingCommentId(comment.id);
+                                  setEditingCommentText(comment.comment_text);
+                                }}
+                                className="text-xs text-primary hover:text-primary/80 transition-colors font-semibold flex items-center gap-1"
+                              >
+                                <Edit2 className="w-3 h-3" /> Edit
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteComment(comment.id)}
+                                className="text-xs text-red-500 hover:text-red-400 transition-colors font-semibold flex items-center gap-1"
+                              >
+                                <Trash2 className="w-3 h-3" /> Delete
+                              </button>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
-                ))}
+                )})}
               </div>
             </div>
           </motion.div>
@@ -509,7 +674,10 @@ export function NewsDetailPage() {
               <button
                 onClick={() => {
                   if (post) {
-                    const formattedText = `📰 *${post.title}*\n📝 Excerpt: ${post.excerpt}\n\n${post.content}\n\n🌐 Read the full article on CareerDream: ${window.location.href}`;
+                    const cleanTitle = cleanTextForClipboard(post.title);
+                    const cleanExcerpt = cleanTextForClipboard(post.excerpt);
+                    const cleanContent = cleanTextForClipboard(post.content);
+                    const formattedText = `📰 *${cleanTitle}*\n📝 Excerpt: ${cleanExcerpt}\n\n${cleanContent}\n\n🌐 Read the full article on CareerDream: ${window.location.href}${socialFooter}`;
                     navigator.clipboard.writeText(formattedText);
                     toast.success("Full article copied successfully! Go ahead and paste it on LinkedIn, WhatsApp, or Facebook.");
                   }
@@ -522,8 +690,11 @@ export function NewsDetailPage() {
 
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast.success('Link copied to clipboard!');
+                  if (post) {
+                    const shareMsg = formatShareMessage(post.title, currentUser?.name || 'A user');
+                    navigator.clipboard.writeText(`${shareMsg}\nArticle ${window.location.href}${socialFooter}`);
+                    toast.success('Link & Socials copied to clipboard!');
+                  }
                 }}
                 className="col-span-2 flex items-center justify-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-all"
               >
@@ -533,6 +704,18 @@ export function NewsDetailPage() {
             </div>
           </motion.div>
         </div>
+      )}
+
+      {/* Edit Modal */}
+      {isEditing && post && (
+        <BlogSubmissionForm
+          editPost={post}
+          onClose={() => setIsEditing(false)}
+          onPostCreated={() => {
+            setIsEditing(false);
+            window.location.reload();
+          }}
+        />
       )}
     </div>
   );

@@ -5,6 +5,8 @@ import { verifyToken } from '../middleware/auth.js';
 import { cacheMiddleware } from '../utils/cache.js';
 import { formatPaginatedResponse } from '../utils/pagination.js';
 import { notifySubscribers } from '../services/emailService.js';
+import { aiLimiter } from '../middleware/rateLimiter.js';
+import { generateBlogPost } from '../services/aiService.js';
 
 const router = express.Router();
 
@@ -137,6 +139,30 @@ router.get('/posts/:id', cacheMiddleware(60), async (req, res) => {
   }
 });
 
+// @route   POST /api/blog/generate
+// @desc    Generate a blog post using AI based on a prompt
+// @access  Private
+router.post('/generate', verifyToken, aiLimiter, async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt || prompt.length < 5) {
+      return res.status(400).json({ message: 'A descriptive prompt is required (min 5 characters).' });
+    }
+
+    const generatedPost = await generateBlogPost(prompt);
+    
+    // Ensure the generated structure matches what frontend expects
+    if (!generatedPost.title || !generatedPost.content) {
+      throw new Error('AI returned an incomplete response.');
+    }
+
+    res.json(generatedPost);
+  } catch (error) {
+    console.error('Error generating blog post with AI:', error);
+    res.status(500).json({ message: error.message || 'Failed to generate blog post' });
+  }
+});
+
 // @route   POST /api/blog/posts
 // @desc    Create a new blog post
 // @access  Private
@@ -207,7 +233,7 @@ router.put('/posts/:id', verifyToken, async (req, res) => {
       return res.status(404).json({ message: 'Blog post not found' });
     }
 
-    if (post.authorId !== req.user.id) {
+    if (String(post.authorId) !== String(req.user.id)) {
       return res.status(403).json({ message: 'You can only edit your own posts' });
     }
 
@@ -255,7 +281,7 @@ router.delete('/posts/:id', verifyToken, async (req, res) => {
       return res.status(404).json({ message: 'Blog post not found' });
     }
 
-    if (post.authorId !== req.user.id) {
+    if (String(post.authorId) !== String(req.user.id)) {
       return res.status(403).json({ message: 'You can only delete your own posts' });
     }
 
@@ -457,6 +483,52 @@ router.post('/subscribe', async (req, res) => {
   } catch (error) {
     console.error('Error subscribing to newsletter:', error);
     res.status(500).json({ message: 'Failed to subscribe to newsletter' });
+  }
+});
+// @route   PUT /api/blog/comments/:id
+// @desc    Update a comment
+// @access  Private
+router.put('/comments/:id', verifyToken, async (req, res) => {
+  try {
+    const commentId = parseInt(req.params.id);
+    const { comment_text } = req.body;
+
+    const comment = await prisma.comment.findUnique({ where: { id: commentId } });
+    if (!comment) return res.status(404).json({ message: 'Comment not found' });
+    if (String(comment.userId) !== String(req.user.id)) return res.status(403).json({ message: 'Unauthorized' });
+
+    const updatedComment = await prisma.comment.update({
+      where: { id: commentId },
+      data: { comment_text },
+      include: {
+        user: { select: { id: true, name: true, avatar: true } }
+      }
+    });
+
+    res.json(updatedComment);
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    res.status(500).json({ message: 'Failed to update comment' });
+  }
+});
+
+// @route   DELETE /api/blog/comments/:id
+// @desc    Delete a comment
+// @access  Private
+router.delete('/comments/:id', verifyToken, async (req, res) => {
+  try {
+    const commentId = parseInt(req.params.id);
+
+    const comment = await prisma.comment.findUnique({ where: { id: commentId } });
+    if (!comment) return res.status(404).json({ message: 'Comment not found' });
+    if (String(comment.userId) !== String(req.user.id)) return res.status(403).json({ message: 'Unauthorized' });
+
+    await prisma.comment.delete({ where: { id: commentId } });
+
+    res.json({ message: 'Comment deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    res.status(500).json({ message: 'Failed to delete comment' });
   }
 });
 

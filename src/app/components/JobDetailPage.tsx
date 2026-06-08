@@ -200,7 +200,7 @@ export function JobDetailPage() {
             <section className="space-y-8">
               <h3 className="text-2xl font-black tracking-tighter">Responsibilities</h3>
               <div className="grid gap-4">
-                {job.responsibilities.map((item, i) => (
+                {(job.responsibilities || []).map((item: string, i: number) => (
                   <div key={i} className="flex gap-4 p-6 rounded-3xl bg-card border border-border/50 hover:border-border transition-all">
                     <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                        <CheckCircle className="w-5 h-5" />
@@ -214,7 +214,7 @@ export function JobDetailPage() {
             <section className="space-y-8">
               <h3 className="text-2xl font-black tracking-tighter">Requirements</h3>
               <div className="space-y-4">
-                {job.requirements.map((item, i) => (
+                {(job.requirements || []).map((item: string, i: number) => (
                   <div key={i} className="flex items-center gap-4 group">
                     <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-xs font-black text-muted-foreground group-hover:border-primary group-hover:text-primary transition-all">
                       {i + 1}
@@ -228,7 +228,7 @@ export function JobDetailPage() {
             <section className="p-10 rounded-[3rem] bg-gradient-to-br from-primary/20 to-accent/20 border border-border">
                <h3 className="text-2xl font-black tracking-tighter mb-8">Perks & Benefits</h3>
                <div className="grid md:grid-cols-2 gap-4">
-                  {job.benefits.map((benefit, i) => (
+                  {(job.benefits || []).map((benefit: string, i: number) => (
                     <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/50">
                       <div className="w-2 h-2 rounded-full bg-accent" />
                       <span className="font-bold text-sm">{benefit}</span>
@@ -265,7 +265,7 @@ export function JobDetailPage() {
               <div className="pt-8 border-t border-border/50">
                  <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Required Expertise</h4>
                  <div className="flex flex-wrap gap-2">
-                    {job.skills.map(skill => (
+                    {(job.skills || []).map((skill: string) => (
                       <span key={skill} className="px-3 py-1.5 rounded-xl bg-card border border-border/50 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                         {skill}
                       </span>

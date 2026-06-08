@@ -15,19 +15,58 @@ export function RecruiterSignup() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [step, setStep] = useState<1 | 2>(1);
+  const [otp, setOtp] = useState('');
+  const [allowFreeEmail, setAllowFreeEmail] = useState(false);
+  const [showFreeEmailWarning, setShowFreeEmailWarning] = useState(false);
+
+  const freeDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com'];
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
+    // Check free domain
+    if (!allowFreeEmail) {
+      const domain = formData.email.split('@')[1]?.toLowerCase();
+      if (domain && freeDomains.includes(domain)) {
+        setShowFreeEmailWarning(true);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const response = await api.post('/auth/recruiter/register', formData);
-      localStorage.setItem('recruiterAuth', JSON.stringify(response));
+      if (response.requiresVerification) {
+        setStep(2);
+      }
+    } catch (err: any) {
+      setError(err?.message || err?.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await api.post('/auth/verify-email', { email: formData.email, otp });
+      localStorage.setItem('recruiterAuth', JSON.stringify({
+        id: response.user.id,
+        name: response.user.name,
+        email: response.user.email,
+        role: response.user.role,
+        employer: response.user.employer
+      }));
       localStorage.setItem('authToken', response.token);
       navigate('/recruiter/dashboard');
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Registration failed. Please try again.');
+      setError(err?.message || err?.response?.data?.message || 'Verification failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -61,7 +100,44 @@ export function RecruiterSignup() {
             </div>
           )}
 
-          <form onSubmit={handleSignup} className="space-y-5">
+          {showFreeEmailWarning && step === 1 && (
+            <div className="mb-6 p-5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 animate-in fade-in zoom-in-95">
+              <div className="flex gap-3 mb-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+                <p className="text-sm font-bold text-amber-800 dark:text-amber-200">
+                  Please use your work email
+                </p>
+              </div>
+              <p className="text-sm text-amber-700 dark:text-amber-300 ml-8 mb-4">
+                You entered a free email domain. Using a work email helps verify your employer status faster. Do you want to proceed anyway?
+              </p>
+              <div className="flex items-center gap-3 ml-8">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAllowFreeEmail(true);
+                    setShowFreeEmailWarning(false);
+                  }}
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition-colors"
+                >
+                  Yes, proceed anyway
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, email: '' });
+                    setShowFreeEmailWarning(false);
+                  }}
+                  className="px-4 py-2 border border-amber-300 text-amber-800 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-xs font-bold rounded-lg transition-colors"
+                >
+                  Use work email
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 1 ? (
+            <form onSubmit={handleSignup} className="space-y-5">
             <div className="grid md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <label className="text-sm font-bold ml-1">Full Name</label>
@@ -148,12 +224,50 @@ export function RecruiterSignup() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || showFreeEmailWarning}
               className="w-full py-4 mt-4 rounded-xl bg-gradient-to-r from-primary to-accent text-white font-bold text-lg hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create Employer Account'}
             </button>
           </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="space-y-6 animate-in slide-in-from-right-4">
+              <div className="space-y-2">
+                <label className="text-sm font-bold ml-1">Enter Verification Code</label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                    placeholder="123456"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all tracking-widest text-lg text-center"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  We sent a 6-digit code to {formData.email}
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || otp.length !== 6}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-primary to-accent text-white font-bold text-lg hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verify & Continue'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="w-full py-2 text-sm text-muted-foreground hover:text-foreground font-semibold"
+              >
+                Back to details
+              </button>
+            </form>
+          )}
 
           <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 text-center">
             <p className="text-muted-foreground">

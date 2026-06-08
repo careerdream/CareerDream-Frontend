@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 
 (async () => {
-  const url = 'http://localhost:5174';
+  const url = 'http://localhost:5173';
   const viewports = [
     { name: 'mobile', width: 375, height: 812 },
     { name: 'tablet', width: 768, height: 1024 },

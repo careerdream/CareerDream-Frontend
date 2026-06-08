@@ -302,6 +302,8 @@ router.post('/recruiter/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
+    const emailOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const emailOtpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
     // Create Employer first
     const employer = await prisma.employer.create({
@@ -319,18 +321,29 @@ router.post('/recruiter/register', async (req, res) => {
         password: hashedPassword,
         role: 'recruiter',
         employerId: employer.id,
+        emailOtp,
+        emailOtpExpiry,
+        isEmailVerified: false
       },
     });
 
-    const token = generateToken(user.id);
+    // Send OTP Email
+    console.log(`[DEVELOPMENT] OTP for ${email} is ${emailOtp}`);
+    try {
+      await transporter.sendMail({
+        from: `"CareerDream" <${process.env.SMTP_USER || 'noreply@careerdream.in'}>`,
+        to: email,
+        subject: 'Verify your CareerDream Employer Account',
+        html: getOtpEmailTemplate(emailOtp, 'register')
+      });
+    } catch (e) {
+      console.error('Email send error:', e.message);
+    }
 
     res.status(201).json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      employer,
-      token,
+      message: 'Registration successful. Please verify your email with the OTP sent.',
+      userId: user.id,
+      requiresVerification: true
     });
   } catch (error) {
     console.error('Recruiter Reg Error:', error);
@@ -776,7 +789,10 @@ router.post('/verify-email', [
 ], async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ 
+      where: { email },
+      include: { employer: true }
+    });
     if (!user) return res.status(404).json({ error: 'not_found' });
     if (user.isEmailVerified) return res.status(400).json({ message: 'Already verified' });
     if (user.emailOtp !== otp || new Date() > user.emailOtpExpiry) {
@@ -789,7 +805,17 @@ router.post('/verify-email', [
     // Auto login after verification
     const token = generateToken(user.id);
     setAuthCookie(res, token);
-    res.json({ message: 'Email verified successfully.', token });
+    res.json({ 
+      message: 'Email verified successfully.', 
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        employer: user.employer
+      }
+    });
   } catch (e) { res.status(500).json({ error: 'server_error' }); }
 });
 

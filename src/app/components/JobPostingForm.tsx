@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import { ArrowLeft, Plus, Trash2, Loader2 } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router';
+import { ArrowLeft, Plus, Trash2, Loader2, Sparkles, Save } from 'lucide-react';
 import { api } from '../utils/api';
 
 export function JobPostingForm() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditing = Boolean(id);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -12,6 +14,9 @@ export function JobPostingForm() {
     location: 'Remote',
     locationType: 'Remote',
     description: '',
+    responsibilities: '',
+    requirements: '',
+    benefits: '',
     skills: [] as string[],
     experienceLevel: 'Fresher',
     salaryMin: '',
@@ -21,16 +26,48 @@ export function JobPostingForm() {
     applicantEmail: ''
   });
   const [skillInput, setSkillInput] = useState('');
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [generatingAI, setGeneratingAI] = useState(false);
 
   useEffect(() => {
     const recruiterAuth = localStorage.getItem('recruiterAuth');
-    if (recruiterAuth) {
+    if (recruiterAuth && !isEditing) {
       const parsed = JSON.parse(recruiterAuth);
       if (parsed.employer?.company_name) {
         setFormData(prev => ({ ...prev, companyName: parsed.employer.company_name }));
       }
     }
-  }, []);
+
+    if (isEditing) {
+      const fetchJob = async () => {
+        try {
+          const job = await api.get(`/jobs/${id}`);
+          setFormData({
+            title: job.title || '',
+            companyName: job.company || '',
+            location: job.location || 'Remote',
+            locationType: job.type || 'Remote',
+            description: job.description || '',
+            responsibilities: Array.isArray(job.responsibilities) ? job.responsibilities.join('\n') : '',
+            requirements: Array.isArray(job.requirements) ? job.requirements.join('\n') : '',
+            benefits: Array.isArray(job.benefits) ? job.benefits.join('\n') : '',
+            skills: Array.isArray(job.skills) ? job.skills : [],
+            experienceLevel: job.experience || 'Fresher',
+            salaryMin: job.salary ? job.salary.replace(/[^0-9]/g, '').slice(0, 7) : '', // Quick hack
+            salaryMax: job.salary ? job.salary.replace(/[^0-9]/g, '').slice(7) : '', // Better to type it in
+            deadline: '',
+            externalUrl: job.externalUrl || '',
+            applicantEmail: ''
+          });
+        } catch (err) {
+          console.error('Fetch job error:', err);
+          alert('Failed to load job details');
+          navigate('/recruiter/dashboard');
+        }
+      };
+      fetchJob();
+    }
+  }, [id, isEditing, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -52,6 +89,35 @@ export function JobPostingForm() {
       ...prev,
       skills: prev.skills.filter(s => s !== skill)
     }));
+  };
+
+  const handleGenerateAI = async () => {
+    if (!aiPrompt.trim()) return;
+    setGeneratingAI(true);
+    try {
+      const response = await api.post('/jobs/generate', { prompt: aiPrompt });
+      const data = response;
+      
+      setFormData(prev => ({
+        ...prev,
+        title: data.title || prev.title,
+        description: data.description || prev.description,
+        responsibilities: Array.isArray(data.responsibilities) ? data.responsibilities.join('\n') : prev.responsibilities,
+        requirements: Array.isArray(data.requirements) ? data.requirements.join('\n') : prev.requirements,
+        benefits: Array.isArray(data.benefits) ? data.benefits.join('\n') : prev.benefits,
+        skills: Array.isArray(data.skills) && data.skills.length > 0 ? data.skills : prev.skills,
+        experienceLevel: data.experienceLevel || prev.experienceLevel,
+        salaryMin: data.salaryMin ? String(data.salaryMin) : prev.salaryMin,
+        salaryMax: data.salaryMax ? String(data.salaryMax) : prev.salaryMax,
+      }));
+      
+      setAiPrompt(''); // clear prompt after success
+    } catch (err: any) {
+      console.error('AI generation error:', err);
+      alert(err?.response?.data?.message || 'Failed to generate job using AI. Please try again.');
+    } finally {
+      setGeneratingAI(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,13 +144,21 @@ export function JobPostingForm() {
         experience: formData.experienceLevel,
         category: 'Technology', // Default for now
         description: formData.description,
+        responsibilities: formData.responsibilities.split('\n').map(s => s.trim()).filter(Boolean),
+        requirements: formData.requirements.split('\n').map(s => s.trim()).filter(Boolean),
+        benefits: formData.benefits.split('\n').map(s => s.trim()).filter(Boolean),
         skills: formData.skills,
         applicants: 0
       };
 
-      await api.post('/jobs', payload);
+      if (isEditing) {
+        await api.put(`/jobs/${id}`, payload);
+        alert('Job updated successfully!');
+      } else {
+        await api.post('/jobs', payload);
+        alert('Job posted successfully!');
+      }
       
-      alert('Job posted successfully!');
       navigate('/recruiter/dashboard');
     } catch (err: any) {
       console.error('Job post error:', err);
@@ -102,13 +176,52 @@ export function JobPostingForm() {
           <button onClick={() => navigate('/recruiter/dashboard')} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
           </button>
-          <h1 className="text-4xl font-bold mb-2">Post a New Job</h1>
-          <p className="text-muted-foreground">Fill in the details below to reach top IT talent</p>
+          <h1 className="text-4xl font-bold mb-2">{isEditing ? 'Edit Job Posting' : 'Post a New Job'}</h1>
+          <p className="text-muted-foreground">{isEditing ? 'Update the details for this position' : 'Fill in the details below to reach top IT talent'}</p>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-12">
-        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-8">
+        <div className="max-w-3xl mx-auto space-y-8">
+          
+          {/* AI Generation Section */}
+          <section className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-xl p-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+              <Sparkles className="w-24 h-24 text-purple-500" />
+            </div>
+            <div className="relative z-10">
+              <h2 className="text-xl font-bold mb-2 flex items-center gap-2 text-purple-700 dark:text-purple-300">
+                <Sparkles className="w-5 h-5" /> Draft with AI ✨
+              </h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Describe the role in a few words and our AI will generate a professional job description, skills, and salary bracket.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  placeholder="e.g., Need a frontend dev with 3 years experience in React and Node.js for remote role. Salary 12 LPA"
+                  className="flex-1 px-4 py-3 rounded-xl border border-purple-500/30 bg-background focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleGenerateAI())}
+                />
+                <button
+                  type="button"
+                  onClick={handleGenerateAI}
+                  disabled={generatingAI || !aiPrompt.trim()}
+                  className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {generatingAI ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>
+                  ) : (
+                    <><Sparkles className="w-4 h-4" /> Generate</>
+                  )}
+                </button>
+              </div>
+            </div>
+          </section>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information */}
           <section className="bg-card border border-border rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4">Basic Information</h2>
@@ -169,17 +282,54 @@ export function JobPostingForm() {
           {/* Job Description */}
           <section className="bg-card border border-border rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4">Job Description</h2>
-            <div>
-              <label className="block text-sm font-medium mb-2">Description *</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Describe the role, responsibilities, and requirements..."
-                rows={8}
-                className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:border-primary focus:outline-none transition-colors"
-              />
-              <p className="text-xs text-muted-foreground mt-2">Include key responsibilities, qualifications, and benefits</p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Description *</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Overview of the role..."
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:border-primary focus:outline-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Responsibilities</label>
+                <textarea
+                  name="responsibilities"
+                  value={formData.responsibilities}
+                  onChange={handleChange}
+                  placeholder="Enter each responsibility on a new line..."
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:border-primary focus:outline-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Requirements</label>
+                <textarea
+                  name="requirements"
+                  value={formData.requirements}
+                  onChange={handleChange}
+                  placeholder="Enter each requirement on a new line..."
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:border-primary focus:outline-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Perks & Benefits</label>
+                <textarea
+                  name="benefits"
+                  value={formData.benefits}
+                  onChange={handleChange}
+                  placeholder="Enter each benefit on a new line..."
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:border-primary focus:outline-none transition-colors"
+                />
+              </div>
             </div>
           </section>
 
@@ -206,7 +356,6 @@ export function JobPostingForm() {
                     <Plus className="w-4 h-4" /> Add
                   </button>
                 </div>
-
                 <div className="flex flex-wrap gap-2">
                   {formData.skills.map(skill => (
                     <div key={skill} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary">
@@ -330,14 +479,15 @@ export function JobPostingForm() {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Publishing...
+                  {isEditing ? 'Saving...' : 'Publishing...'}
                 </>
               ) : (
-                'Publish Job'
+                isEditing ? <><Save className="w-4 h-4" /> Save Changes</> : 'Publish Job'
               )}
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

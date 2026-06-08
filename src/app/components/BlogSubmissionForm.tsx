@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { X, Send, AlertCircle, Image as ImageIcon, Trash2, ArrowRight, Sparkles } from 'lucide-react';
+import { X, Send, AlertCircle, Image as ImageIcon, Trash2, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { api } from '../utils/api';
 import { useApp } from '../context/AppContext';
 import { getWatermark } from '../utils/watermark';
@@ -8,19 +8,22 @@ import { getWatermark } from '../utils/watermark';
 interface BlogSubmissionFormProps {
   onClose: () => void;
   onPostCreated: () => void;
+  editPost?: any;
 }
 
-export function BlogSubmissionForm({ onClose, onPostCreated }: BlogSubmissionFormProps) {
+export function BlogSubmissionForm({ onClose, onPostCreated, editPost }: BlogSubmissionFormProps) {
   const { user } = useApp();
   const [formData, setFormData] = useState({
-    title: '',
-    excerpt: '',
-    content: '',
-    category: 'IT Career',
-    image: null as string | null,
+    title: editPost?.title || '',
+    excerpt: editPost?.excerpt || '',
+    content: editPost?.content || '',
+    category: editPost?.category || 'IT Career',
+    image: editPost?.image || null as string | null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
+  const [aiPrompt, setAiPrompt] = useState('');
   const [step, setStep] = useState<'edit' | 'preview'>('edit');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -31,7 +34,8 @@ export function BlogSubmissionForm({ onClose, onPostCreated }: BlogSubmissionFor
     'IT Career', 'Others'
   ];
 
-  const [customCategory, setCustomCategory] = useState('');
+  const initialCustomCategory = editPost && !categories.includes(editPost.category) ? editPost.category : '';
+  const [customCategory, setCustomCategory] = useState(initialCustomCategory);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -91,12 +95,21 @@ export function BlogSubmissionForm({ onClose, onPostCreated }: BlogSubmissionFor
 
     try {
       setIsSubmitting(true);
-      const watermarkedContent = formData.content + getWatermark(user?.name);
-      await api.post('/blog/posts', { ...formData, content: watermarkedContent, category: finalCategory });
+      // Remove watermark if it's already there to prevent duplicates (rudimentary check)
+      let finalContent = formData.content;
+      if (!editPost) {
+        finalContent = formData.content + getWatermark(user?.name);
+      }
+
+      if (editPost) {
+        await api.put(`/blog/posts/${editPost.id}`, { ...formData, content: finalContent, category: finalCategory });
+      } else {
+        await api.post('/blog/posts', { ...formData, content: finalContent, category: finalCategory });
+      }
       onPostCreated();
     } catch (err) {
-      setError('Failed to create blog post. Please try again.');
-      console.error('Error creating post:', err);
+      setError(`Failed to ${editPost ? 'update' : 'create'} blog post. Please try again.`);
+      console.error('Error saving post:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -109,6 +122,39 @@ export function BlogSubmissionForm({ onClose, onPostCreated }: BlogSubmissionFor
       return;
     }
     setStep('preview');
+  };
+
+  const handleGenerateAI = async () => {
+    if (!aiPrompt.trim() || aiPrompt.length < 5) {
+      setError('Please enter a more descriptive prompt for the AI (min 5 characters).');
+      return;
+    }
+    setError('');
+    setIsGenerating(true);
+    try {
+      const response = await api.post('/blog/generate', { prompt: aiPrompt });
+      // api.post returns the JSON directly, not an axios response object
+      const { title, category, excerpt, content } = response;
+      
+      setFormData(prev => ({
+        ...prev,
+        title: title || prev.title,
+        excerpt: excerpt || prev.excerpt,
+        content: content || prev.content,
+        category: categories.includes(category) ? category : 'Others',
+      }));
+      
+      if (category && !categories.includes(category)) {
+        setCustomCategory(category);
+      }
+
+      setAiPrompt(''); // Clear prompt on success
+    } catch (err: any) {
+      console.error("AI Generation Error:", err);
+      setError(err.message || 'Failed to generate post. Please try again later.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -128,7 +174,7 @@ export function BlogSubmissionForm({ onClose, onPostCreated }: BlogSubmissionFor
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between p-6 border-b border-white/10 bg-[#0a0a1a]/80 backdrop-blur">
-          <h2 className="text-2xl font-bold text-white">Share Your Post</h2>
+          <h2 className="text-2xl font-bold text-white">{editPost ? 'Edit Post' : 'Share Your Post'}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
@@ -150,6 +196,38 @@ export function BlogSubmissionForm({ onClose, onPostCreated }: BlogSubmissionFor
               <span>{error}</span>
             </motion.div>
           )}
+
+          {/* AI Generation Section */}
+          <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-xl p-5 mb-6">
+            <label className="flex items-center gap-2 text-sm font-bold text-white mb-3">
+              <Sparkles className="w-4 h-4 text-primary" />
+              Generate with AI
+            </label>
+            <div className="flex gap-3">
+              <textarea
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder="Give a short brief (e.g., 'Write a post about learning React in 2026')"
+                rows={2}
+                className="flex-1 px-4 py-3 bg-[#0a0a1a]/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary/50 transition-colors resize-none text-sm"
+              />
+              <button
+                type="button"
+                onClick={handleGenerateAI}
+                disabled={isGenerating || !aiPrompt.trim()}
+                className="px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center min-w-[100px] shadow-lg shadow-primary/20"
+              >
+                {isGenerating ? (
+                  <><Loader2 className="w-5 h-5 animate-spin mb-1" /> Generating...</>
+                ) : (
+                  <><Sparkles className="w-5 h-5 mb-1" /> Generate</>
+                )}
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 mt-3 italic">
+              AI will fill in the Title, Category, Excerpt, and Content based on your prompt.
+            </p>
+          </div>
 
           {/* Title */}
           <div>
@@ -357,7 +435,7 @@ export function BlogSubmissionForm({ onClose, onPostCreated }: BlogSubmissionFor
                 className="px-6 py-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-green-500/50 transition-all"
               >
                 <Send className="w-5 h-5" />
-                {isSubmitting ? 'Publishing...' : 'Confirm & Publish Now'}
+                {isSubmitting ? (editPost ? 'Saving...' : 'Publishing...') : (editPost ? 'Save Changes' : 'Confirm & Publish Now')}
               </motion.button>
             </div>
           </div>
