@@ -1,15 +1,17 @@
 import { useParams, Link } from 'react-router';
-import { MapPin, Briefcase, DollarSign, Clock, Building, Users, TrendingUp, Bookmark, Share2, ArrowLeft, CheckCircle, Plus, ExternalLink, Loader2 } from 'lucide-react';
+import { MapPin, Briefcase, DollarSign, Clock, Building, Users, TrendingUp, Bookmark, Share2, ArrowLeft, CheckCircle, Plus, ExternalLink, Loader2, MessageCircle, Linkedin, Twitter, Facebook, Link as LinkIcon } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { getWatermark, formatShareMessage } from '../utils/watermark';
+import { toast } from 'sonner';
 
 export function JobDetailPage() {
   const { id } = useParams();
   const { user, savedJobIds, toggleSaveJob, applyToJob, appliedJobIds, jobs, isLoading, isLoggedIn, setUnlockModalOpen } = useApp();
   const [showApply, setShowApply] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
   const [resume, setResume] = useState<File | null>(null);
 
@@ -67,26 +69,8 @@ export function JobDetailPage() {
     setShowApply(false);
   };
 
-  const handleShare = async () => {
-    setIsSharing(true);
-    const shareData = {
-      title: job.title,
-      text: formatShareMessage(`Check out this job at ${job.company} on CareerDream!`, user?.name || 'A user'),
-      url: window.location.href
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareData.url);
-        alert('Job link copied to clipboard!');
-      }
-    } catch (err) {
-      console.error('Error sharing:', err);
-    } finally {
-      setIsSharing(false);
-    }
+  const handleShare = () => {
+    setShowShareModal(true);
   };
 
   return (
@@ -136,7 +120,7 @@ export function JobDetailPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-col items-start gap-4">
               {job.externalUrl ? (
                 <a
                   href={job.externalUrl}
@@ -147,18 +131,18 @@ export function JobDetailPage() {
                       applyToJob(job.id);
                     }
                   }}
-                  className="px-10 py-4 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform hover:scale-105 shadow-2xl flex items-center gap-2 text-center"
+                  className="px-10 py-4 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform hover:scale-105 shadow-2xl flex items-center gap-2 text-center whitespace-nowrap w-full sm:w-auto"
                 >
                   Apply on company site <ExternalLink className="w-4 h-4" />
                 </a>
               ) : isApplied ? (
-                <div className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-green-500/10 text-green-400 border border-green-500/20 font-black text-xs uppercase tracking-widest">
-                  <CheckCircle className="w-5 h-5" /> Application Received
+                <div className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-green-500/10 text-green-400 border border-green-500/20 font-black text-xs uppercase tracking-widest whitespace-nowrap w-full sm:w-auto">
+                  <CheckCircle className="w-5 h-5 shrink-0" /> Application Received
                 </div>
               ) : (
                 <button
                   onClick={handleOpenApplyModal}
-                  className="px-10 py-4 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform hover:scale-105 shadow-2xl flex items-center gap-2"
+                  className="px-10 py-4 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-foreground transition-all transform hover:scale-105 shadow-2xl flex items-center justify-center gap-2 whitespace-nowrap w-full sm:w-auto"
                 >
                   Apply Now
                 </button>
@@ -177,6 +161,7 @@ export function JobDetailPage() {
                 <button 
                   onClick={handleShare}
                   className="w-14 h-14 rounded-2xl bg-card border border-border hover:border-border text-muted-foreground hover:text-foreground flex items-center justify-center transition-all"
+                  title="Share"
                 >
                   <Share2 className="w-5 h-5" />
                 </button>
@@ -421,6 +406,69 @@ export function JobDetailPage() {
           </motion.div>
         </div>
       )}
+      {/* Share Modal */}
+      {showShareModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onClick={() => setShowShareModal(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+          />
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="relative w-full max-w-sm bg-[#0a0a1a] border border-white/10 rounded-3xl p-8 shadow-2xl"
+          >
+            <h3 className="text-xl font-bold mb-6 text-center">Share this Job</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { name: 'WhatsApp', icon: MessageCircle, color: 'hover:text-green-500', url: `https://wa.me/?text=${encodeURIComponent(`${job.title}\n\n🌐 Job posted on CareerDream.in : ${window.location.href}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`)}` },
+                { name: 'LinkedIn', icon: Linkedin, color: 'hover:text-blue-600', url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}` },
+                { name: 'Twitter', icon: Twitter, color: 'hover:text-sky-400', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${job.title}\n\n🌐 Job posted on CareerDream.in : ${window.location.href}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`)}` },
+                { name: 'Facebook', icon: Facebook, color: 'hover:text-blue-700', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}` },
+              ].map(link => (
+                <a
+                  key={link.name}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex flex-col items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 transition-all ${link.color} text-white`}
+                >
+                  <link.icon className="w-8 h-8" />
+                  <span className="text-xs font-bold uppercase tracking-widest">{link.name}</span>
+                </a>
+              ))}
+              
+              <button
+                onClick={() => {
+                  const skillsText = Array.isArray(job.skills) ? job.skills.join(', ') : job.skills || 'N/A';
+                  const fullText = `*${job.title}*\n🏢 ${job.company}\n📍 ${job.location}\n💰 ${job.salary}\n\n*Requirements:*\n- Experience: ${job.experience}\n- Job Type: ${job.type}\n- Skills: ${skillsText}\n\n*Description:*\n${job.description}\n\n🌐 Apply here: ${window.location.href}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`;
+                  navigator.clipboard.writeText(fullText);
+                  toast.success("Full job details copied successfully! Go ahead and paste it on LinkedIn, WhatsApp, or Facebook.");
+                }}
+                className="col-span-2 flex items-center justify-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 text-white hover:opacity-90 transition-all"
+              >
+                <Share2 className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold uppercase tracking-widest">Copy Full Details & Share</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  const shareMsg = `${job.title}\n\n🌐 Job posted on CareerDream.in : ${window.location.href}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`;
+                  navigator.clipboard.writeText(shareMsg);
+                  toast.success('Link & Socials copied to clipboard!');
+                }}
+                className="col-span-2 flex items-center justify-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-all"
+              >
+                <LinkIcon className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase tracking-widest">Copy Job Link</span>
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
     </div>
   );
 }

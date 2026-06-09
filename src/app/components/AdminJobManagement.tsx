@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Search, Filter, Plus, Edit, Trash2, Eye, Download, CheckCircle, 
-  XCircle, Clock, Star, Users, BarChart2, MoreVertical, X, Loader2 
+  XCircle, Clock, Star, Users, BarChart2, MoreVertical, X, Loader2, FileUp
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { api } from '../utils/api';
+import { JobPostingForm } from './JobPostingForm';
+import * as XLSX from 'xlsx';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -26,6 +28,13 @@ export function AdminJobManagement() {
   const [analytics, setAnalytics] = useState<any>(null);
   const [applicants, setApplicants] = useState<any[]>([]);
   
+  // Bulk Upload State
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showBulkPreviewModal, setShowBulkPreviewModal] = useState(false);
+  const [bulkPreviewJobs, setBulkPreviewJobs] = useState<any[]>([]);
+  const [isBulkPublishing, setIsBulkPublishing] = useState(false);
+  
   useEffect(() => {
     if (currentView === 'list') {
       fetchJobs();
@@ -42,7 +51,7 @@ export function AdminJobManagement() {
         ...(search && { search })
       });
       const data = await api.get(`/admin/jobs?${params}`);
-      setJobs(data.jobs);
+      setJobs(data.data || data.jobs || []);
       setTotalPages(data.totalPages);
     } catch (e) {
       console.error(e);
@@ -59,7 +68,7 @@ export function AdminJobManagement() {
         api.get(`/admin/jobs/${id}/analytics`)
       ]);
       setSelectedJob(job);
-      setApplicants(applicants);
+      setApplicants(applicants || []);
       setAnalytics(analytics);
       setCurrentView('details');
     } catch (e) {
@@ -91,9 +100,55 @@ export function AdminJobManagement() {
 
   const deleteJob = async (id: number) => {
     if (!window.confirm('Delete this job?')) return;
-    await api.delete(`/admin/jobs/${id}`);
-    if (currentView === 'details') setCurrentView('list');
-    else fetchJobs();
+    try {
+      await api.delete(`/admin/jobs/${id}`);
+      if (currentView === 'details') setCurrentView('list');
+      else fetchJobs();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to delete selected jobs.');
+    }
+  };
+
+  const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const bstr = evt.target?.result;
+        const wb = XLSX.read(bstr, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws);
+
+        const newJobs = data.map((item: any) => ({
+          title: item.title || 'Untitled Role',
+          company: item.company || item.companyName || 'Unknown Company',
+          location: item.location || 'Remote',
+          type: item.type || item.locationType || 'Remote',
+          description: item.description || '',
+          skills: typeof item.skills === 'string' ? item.skills.split(/[,;]/).map((s: string) => s.trim()).filter(Boolean) : [],
+          responsibilities: typeof item.responsibilities === 'string' ? item.responsibilities.split(';').map((s: string) => s.trim()).filter(Boolean) : [],
+          requirements: typeof item.requirements === 'string' ? item.requirements.split(';').map((s: string) => s.trim()).filter(Boolean) : [],
+          benefits: typeof item.benefits === 'string' ? item.benefits.split(';').map((s: string) => s.trim()).filter(Boolean) : [],
+          experience: item.experience || item.experienceLevel || 'Fresher',
+          salary: item.salary || (item.salaryMin && item.salaryMax ? `₹${item.salaryMin} - ₹${item.salaryMax}` : ''),
+        }));
+
+        setBulkPreviewJobs(newJobs);
+        setShowBulkPreviewModal(true);
+      } catch (err) {
+        console.error('Error parsing Excel:', err);
+        alert('Failed to parse jobs. Please check your Excel format.');
+      } finally {
+        setIsUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    };
+    reader.readAsBinaryString(file);
   };
 
   const StatusBadge = ({ status, featured }: { status: string, featured?: boolean }) => {
@@ -128,6 +183,11 @@ export function AdminJobManagement() {
                 <Trash2 size={16} className="mr-2" /> Delete Selected ({selectedIds.length})
               </Button>
             )}
+            <input type="file" accept=".xlsx, .xls, .csv" className="hidden" ref={fileInputRef} onChange={handleBulkUpload} />
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
+              {isUploading ? <Loader2 size={16} className="mr-2 animate-spin" /> : <FileUp size={16} className="mr-2" />}
+              Bulk Upload
+            </Button>
             <Button variant="outline" onClick={() => api.download('/admin/jobs/export', 'jobs_export.csv')}>
               <Download size={16} className="mr-2" /> Export CSV
             </Button>
@@ -175,14 +235,14 @@ export function AdminJobManagement() {
                       className="rounded border-slate-300"
                       onChange={(e) => {
                         if (e.target.checked) {
-                          const newIds = jobs.map(j => j.id).filter(id => !selectedIds.includes(id));
+                          const newIds = (jobs || []).map(j => j.id).filter(id => !selectedIds.includes(id));
                           setSelectedIds([...selectedIds, ...newIds]);
                         } else {
-                          const pageIds = jobs.map(j => j.id);
+                          const pageIds = (jobs || []).map(j => j.id);
                           setSelectedIds(selectedIds.filter(id => !pageIds.includes(id)));
                         }
                       }}
-                      checked={jobs.length > 0 && jobs.every(j => selectedIds.includes(j.id))}
+                      checked={(jobs || []).length > 0 && jobs.every(j => selectedIds.includes(j.id))}
                     />
                   </th>
                   <th className="p-4 font-medium">Job Info</th>
@@ -197,7 +257,7 @@ export function AdminJobManagement() {
                   <tr><td colSpan={6} className="p-8 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" /></td></tr>
                 ) : jobs.length === 0 ? (
                   <tr><td colSpan={6} className="p-8 text-center text-slate-500">No jobs found.</td></tr>
-                ) : jobs.map((job) => (
+                ) : (jobs || []).map((job) => (
                   <tr key={job.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/20">
                     <td className="p-4">
                       <input 
@@ -294,7 +354,7 @@ export function AdminJobManagement() {
         {/* Applicants Table */}
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="p-4 border-b border-slate-200 dark:border-slate-700">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Applicants ({applicants.length})</h3>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Applicants ({(applicants || []).length})</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -308,9 +368,9 @@ export function AdminJobManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                {applicants.length === 0 ? (
+                {(applicants || []).length === 0 ? (
                   <tr><td colSpan={5} className="p-8 text-center text-slate-500">No applicants yet.</td></tr>
-                ) : applicants.map((app) => (
+                ) : (applicants || []).map((app) => (
                   <tr key={app.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/20">
                     <td className="p-4">
                       <p className="font-semibold">{app.user?.name || 'Unknown'}</p>
@@ -336,76 +396,106 @@ export function AdminJobManagement() {
     );
   }
 
-  // CREATE / EDIT FORM VIEW (Simplified for integration)
+  // CREATE / EDIT FORM VIEW
   if (currentView === 'edit') {
-    const isEdit = !!selectedJob;
     return (
-      <div className="max-w-4xl mx-auto space-y-6 pb-20">
-        <div className="flex items-center gap-4 mb-6">
-          <Button variant="outline" onClick={() => setCurrentView(isEdit ? 'details' : 'list')}>← Back</Button>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{isEdit ? 'Edit Job' : 'Create New Job'}</h1>
-        </div>
-        <div className="bg-white dark:bg-slate-800 p-8 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <p className="text-slate-500 mb-8">This would embed the full JobFormModal with all fields pre-populated for ID: {selectedJob?.id}. For brevity in this system integration, click "Save" to simulate saving.</p>
-          
-          <div className="grid grid-cols-2 gap-6 mb-8">
-            <div><label className="text-sm font-medium">Job Title</label><Input id="job-title-input" defaultValue={selectedJob?.title} className="mt-1" placeholder="Job Title" /></div>
-            <div><label className="text-sm font-medium">Company</label><Input id="job-company-input" defaultValue={selectedJob?.company} className="mt-1" placeholder="Company" /></div>
-            <div>
-              <label className="text-sm font-medium">Status</label>
-              <Select id="job-status-select" defaultValue={selectedJob?.status || 'active'}>
-                <SelectTrigger className="mt-1"><SelectValue id="job-status-value" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="expired">Expired</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-               <label className="flex items-center gap-2 mt-8 cursor-pointer">
-                 <input id="job-featured-check" type="checkbox" defaultChecked={selectedJob?.featured} className="w-4 h-4 rounded" />
-                 <span className="text-sm font-medium">Featured Job</span>
-               </label>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3">
-             <Button variant="outline" onClick={() => setCurrentView(isEdit ? 'details' : 'list')} disabled={loading}>Cancel</Button>
-             <Button 
-               className="bg-blue-600 hover:bg-blue-700" 
-               disabled={loading}
-               onClick={async () => {
-                setLoading(true);
-                try {
-                  const jobData = {
-                    title: (document.getElementById('job-title-input') as HTMLInputElement)?.value,
-                    company: (document.getElementById('job-company-input') as HTMLInputElement)?.value,
-                    status: selectedJob?.status || 'active', // Simplified for this demo
-                    featured: (document.getElementById('job-featured-check') as HTMLInputElement)?.checked
-                  };
-
-                  if (isEdit) {
-                    await api.put(`/admin/jobs/${selectedJob.id}`, jobData);
-                  } else {
-                    await api.post('/admin/jobs', jobData);
-                  }
-                  setCurrentView('list');
-                  fetchJobs();
-                } catch (e) {
-                  console.error("Save failed", e);
-                } finally {
-                  setLoading(false);
-                }
-             }}>
-               {loading && <Loader2 size={16} className="animate-spin mr-2" />}
-               {isEdit ? 'Update Job' : 'Create Job'}
-             </Button>
-          </div>
-        </div>
-      </div>
+      <JobPostingForm 
+        jobId={selectedJob?.id} 
+        isAdmin={true}
+        onCancel={() => setCurrentView(selectedJob && analytics ? 'details' : 'list')}
+        onSuccess={() => {
+          setCurrentView('list');
+          fetchJobs();
+        }}
+      />
     );
   }
 
-  return null;
+  return (
+    <>
+      {/* Bulk Job Preview Modal */}
+      {showBulkPreviewModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-5xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 my-auto flex flex-col max-h-full">
+            <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 sticky top-0 z-10">
+              <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                <Eye className="w-5 h-5" />
+                <h2 className="text-xl font-bold">Bulk Job Preview</h2>
+              </div>
+              <button 
+                onClick={() => setShowBulkPreviewModal(false)}
+                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto">
+              <p className="mb-4 text-slate-500 dark:text-slate-400 text-sm">
+                Please review the <strong>{bulkPreviewJobs.length}</strong> jobs parsed from your Excel file before publishing.
+              </p>
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 font-medium border-b border-slate-200 dark:border-slate-700">
+                    <tr>
+                      <th className="px-4 py-3">Title</th>
+                      <th className="px-4 py-3">Company</th>
+                      <th className="px-4 py-3">Location</th>
+                      <th className="px-4 py-3">Type</th>
+                      <th className="px-4 py-3">Experience</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                    {bulkPreviewJobs.map((job, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                        <td className="px-4 py-3 font-medium">{job.title}</td>
+                        <td className="px-4 py-3">{job.company}</td>
+                        <td className="px-4 py-3">{job.location}</td>
+                        <td className="px-4 py-3">{job.type}</td>
+                        <td className="px-4 py-3">{job.experience}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="p-4 sm:p-6 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 bg-slate-50 dark:bg-slate-900/50 mt-auto sticky bottom-0 z-10">
+              <button
+                onClick={() => setShowBulkPreviewModal(false)}
+                className="px-4 py-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white font-medium transition-colors"
+                disabled={isBulkPublishing}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  setIsBulkPublishing(true);
+                  try {
+                    const response = await api.post('/jobs/bulk', { jobs: bulkPreviewJobs });
+                    alert(response.message || `Successfully uploaded ${bulkPreviewJobs.length} jobs!`);
+                    setShowBulkPreviewModal(false);
+                    fetchJobs();
+                  } catch (error: any) {
+                    console.error('Bulk Publish Error:', error);
+                    alert(error.message || 'Failed to publish bulk jobs');
+                  } finally {
+                    setIsBulkPublishing(false);
+                  }
+                }}
+                disabled={isBulkPublishing}
+                className="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                {isBulkPublishing ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Publishing...</>
+                ) : (
+                  <>Publish {bulkPreviewJobs.length} Jobs</>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

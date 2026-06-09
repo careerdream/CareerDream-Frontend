@@ -90,10 +90,10 @@ export function AdminDashboard() {
       setLoading(true);
       setError(null);
       const [statsData, actData, ugData, jaData] = await Promise.all([
-        api.get('/admin/dashboard/stats'),
-        api.get('/admin/dashboard/activity'),
-        api.get('/admin/dashboard/charts/user-growth'),
-        api.get('/admin/dashboard/charts/job-applications')
+        api.get('/admin/dashboard/stats?t=' + Date.now()),
+        api.get('/admin/dashboard/activity?t=' + Date.now()),
+        api.get('/admin/dashboard/charts/user-growth?t=' + Date.now()),
+        api.get('/admin/dashboard/charts/job-applications?t=' + Date.now())
       ]);
 
       setStats(statsData);
@@ -196,7 +196,7 @@ export function AdminDashboard() {
               />
             </div>
             
-            <button className="relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300">
+            <button onClick={() => alert("No new notifications at this time.")} className="relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300">
               <Bell size={20} />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
@@ -240,10 +240,10 @@ export function AdminDashboard() {
                   <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Dashboard Overview</h1>
                     <div className="flex space-x-3">
-                      <button className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-lg shadow-blue-500/20">
+                      <button onClick={() => setActiveTab('jobs')} className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-lg shadow-blue-500/20">
                         <Plus size={16} className="mr-2" /> Post Job
                       </button>
-                      <button className="flex items-center px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors">
+                      <button onClick={() => setActiveTab('analytics')} className="flex items-center px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors">
                         <FileText size={16} className="mr-2" /> Generate Report
                       </button>
                     </div>

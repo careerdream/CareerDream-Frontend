@@ -249,6 +249,7 @@ const seed = async () => {
         role: 'admin',
         title: 'Master Administrator',
         avatar: '💎',
+        isEmailVerified: true,
       }
     });
 

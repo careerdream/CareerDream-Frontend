@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Upload, Brain, Zap, Target, AlertCircle, CheckCircle, ChevronRight, FileText, Loader2, Star, TrendingUp, Award, BookOpen, Briefcase } from 'lucide-react';
 import { jobs } from '../data/jobs';
@@ -19,6 +19,41 @@ export function AIResumePage() {
   const [resumeDetails, setResumeDetails] = useState<ResumeDetails | null>(null);
   const [matchResults, setMatchResults] = useState<ReturnType<typeof matchJobsToResume>>([]);
   const [careerInsights, setCareerInsights] = useState<ReturnType<typeof getCareerInsights>>([]);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [existingAnalysis, setExistingAnalysis] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchExistingAnalysis = async () => {
+      try {
+        const { api } = await import('../utils/api');
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          setInitialLoading(false);
+          return;
+        }
+        
+        const res = await api.get('/resume/analysis');
+        // Handle axios (res.data) or standard fetch (res)
+        const analysisData = res.data?.analysis || res.analysis;
+        
+        if (analysisData && analysisData.analysisReport) {
+          const report = typeof analysisData.analysisReport === 'string' 
+            ? JSON.parse(analysisData.analysisReport) 
+            : analysisData.analysisReport;
+            
+          if (report.resumeDetails && report.matchResults) {
+            setExistingAnalysis(report);
+          }
+        }
+      } catch (e) {
+        // Normal if user hasn't uploaded a resume yet
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+    
+    fetchExistingAnalysis();
+  }, []);
 
   const handleFile = (f: File) => {
     setFile(f);
@@ -119,14 +154,36 @@ export function AIResumePage() {
             AI Resume{' '}
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Match</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Upload your resume and let our AI instantly analyze your skills, match you to the best jobs, and identify learning gaps.
           </p>
+          {existingAnalysis && !parsed && (
+            <div className="flex justify-center">
+              <button 
+                onClick={() => {
+                  setResumeDetails(existingAnalysis.resumeDetails);
+                  setMatchResults(existingAnalysis.matchResults);
+                  setExtractedSkills(existingAnalysis.resumeDetails.skills || []);
+                  setCareerInsights(existingAnalysis.careerInsights || []);
+                  setParsed(true);
+                }}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-card border border-border hover:border-primary text-foreground font-bold transition-all shadow-sm"
+              >
+                <Brain className="w-5 h-5 text-primary" />
+                View Previous ATS Insights
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-10">
-        {!parsed ? (
+        {initialLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+          </div>
+        ) : !parsed ? (
           <div className="max-w-2xl mx-auto space-y-6">
             {/* Upload Zone */}
             <div
@@ -213,6 +270,7 @@ export function AIResumePage() {
               <div className="flex-1">
                 <p className="font-bold text-lg">Resume Analyzed Successfully!</p>
                 <p className="text-muted-foreground text-sm">Found <strong>{extractedSkills.length}</strong> skills • Matched against <strong>{jobs.length}</strong> jobs</p>
+                <Link to="/dashboard" className="text-primary font-bold text-sm mt-2 inline-block hover:underline">View Full ATS Insights on Dashboard →</Link>
               </div>
               <button
                 onClick={() => { setParsed(false); setFile(null); setExtractedSkills([]); setResumeDetails(null); }}

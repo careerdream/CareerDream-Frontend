@@ -540,7 +540,7 @@ export function AdminJobsPage() {
           <h2 className="text-xl font-semibold mb-4">Platform Stats</h2>
           <div className="grid grid-cols-3 gap-4">
             <Card className="p-4 text-center">
-              <div className="text-3xl font-bold text-primary">{jobs.length}</div>
+              <div className="text-3xl font-bold text-primary">{(jobs || []).length}</div>
               <div className="text-sm text-muted-foreground">Total Job Postings</div>
             </Card>
           </div>

@@ -31,10 +31,24 @@ const uploadMiddleware = (req, res, next) => {
   });
 };
 
+// Optional auth to save data if logged in
+const optionalAuth = (req, res, next) => {
+  let token = req.cookies?.token;
+  if (!token) {
+    token = req.header('Authorization')?.split(' ')[1];
+  }
+  if (!token) return next();
+  try {
+    const jwt = require('jsonwebtoken');
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (e) {}
+  next();
+};
+
 // @route   POST /api/resume/analyze
 // @desc    Upload and analyze resume using OpenRouter AI
-// @access  Public (temporarily for testing)
-router.post('/analyze', uploadMiddleware, async (req, res) => {
+// @access  Public (saves to DB if authenticated)
+router.post('/analyze', optionalAuth, uploadMiddleware, async (req, res) => {
   try {
     console.log('Received file:', req.file ? req.file.originalname : 'No file');
     
@@ -76,11 +90,26 @@ router.post('/analyze', uploadMiddleware, async (req, res) => {
 
     // Optionally save the analysis in DB if user is authenticated
     if (req.user && req.user.id) {
-      await prisma.resumeAnalysis.create({
-        data: {
+      await prisma.resumeAnalysis.upsert({
+        where: { userId: req.user.id },
+        update: {
+          atsScore: resumeDetails.atsScore || 0,
+          keywordMatch: resumeDetails.keywordMatch || 0,
+          readinessScore: resumeDetails.readinessScore || 0,
+          missingSkills: resumeDetails.missingSkills || [],
+          formatIssues: resumeDetails.formatIssues || [],
+          recommendedCourses: resumeDetails.recommendedCourseKeywords || [],
+          analysisReport: JSON.stringify({ resumeDetails, matchResults })
+        },
+        create: {
           userId: req.user.id,
-          match_score: matchResults.length > 0 ? matchResults[0].matchScore : 0,
-          analysis_report: JSON.stringify({ resumeDetails, matchResults })
+          atsScore: resumeDetails.atsScore || 0,
+          keywordMatch: resumeDetails.keywordMatch || 0,
+          readinessScore: resumeDetails.readinessScore || 0,
+          missingSkills: resumeDetails.missingSkills || [],
+          formatIssues: resumeDetails.formatIssues || [],
+          recommendedCourses: resumeDetails.recommendedCourseKeywords || [],
+          analysisReport: JSON.stringify({ resumeDetails, matchResults })
         }
       });
       
@@ -103,6 +132,26 @@ router.post('/analyze', uploadMiddleware, async (req, res) => {
   } catch (err) {
     console.error('Resume Analysis Error:', err);
     res.status(500).json({ success: false, message: err.message || 'Server Error during analysis' });
+  }
+});
+
+// @route   GET /api/resume/analysis
+// @desc    Get user's saved resume analysis
+// @access  Private
+router.get('/analysis', auth, async (req, res) => {
+  try {
+    const analysis = await prisma.resumeAnalysis.findUnique({
+      where: { userId: req.user.id }
+    });
+    
+    if (!analysis) {
+      return res.status(404).json({ success: false, message: 'No analysis found' });
+    }
+    
+    res.json({ success: true, analysis });
+  } catch (error) {
+    console.error('Get Resume Analysis Error:', error);
+    res.status(500).json({ success: false, message: 'Server error fetching analysis' });
   }
 });
 

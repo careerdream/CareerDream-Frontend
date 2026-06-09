@@ -65,7 +65,7 @@ export function AdminRBACManagement() {
     setLoading(true);
     try {
       const data = await api.get('/admin/admins');
-      setAdmins(data.admins || []);
+      setAdmins(data.data || data.admins || []);
     } finally { setLoading(false); }
   };
 
@@ -79,7 +79,7 @@ export function AdminRBACManagement() {
     try {
       const params = new URLSearchParams({ ...(auditAction && { action: auditAction }), ...(auditResource && { resourceType: auditResource }) });
       const data = await api.get(`/admin/admins/audit-log?${params}`);
-      setAuditLogs(data.logs || []);
+      setAuditLogs(data.data || data.logs || []);
     } finally { setLoading(false); }
   };
 

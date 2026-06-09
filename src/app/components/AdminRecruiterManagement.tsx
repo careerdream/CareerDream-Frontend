@@ -43,7 +43,7 @@ export function AdminRecruiterManagement() {
         ...(search && { search })
       });
       const data = await api.get(`/admin/recruiters?${params}`);
-      setRecruiters(data.recruiters);
+      setRecruiters(data.data || data.recruiters || []);
       setTotalPages(data.totalPages);
     } catch (e) {
       console.error(e);

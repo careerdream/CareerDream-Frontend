@@ -343,12 +343,18 @@ model ArticleLike {
 }
 
 model ResumeAnalysis {
-  id              Int      @id @default(autoincrement())
-  userId          Int
-  match_score     Decimal  @db.Decimal(5, 2)
-  analysis_report String   @db.Text
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  created_at      DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @unique
+  atsScore           Int      @default(0)
+  keywordMatch       Int      @default(0)
+  readinessScore     Int      @default(0)
+  missingSkills      Json?    // Array of skills
+  formatIssues       Json?    // Array of formatting issues
+  recommendedCourses Json?    // Array of course IDs
+  analysisReport     String   @db.Text
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model UserSetting {

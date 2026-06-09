@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ArrowLeft, Plus, Trash2, Loader2, Sparkles, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Loader2, Sparkles, Save, Eye, X, MapPin, Building2, Briefcase, IndianRupee, Clock } from 'lucide-react';
 import { api } from '../utils/api';
 
-export function JobPostingForm() {
+interface JobPostingFormProps {
+  jobId?: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+  isAdmin?: boolean;
+}
+
+export function JobPostingForm({ jobId, onSuccess, onCancel, isAdmin = false }: JobPostingFormProps = {}) {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const params = useParams();
+  const id = jobId || params.id;
   const isEditing = Boolean(id);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,11 +31,14 @@ export function JobPostingForm() {
     salaryMax: '',
     deadline: '',
     externalUrl: '',
-    applicantEmail: ''
+    applicantEmail: '',
+    status: 'active',
+    featured: false
   });
   const [skillInput, setSkillInput] = useState('');
   const [aiPrompt, setAiPrompt] = useState('');
   const [generatingAI, setGeneratingAI] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     const recruiterAuth = localStorage.getItem('recruiterAuth');
@@ -41,7 +52,8 @@ export function JobPostingForm() {
     if (isEditing) {
       const fetchJob = async () => {
         try {
-          const job = await api.get(`/jobs/${id}`);
+          const endpoint = isAdmin ? `/admin/jobs/${id}` : `/jobs/${id}`;
+          const job = await api.get(endpoint);
           setFormData({
             title: job.title || '',
             companyName: job.company || '',
@@ -57,12 +69,15 @@ export function JobPostingForm() {
             salaryMax: job.salary ? job.salary.replace(/[^0-9]/g, '').slice(7) : '', // Better to type it in
             deadline: '',
             externalUrl: job.externalUrl || '',
-            applicantEmail: ''
+            applicantEmail: '',
+            status: job.status || 'active',
+            featured: Boolean(job.featured)
           });
         } catch (err) {
           console.error('Fetch job error:', err);
           alert('Failed to load job details');
-          navigate('/recruiter/dashboard');
+          if (onCancel) onCancel();
+          else navigate(isAdmin ? '/admin/dashboard' : '/recruiter/dashboard');
         }
       };
       fetchJob();
@@ -70,8 +85,13 @@ export function JobPostingForm() {
   }, [id, isEditing, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const addSkill = () => {
@@ -101,6 +121,9 @@ export function JobPostingForm() {
       setFormData(prev => ({
         ...prev,
         title: data.title || prev.title,
+        companyName: data.companyName || prev.companyName,
+        location: data.location || prev.location,
+        locationType: data.locationType || prev.locationType,
         description: data.description || prev.description,
         responsibilities: Array.isArray(data.responsibilities) ? data.responsibilities.join('\n') : prev.responsibilities,
         requirements: Array.isArray(data.requirements) ? data.requirements.join('\n') : prev.requirements,
@@ -109,6 +132,7 @@ export function JobPostingForm() {
         experienceLevel: data.experienceLevel || prev.experienceLevel,
         salaryMin: data.salaryMin ? String(data.salaryMin) : prev.salaryMin,
         salaryMax: data.salaryMax ? String(data.salaryMax) : prev.salaryMax,
+        externalUrl: data.externalUrl || prev.externalUrl,
       }));
       
       setAiPrompt(''); // clear prompt after success
@@ -148,18 +172,23 @@ export function JobPostingForm() {
         requirements: formData.requirements.split('\n').map(s => s.trim()).filter(Boolean),
         benefits: formData.benefits.split('\n').map(s => s.trim()).filter(Boolean),
         skills: formData.skills,
-        applicants: 0
+        applicants: 0,
+        status: formData.status,
+        featured: formData.featured
       };
 
+      const endpoint = isAdmin ? '/admin/jobs' : '/jobs';
+
       if (isEditing) {
-        await api.put(`/jobs/${id}`, payload);
+        await api.put(`${endpoint}/${id}`, payload);
         alert('Job updated successfully!');
       } else {
-        await api.post('/jobs', payload);
+        await api.post(endpoint, payload);
         alert('Job posted successfully!');
       }
       
-      navigate('/recruiter/dashboard');
+      if (onSuccess) onSuccess();
+      else navigate(isAdmin ? '/admin/dashboard' : '/recruiter/dashboard');
     } catch (err: any) {
       console.error('Job post error:', err);
       alert(err?.response?.data?.message || 'Failed to post job. Please check your connection.');
@@ -173,7 +202,10 @@ export function JobPostingForm() {
       {/* Header */}
       <div className="bg-gradient-to-r from-primary/20 to-accent/20 border-b border-border py-8">
         <div className="container mx-auto px-4">
-          <button onClick={() => navigate('/recruiter/dashboard')} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
+          <button 
+            onClick={() => onCancel ? onCancel() : navigate(isAdmin ? '/admin/dashboard' : '/recruiter/dashboard')} 
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4"
+          >
             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
           </button>
           <h1 className="text-4xl font-bold mb-2">{isEditing ? 'Edit Job Posting' : 'Post a New Job'}</h1>
@@ -274,6 +306,34 @@ export function JobPostingForm() {
                     <option>On-site</option>
                     <option>Hybrid</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4 pt-2">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Status</label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-background focus:border-primary focus:outline-none transition-colors"
+                  >
+                    <option value="active">Active</option>
+                    <option value="draft">Draft</option>
+                    <option value="expired">Expired</option>
+                  </select>
+                </div>
+                <div className="flex items-center h-full pt-6">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="featured"
+                      checked={formData.featured}
+                      onChange={handleChange}
+                      className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <span className="text-sm font-medium">Featured Job (Highlight to candidates)</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -466,10 +526,18 @@ export function JobPostingForm() {
           <div className="flex gap-4">
             <button
               type="button"
-              onClick={() => navigate('/recruiter/dashboard')}
+              onClick={() => onCancel ? onCancel() : navigate(isAdmin ? '/admin/dashboard' : '/recruiter/dashboard')}
               className="flex-1 px-6 py-3 rounded-lg border border-border hover:bg-muted transition-colors font-semibold"
             >
               Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowPreview(true)}
+              className="flex-1 px-6 py-3 rounded-lg border border-primary text-primary hover:bg-primary/5 transition-colors font-semibold flex items-center justify-center gap-2"
+            >
+              <Eye className="w-4 h-4" />
+              Preview
             </button>
             <button
               type="submit"
@@ -489,6 +557,112 @@ export function JobPostingForm() {
         </form>
         </div>
       </div>
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-4xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 my-auto flex flex-col max-h-full">
+            <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-muted/20 sticky top-0 z-10">
+              <div className="flex items-center gap-2 text-primary">
+                <Eye className="w-5 h-5" />
+                <h2 className="text-xl font-bold">Job Post Preview</h2>
+              </div>
+              <button 
+                onClick={() => setShowPreview(false)}
+                className="p-2 hover:bg-muted rounded-full transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto">
+              {/* Mock Job Detail Page Header */}
+              <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-transparent p-6 rounded-2xl mb-8">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                  <div>
+                    <h1 className="text-3xl font-bold mb-4">{formData.title || 'Job Title'}</h1>
+                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1"><Building2 className="w-4 h-4"/> {formData.companyName || 'Company Name'}</span>
+                      <span className="flex items-center gap-1"><MapPin className="w-4 h-4"/> {formData.location || 'Location'} ({formData.locationType})</span>
+                      <span className="flex items-center gap-1"><Briefcase className="w-4 h-4"/> {formData.experienceLevel}</span>
+                      <span className="flex items-center gap-1"><IndianRupee className="w-4 h-4"/> {formData.salaryMin} - {formData.salaryMax} LPA</span>
+                      <span className="flex items-center gap-1"><Clock className="w-4 h-4"/> Apply by: {formData.deadline || 'N/A'}</span>
+                    </div>
+                  </div>
+                  <button disabled className="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-bold opacity-50 cursor-not-allowed shrink-0">
+                    Apply Now
+                  </button>
+                </div>
+              </div>
+
+              {/* Mock Content */}
+              <div className="space-y-8">
+                <section>
+                  <h3 className="text-xl font-bold mb-4">Job Description</h3>
+                  <div className="text-muted-foreground whitespace-pre-line">{formData.description || 'No description provided.'}</div>
+                </section>
+
+                {(formData.responsibilities || formData.requirements || formData.benefits) && (
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {formData.responsibilities && (
+                      <section>
+                        <h3 className="text-xl font-bold mb-4">Key Responsibilities</h3>
+                        <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
+                          {formData.responsibilities.split('\n').filter(Boolean).map((req, i) => (
+                            <li key={i}>{req}</li>
+                          ))}
+                        </ul>
+                      </section>
+                    )}
+                    {formData.requirements && (
+                      <section>
+                        <h3 className="text-xl font-bold mb-4">Requirements</h3>
+                        <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
+                          {formData.requirements.split('\n').filter(Boolean).map((req, i) => (
+                            <li key={i}>{req}</li>
+                          ))}
+                        </ul>
+                      </section>
+                    )}
+                  </div>
+                )}
+
+                {formData.skills.length > 0 && (
+                  <section>
+                    <h3 className="text-xl font-bold mb-4">Required Skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.skills.map((skill, i) => (
+                        <span key={i} className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-medium">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </div>
+            </div>
+
+            <div className="p-4 sm:p-6 border-t border-border flex justify-end gap-3 bg-muted/20 mt-auto sticky bottom-0 z-10">
+              <button
+                onClick={() => setShowPreview(false)}
+                className="px-4 py-2 text-muted-foreground hover:text-foreground font-medium transition-colors"
+              >
+                Close Preview
+              </button>
+              <button
+                onClick={() => {
+                  setShowPreview(false);
+                  // Optionally trigger form submit here
+                }}
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary/90 transition-colors flex items-center gap-2"
+              >
+                <Save className="w-4 h-4" />
+                Looks Good, Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

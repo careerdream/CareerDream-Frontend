@@ -2,22 +2,37 @@ import express from 'express';
 // Note: In a real app, you would import a role-checking middleware here.
 // import { checkRole } from '../middleware/auth.js';
 
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
 const router = express.Router();
 
 // GET /api/admin/dashboard/stats
 router.get('/dashboard/stats', async (req, res) => {
   try {
-    // In a real app, these would be Prisma DB queries:
-    // const totalUsers = await prisma.user.count();
-    
-    // Returning dummy data as per requirements
+    const [
+      totalUsers,
+      activeRecruiters,
+      totalJobs,
+      totalCourses,
+      totalAssessments,
+      totalBlogs
+    ] = await Promise.all([
+      prisma.user.count(),
+      prisma.user.count({ where: { role: 'recruiter' } }),
+      prisma.job.count(),
+      prisma.course.count(),
+      prisma.assessment.count(),
+      prisma.blogPost.count()
+    ]);
+
     res.json({
-      totalUsers: 12450,
-      activeRecruiters: 342,
-      totalJobs: 1856,
-      totalCourses: 45,
-      totalAssessments: 120,
-      totalBlogs: 89,
+      totalUsers,
+      activeRecruiters,
+      totalJobs,
+      totalCourses,
+      totalAssessments,
+      totalBlogs,
       systemHealth: "99.9%"
     });
   } catch (error) {

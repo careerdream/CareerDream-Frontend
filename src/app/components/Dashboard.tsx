@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { 
   Briefcase, BookOpen, Award, Target, ChevronRight, 
@@ -73,6 +74,33 @@ export function Dashboard() {
     jobs, courses, isLoading, resumeSkills,
     getGlobalRanking, getSkillScores
   } = useApp();
+
+  const [activeTab, setActiveTab] = useState<'overview' | 'ats'>('overview');
+  const [atsData, setAtsData] = useState<any>(null);
+  const [atsLoading, setAtsLoading] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'ats' && !atsData) {
+      fetchAtsData();
+    }
+  }, [activeTab]);
+
+  const fetchAtsData = async () => {
+    setAtsLoading(true);
+    try {
+      const { api } = await import('../utils/api');
+      const res = await api.get('/resume/analysis');
+      if (res && res.data && res.data.analysis) {
+        setAtsData(res.data.analysis);
+      } else if (res && res.analysis) {
+        setAtsData(res.analysis);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setAtsLoading(false);
+    }
+  };
 
   const ranking = getGlobalRanking();
   const skillScores = getSkillScores();
@@ -236,13 +264,32 @@ export function Dashboard() {
       </div>
 
       <div className="container mx-auto px-6 py-12">
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-12"
-        >
-          {/* Executive Stats */}
+        <div className="flex items-center gap-8 mb-8 border-b border-border/50 pb-4">
+          <button 
+            onClick={() => setActiveTab('overview')}
+            className={`text-xl font-bold transition-all relative ${activeTab === 'overview' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            Overview
+            {activeTab === 'overview' && <div className="absolute -bottom-4 left-0 w-full h-1 bg-primary rounded-t-full shadow-[0_-2px_10px_rgba(79,70,229,0.5)]" />}
+          </button>
+          <button 
+            onClick={() => setActiveTab('ats')}
+            className={`text-xl font-bold transition-all flex items-center gap-2 relative ${activeTab === 'ats' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Brain className="w-5 h-5" />
+            ATS Insights
+            {activeTab === 'ats' && <div className="absolute -bottom-4 left-0 w-full h-1 bg-primary rounded-t-full shadow-[0_-2px_10px_rgba(79,70,229,0.5)]" />}
+          </button>
+        </div>
+
+        {activeTab === 'overview' ? (
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-12"
+          >
+            {/* Executive Stats */}
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {statCards.map(({ icon: Icon, label, value, trend, color }) => (
               <motion.div 
@@ -472,7 +519,144 @@ export function Dashboard() {
             </aside>
           </div>
         </motion.div>
+        ) : (
+          <AtsInsightsView atsData={atsData} loading={atsLoading} courses={courses} />
+        )}
       </div>
+    </div>
+  );
+}
+
+function AtsInsightsView({ atsData, loading, courses }: { atsData: any, loading: boolean, courses: any[] }) {
+  if (loading) return <div className="py-32 flex flex-col items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-primary mb-4" /><p className="text-muted-foreground font-medium">Loading ATS Insights...</p></div>;
+  if (!atsData) return (
+    <div className="text-center py-24 bg-card border border-border rounded-[2.5rem] shadow-sm animate-in fade-in slide-in-from-bottom-4">
+      <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+        <Brain className="w-12 h-12 text-primary" />
+      </div>
+      <h3 className="text-3xl font-black mb-3">No ATS Scan Found</h3>
+      <p className="text-muted-foreground mb-8 text-lg">Upload your resume to unlock deep AI-driven ATS insights and personalized courses.</p>
+      <Link to="/ai-match" className="px-8 py-4 bg-primary text-white rounded-2xl font-bold inline-block hover:scale-105 transition-transform shadow-[0_0_20px_rgba(79,70,229,0.3)]">Scan Resume Now</Link>
+    </div>
+  );
+
+  const formatIssues = (typeof atsData.formatIssues === 'string' ? JSON.parse(atsData.formatIssues) : atsData.formatIssues) || [];
+  const missingSkills = (typeof atsData.missingSkills === 'string' ? JSON.parse(atsData.missingSkills) : atsData.missingSkills) || [];
+  const recommendedCoursesKeys = (typeof atsData.recommendedCourses === 'string' ? JSON.parse(atsData.recommendedCourses) : atsData.recommendedCourses) || [];
+
+  const recommendedCourses = courses.filter(c => 
+    recommendedCoursesKeys.some((rc: string) => c.title.toLowerCase().includes(rc.toLowerCase()) || c.skills?.some((s:string) => s.toLowerCase().includes(rc.toLowerCase())))
+  ).slice(0, 3);
+
+  // If no courses matched perfectly, just recommend popular ones
+  if (recommendedCourses.length === 0) {
+    recommendedCourses.push(...courses.slice(0, 3));
+  }
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+      {/* Radial Scores */}
+      <div className="grid md:grid-cols-3 gap-6">
+        <ScoreCard title="Overall ATS Score" score={atsData.atsScore || 0} color="#4F46E5" />
+        <ScoreCard title="Keyword Match" score={atsData.keywordMatch || 0} color="#10B981" />
+        <ScoreCard title="Recruiter Readiness" score={atsData.readinessScore || 0} color="#06B6D4" />
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Actionable Tips: Formatting */}
+        <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-sm">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+            <CheckCircle className="w-6 h-6 text-orange-500" />
+            Formatting & Layout Issues
+          </h3>
+          {formatIssues.length > 0 ? (
+            <ul className="space-y-4">
+              {formatIssues.map((issue: string, idx: number) => (
+                <li key={idx} className="flex gap-3 text-muted-foreground bg-muted/50 p-4 rounded-2xl">
+                  <span className="text-orange-500 font-bold">•</span>
+                  <span>{issue}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="p-4 bg-green-500/10 text-green-500 rounded-2xl font-medium flex gap-3">
+              <CheckCircle className="w-5 h-5 shrink-0" />
+              Your resume format looks perfectly optimized for ATS parsers!
+            </div>
+          )}
+        </div>
+
+        {/* Missing Skills */}
+        <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-sm">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+            <Target className="w-6 h-6 text-red-500" />
+            Critical Missing Skills
+          </h3>
+          {missingSkills.length > 0 ? (
+            <div className="flex flex-wrap gap-3">
+              {missingSkills.map((skill: string, idx: number) => (
+                <span key={idx} className="px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-bold text-sm">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 bg-green-500/10 text-green-500 rounded-2xl font-medium flex gap-3">
+              <CheckCircle className="w-5 h-5 shrink-0" />
+              You have a highly comprehensive skill set!
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Suggested Courses */}
+      <div className="bg-gradient-to-br from-primary to-accent p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-10">
+          <GraduationCap className="w-64 h-64 -rotate-12" />
+        </div>
+        <div className="relative z-10">
+          <h3 className="text-2xl font-black mb-2 flex items-center gap-3">
+            <Sparkles className="w-6 h-6" />
+            Recommended Masterclasses
+          </h3>
+          <p className="text-white/80 mb-8 font-medium">Personalized courses to bridge your skill gaps and boost your keyword match.</p>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {recommendedCourses.map(course => (
+              <Link key={course.id} to={`/learn/${course.id}`} className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-3xl hover:bg-white/20 transition-all group">
+                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                  {course.image || '📚'}
+                </div>
+                <h4 className="font-bold text-lg mb-2">{course.title}</h4>
+                <p className="text-xs text-white/70">Instructor: {course.instructor}</p>
+                <div className="mt-4 inline-block text-sm font-bold bg-white text-primary px-4 py-2 rounded-xl">Enrol Now</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScoreCard({ title, score, color }: { title: string, score: number, color: string }) {
+  const dashArray = 351.8;
+  const dashOffset = dashArray - (dashArray * score / 100);
+  
+  return (
+    <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden group">
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity" style={{ backgroundColor: color }} />
+      <div className="relative w-36 h-36 flex items-center justify-center mb-6">
+        <svg className="w-full h-full transform -rotate-90 drop-shadow-xl">
+          <circle cx="72" cy="72" r="56" fill="none" stroke="var(--border)" strokeWidth="14" />
+          <circle cx="72" cy="72" r="56" fill="none" stroke={color} strokeWidth="14" strokeDasharray={dashArray} strokeDashoffset={dashOffset} className="transition-all duration-1500 ease-out" strokeLinecap="round" />
+        </svg>
+        <div className="absolute flex flex-col items-center justify-center">
+          <span className="text-4xl font-black" style={{ color }}>{score}</span>
+          <span className="text-xs font-bold text-muted-foreground uppercase">/ 100</span>
+        </div>
+      </div>
+      <h3 className="font-bold text-lg">{title}</h3>
     </div>
   );
 }

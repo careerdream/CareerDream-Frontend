@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { SEO } from "./SEO";
 import { Link } from 'react-router';
 import { Trophy, Target, Clock, TrendingUp, Star, Users, CheckCircle, Lock, Loader2 } from 'lucide-react';
@@ -5,7 +6,7 @@ import { Trophy, Target, Clock, TrendingUp, Star, Users, CheckCircle, Lock, Load
 import { assessments } from '../data/assessments';
 import { useApp } from '../context/AppContext';
 
-const leaderboard = [
+const initialLeaderboard = [
   { rank: 1, name: 'Arjun Mehta', score: 98, tests: 15, badge: '🏆', country: '🇮🇳' },
   { rank: 2, name: 'Sarah Chen', score: 96, tests: 18, badge: '🥈', country: '🇺🇸' },
   { rank: 3, name: 'Carlos Rivera', score: 94, tests: 12, badge: '🥉', country: '🇧🇷' },
@@ -15,6 +16,24 @@ const leaderboard = [
 
 export function AssessmentsPage() {
   const { testResults, assessments: apiAssessments, isLoading: isAppLoading, isLoggedIn, setUnlockModalOpen } = useApp();
+  const [leaderboard, setLeaderboard] = useState(initialLeaderboard);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const { api } = await import('../utils/api');
+        const res = await api.get('/assessments/leaderboard/global');
+        // Handle both axios res.data and fetch res
+        const data = res.data || res;
+        if (data && Array.isArray(data)) {
+          setLeaderboard(data.length > 0 ? data : []);
+        }
+      } catch(e) {
+        console.error("Failed to fetch global leaderboard", e);
+      }
+    };
+    fetchLeaderboard();
+  }, []);
 
   const handleProtectedClick = (e: React.MouseEvent) => {
     if (!isLoggedIn) {

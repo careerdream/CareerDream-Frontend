@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
-import { Plus, LogOut, Briefcase, Users, TrendingUp, CheckCircle, Eye, Edit2, Download, Archive, Trash2, Bell, ChevronDown, PieChart, BarChart3, FileUp, FileDown, Loader2, Search, MapPin, Award, X } from 'lucide-react';
+import { Plus, LogOut, Briefcase, Users, TrendingUp, CheckCircle, Eye, Edit2, Download, Archive, Trash2, Bell, ChevronDown, PieChart, BarChart3, FileUp, FileDown, Loader2, Search, MapPin, Award, X, Settings } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { api } from '../utils/api';
 import { ActiveJobsView, TotalApplicationsView, HiredView, AnalyticsView } from './RecruiterDashboardViews';
@@ -31,6 +31,38 @@ export function RecruiterDashboard() {
   const [selectedJobForMatches, setSelectedJobForMatches] = useState<any | null>(null);
   const [matchedCandidates, setMatchedCandidates] = useState<any[]>([]);
   const [loadingMatches, setLoadingMatches] = useState(false);
+
+  // Notifications state
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const [recruiterNotifications, setRecruiterNotifications] = useState([
+    { id: 1, title: 'New Application Received', message: 'Vish has applied for Software Engineer', date: new Date().toISOString(), read: false, type: 'job' },
+    { id: 2, title: 'Job Approved', message: 'Your job posting "Frontend Developer" is now live.', date: new Date(Date.now() - 86400000).toISOString(), read: true, type: 'feature' }
+  ]);
+  const unreadCount = recruiterNotifications.filter(n => !n.read).length;
+
+  // Settings state
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [editProfileData, setEditProfileData] = useState({ name: '', companyName: '', email: '' });
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [showOtpView, setShowOtpView] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
+  const [otpError, setOtpError] = useState('');
+
+  // Bulk Upload Preview state
+  const [bulkPreviewJobs, setBulkPreviewJobs] = useState<any[]>([]);
+  const [showBulkPreviewModal, setShowBulkPreviewModal] = useState(false);
+  const [isBulkPublishing, setIsBulkPublishing] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setIsNotificationsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const recruiterAuth = localStorage.getItem('recruiterAuth');
@@ -94,6 +126,16 @@ export function RecruiterDashboard() {
   const handleSelectJob = (id: any) => {
     if (selectedJobs.includes(id)) setSelectedJobs(selectedJobs.filter(jid => jid !== id));
     else setSelectedJobs([...selectedJobs, id]);
+  };
+
+  const handleToggleJob = async (jobId: number, field: 'status' | 'featured', value: any) => {
+    try {
+      await api.patch(`/jobs/${jobId}/toggle`, { [field]: value });
+      setPostedJobs(prev => prev.map(job => job.id === jobId ? { ...job, [field]: value } : job));
+    } catch (err) {
+      console.error(`Failed to toggle ${field}:`, err);
+      alert(`Failed to update job ${field}.`);
+    }
   };
 
   const handleSelectAll = () => {
@@ -172,17 +214,12 @@ export function RecruiterDashboard() {
           applicantEmail: item.applicantEmail || recruiter.email,
         }));
 
-        // Send to backend
-        const response = await api.post('/jobs/bulk', { jobs: newJobs });
+        setBulkPreviewJobs(newJobs);
+        setShowBulkPreviewModal(true);
         
-        // Refresh local list if needed or just fetch from backend
-        // For now, let's just show success
-        alert(response.message || `Successfully uploaded ${newJobs.length} jobs!`);
-        
-        // Optionally fetch updated jobs from backend here
       } catch (err) {
-        console.error('Error parsing/uploading Excel:', err);
-        alert('Failed to upload jobs. Please check your network and Excel format.');
+        console.error('Error parsing Excel:', err);
+        alert('Failed to parse jobs. Please check your Excel format.');
       } finally {
         setIsUploading(false);
         if (fileInputRef.current) fileInputRef.current.value = '';
@@ -275,6 +312,59 @@ export function RecruiterDashboard() {
     }
   };
 
+  const exportRecruiterData = () => {
+    try {
+      const applicationsData = globalApplications.map(app => ({
+        'Job Title': app.job?.title || 'Unknown',
+        'Candidate Name': app.candidate?.name || 'Unknown',
+        'Candidate Email': app.candidate?.email || 'N/A',
+        'Status': app.status || 'Pending',
+        'Applied Date': app.applied_at ? new Date(app.applied_at).toLocaleDateString() : 'N/A',
+        'Candidate Location': app.candidate?.location || 'Unknown',
+        'Candidate Experience': app.candidate?.experience || 'N/A'
+      }));
+
+      const jobsData = postedJobs.map(job => ({
+        'Job Title': job.title,
+        'Location': job.location,
+        'Type': job.locationType,
+        'Experience Level': job.experienceLevel,
+        'Posted Date': job.created_at ? new Date(job.created_at).toLocaleDateString() : 'N/A'
+      }));
+
+      let rejected = 0, shortlisted = 0, interviewed = 0, hired = hiredCount;
+      globalApplications.forEach(app => {
+        if (app.status === 'Rejected') rejected++;
+        if (app.status === 'Shortlisted') shortlisted++;
+        if (app.status === 'Interviewing' || app.status === 'Interviewed') interviewed++;
+      });
+
+      const analyticsData = [
+        { Metric: 'Total Applications', Value: globalApplications.length },
+        { Metric: 'Hired', Value: hired },
+        { Metric: 'Interviewed', Value: interviewed },
+        { Metric: 'Shortlisted', Value: shortlisted },
+        { Metric: 'Rejected', Value: rejected }
+      ];
+
+      const wb = XLSX.utils.book_new();
+      
+      const wsAnalytics = XLSX.utils.json_to_sheet(analyticsData);
+      XLSX.utils.book_append_sheet(wb, wsAnalytics, 'Analytics Reports');
+      
+      const wsApps = XLSX.utils.json_to_sheet(applicationsData);
+      XLSX.utils.book_append_sheet(wb, wsApps, 'Application Details');
+      
+      const wsJobs = XLSX.utils.json_to_sheet(jobsData);
+      XLSX.utils.book_append_sheet(wb, wsJobs, 'Job Details');
+
+      XLSX.writeFile(wb, `Recruiter_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
+    } catch (err) {
+      console.error('Export error:', err);
+      alert('Failed to export data');
+    }
+  };
+
   if (!recruiter) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
@@ -306,9 +396,85 @@ export function RecruiterDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <button className="relative p-2 hover:bg-muted/50 rounded-lg transition-colors text-muted-foreground hover:text-foreground">
-              <Bell className="w-6 h-6" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            <div className="relative" ref={notificationRef}>
+              <button 
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="relative p-2 hover:bg-muted/50 rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+              >
+                <Bell className={`w-6 h-6 ${unreadCount > 0 ? 'text-primary' : ''}`} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse ring-2 ring-[#111827]"></span>
+                )}
+              </button>
+
+              {isNotificationsOpen && (
+                <div className="absolute right-0 mt-3 w-80 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                  <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
+                    <h3 className="font-bold text-foreground">Notifications</h3>
+                    <button 
+                      onClick={() => setRecruiterNotifications([])}
+                      className="text-xs text-muted-foreground hover:text-red-500 flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3 h-3" /> Clear All
+                    </button>
+                  </div>
+                  <div className="max-h-[400px] overflow-y-auto">
+                    {recruiterNotifications.length === 0 ? (
+                      <div className="p-8 text-center">
+                        <Bell className="w-10 h-10 text-muted-foreground mx-auto mb-2 opacity-20" />
+                        <p className="text-sm text-muted-foreground">All caught up!</p>
+                      </div>
+                    ) : (
+                      recruiterNotifications.map(notif => (
+                        <div 
+                          key={notif.id}
+                          onClick={() => {
+                            setRecruiterNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
+                            setIsNotificationsOpen(false);
+                          }}
+                          className={`p-4 border-b border-border last:border-0 hover:bg-muted/50 cursor-pointer transition-colors relative group ${!notif.read ? 'bg-primary/5' : ''}`}
+                        >
+                          {!notif.read && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />}
+                          <div className="flex gap-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                              notif.type === 'job' ? 'bg-green-500/10 text-green-600' :
+                              'bg-purple-500/10 text-purple-600'
+                            }`}>
+                              {notif.type === 'job' ? <Briefcase className="w-4 h-4" /> : <TrendingUp className="w-4 h-4" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold truncate pr-4 text-foreground">{notif.title}</p>
+                              <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{notif.message}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className="text-[10px] text-muted-foreground">
+                                  {new Date(notif.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => {
+                setEditProfileData({ 
+                  name: recruiter?.name || '', 
+                  companyName: recruiter?.employer?.companyName || '',
+                  email: recruiter?.email || ''
+                });
+                setShowOtpView(false);
+                setOtpInput('');
+                setOtpError('');
+                setShowSettingsModal(true);
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm font-medium border border-border/50"
+            >
+              <Settings className="w-4 h-4" />
+              Settings
             </button>
             <button
               onClick={handleLogout}
@@ -344,6 +510,14 @@ export function RecruiterDashboard() {
           ))}
         </div>
 
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleBulkUpload}
+          className="hidden"
+          accept=".xlsx, .xls"
+        />
+
         {activeTab === 'overview' && (
           <div className="animate-in fade-in slide-in-from-bottom-4">
             {/* Top Action */}
@@ -353,14 +527,13 @@ export function RecruiterDashboard() {
                 <p className="text-muted-foreground">Manage your job listings and track applications</p>
               </div>
               <div className="flex gap-3 w-full sm:w-auto">
+                <button
+                  onClick={exportRecruiterData}
+                  className="flex items-center gap-2 px-5 py-3 border border-border bg-card hover:border-green-500/50 hover:text-green-500 transition-all rounded-xl font-semibold"
+                >
+                  <Download className="w-5 h-5" /> Export Data
+                </button>
                 <div className="relative">
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleBulkUpload}
-                    className="hidden"
-                    accept=".xlsx, .xls"
-                  />
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
@@ -491,7 +664,7 @@ export function RecruiterDashboard() {
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-xl overflow-hidden">
+            <div className="bg-card border border-border rounded-xl overflow-hidden overflow-x-auto">
               {postedJobs.length === 0 ? (
                 <div className="p-12 text-center">
                   <Briefcase className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
@@ -504,95 +677,129 @@ export function RecruiterDashboard() {
                   </button>
                 </div>
               ) : (
-                <div className="divide-y divide-border">
-                  {postedJobs.map(job => (
-                    <div key={job.id} className="p-6 hover:bg-muted/50 transition-colors">
-                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                        
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="flex items-center gap-3">
-                              <input 
-                                type="checkbox" 
-                                checked={selectedJobs.includes(job.id)}
-                                onChange={() => handleSelectJob(job.id)}
-                                className="w-5 h-5 rounded border-border text-primary focus:ring-primary mt-1"
-                              />
-                              <h4 className="text-lg font-bold">{job.title}</h4>
-                            </div>
-                            <div className="md:hidden text-right">
-                              <button onClick={() => handleViewApplications(job)} className="hover:bg-muted p-1 rounded-lg transition-colors flex flex-col items-end">
-                                <span className="text-xl font-bold text-primary">{job.stats?.applicants_count || job.applicants || 0}</span>
-                                <span className="text-xs text-muted-foreground ml-1">apps</span>
-                              </button>
-                            </div>
-                          </div>
-                          
-                          <p className="text-sm text-muted-foreground mb-3">{job.company || job.companyName} • {job.location} • {job.type || job.locationType}</p>
-                          
-                          <div className="flex flex-wrap gap-2 mb-4">
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                  <thead className="bg-muted/50 text-muted-foreground">
+                    <tr>
+                      <th className="p-4 w-12">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-border"
+                          onChange={handleSelectAll}
+                          checked={postedJobs.length > 0 && selectedJobs.length === postedJobs.length}
+                        />
+                      </th>
+                      <th className="p-4 font-medium">Job Info</th>
+                      <th className="p-4 font-medium">Status & Badges</th>
+                      <th className="p-4 font-medium">Details</th>
+                      <th className="p-4 font-medium">Stats</th>
+                      <th className="p-4 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {postedJobs.map(job => (
+                      <tr key={job.id} className="hover:bg-muted/20 transition-colors group">
+                        <td className="p-4">
+                          <input 
+                            type="checkbox" 
+                            checked={selectedJobs.includes(job.id)}
+                            onChange={() => handleSelectJob(job.id)}
+                            className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                          />
+                        </td>
+                        <td className="p-4">
+                          <h4 className="text-base font-bold text-foreground mb-1">{job.title}</h4>
+                          <p className="text-xs text-muted-foreground mb-2">
+                            {job.company || job.companyName} • {job.location} • {job.type || job.locationType}
+                          </p>
+                          <div className="flex flex-wrap gap-1">
                             {job.skills.slice(0, 3).map((skill: string, i: number) => (
-                              <span key={i} className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
+                              <span key={i} className="px-2 py-0.5 text-[10px] rounded bg-primary/10 text-primary">
                                 {skill}
                               </span>
                             ))}
+                            {job.skills.length > 3 && (
+                              <span className="px-2 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">
+                                +{job.skills.length - 3}
+                              </span>
+                            )}
                           </div>
-
-                          <div className="grid grid-cols-2 gap-4 text-sm mb-4 bg-muted/20 p-3 rounded-lg">
-                            <div>
-                              <p className="text-xs text-muted-foreground mb-1">Experience</p>
-                              <p className="font-medium">{job.experience || job.experienceLevel}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-muted-foreground mb-1">Salary Range</p>
-                              <p className="font-medium">
-                                {job.salary || (job.salaryMin && job.salaryMax ? `₹${job.salaryMin} - ₹${job.salaryMax}` : 'Not specified')}
-                              </p>
-                            </div>
+                        </td>
+                        <td className="p-4 space-y-2">
+                          <select
+                            value={job.status || 'active'}
+                            onChange={(e) => handleToggleJob(job.id, 'status', e.target.value)}
+                            className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full border cursor-pointer focus:outline-none appearance-none block w-max ${
+                              job.status === 'active' || !job.status ? 'bg-green-500/10 text-green-600 border-green-500/20' :
+                              job.status === 'draft' ? 'bg-slate-500/10 text-slate-600 border-slate-500/20' :
+                              'bg-red-500/10 text-red-600 border-red-500/20'
+                            }`}
+                            style={{ paddingRight: '0.5rem' }}
+                          >
+                            <option value="active">ACTIVE</option>
+                            <option value="draft">DRAFT</option>
+                            <option value="expired">EXPIRED</option>
+                          </select>
+                          <label className="flex items-center gap-1.5 cursor-pointer bg-amber-500/10 text-amber-600 border border-amber-500/20 px-2 py-0.5 rounded-full hover:bg-amber-500/20 transition-colors w-max">
+                            <input 
+                              type="checkbox" 
+                              checked={job.featured || false} 
+                              onChange={(e) => handleToggleJob(job.id, 'featured', e.target.checked)}
+                              className="w-3 h-3 rounded text-amber-500 focus:ring-amber-500 cursor-pointer"
+                            />
+                            <span className="text-[10px] font-bold uppercase tracking-wider">Featured</span>
+                          </label>
+                        </td>
+                        <td className="p-4 text-xs text-muted-foreground">
+                          <div className="mb-1">
+                            <span className="font-semibold text-foreground">Exp:</span> {job.experience || job.experienceLevel}
                           </div>
-                          
-                          <div className="flex gap-2">
+                          <div>
+                            <span className="font-semibold text-foreground">Pay:</span> {job.salary || (job.salaryMin && job.salaryMax ? `₹${job.salaryMin} - ₹${job.salaryMax}` : 'N/A')}
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4 text-muted-foreground" />
+                            <span className="font-medium text-foreground">{job.stats?.applicants_count || job.applicants || 0}</span>
+                          </div>
+                        </td>
+                        <td className="p-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
                             <button 
                               onClick={() => handleViewApplications(job)}
-                              className="px-4 py-1.5 text-sm bg-blue-500/10 text-blue-600 rounded-lg hover:bg-blue-500/20 transition-colors font-medium flex items-center gap-1.5"
+                              title="View Applications"
+                              className="p-1.5 text-blue-600 bg-blue-500/10 rounded hover:bg-blue-500/20 transition-colors flex items-center gap-1.5"
                             >
-                              <Eye className="w-3.5 h-3.5" /> View Applications
+                              <Eye className="w-4 h-4" /> 
+                              <span className="text-xs font-semibold">Apps</span>
                             </button>
                             <button 
                               onClick={() => handleFindMatches(job)}
-                              className="px-4 py-1.5 text-sm bg-purple-500/10 text-purple-600 rounded-lg hover:bg-purple-500/20 transition-colors font-medium flex items-center gap-1.5"
+                              title="Find Matches"
+                              className="p-1.5 text-purple-600 bg-purple-500/10 rounded hover:bg-purple-500/20 transition-colors flex items-center gap-1.5"
                             >
-                              ✨ Find Matches
+                              ✨ <span className="text-xs font-semibold">Match</span>
                             </button>
                             <button
                               onClick={() => navigate(`/recruiter/edit-job/${job.id}`)}
-                              className="px-4 py-1.5 text-sm bg-amber-500/10 text-amber-600 rounded-lg hover:bg-amber-500/20 transition-colors font-medium flex items-center gap-1.5"
+                              title="Edit Job"
+                              className="p-1.5 text-amber-600 bg-amber-500/10 rounded hover:bg-amber-500/20 transition-colors"
                             >
-                              <Edit2 className="w-3.5 h-3.5" /> Edit
+                              <Edit2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => deleteJob(job.id)}
-                              className="px-4 py-1.5 text-sm bg-red-500/10 text-red-600 rounded-lg hover:bg-red-500/20 transition-colors font-medium flex items-center gap-1.5"
+                              title="Delete Job"
+                              className="p-1.5 text-red-600 bg-red-500/10 rounded hover:bg-red-500/20 transition-colors"
                             >
-                              <Trash2 className="w-3.5 h-3.5" /> Delete
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
-                        </div>
-
-                        <div className="hidden md:flex flex-col items-end min-w-[120px]">
-                          <button 
-                            onClick={() => handleViewApplications(job)}
-                            className="bg-primary/10 hover:bg-primary/20 transition-colors px-4 py-3 rounded-xl flex flex-col items-center w-full"
-                          >
-                            <div className="text-3xl font-bold text-primary mb-1">{job.stats?.applicants_count || job.applicants || 0}</div>
-                            <p className="text-xs text-muted-foreground uppercase font-semibold">applications</p>
-                          </button>
-                        </div>
-
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
             </div>
           </div>
@@ -639,14 +846,16 @@ export function RecruiterDashboard() {
                 <div key={can.id} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all group">
                   <div className="p-6">
                     <div className="flex gap-4 mb-4">
-                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                        <div className="w-full h-full rounded-xl flex items-center justify-center overflow-hidden">
-                          {can.avatar && (can.avatar.startsWith('http') || can.avatar.startsWith('data:')) ? (
-                            <img src={can.avatar} alt={can.name} className="w-full h-full object-cover" />
-                          ) : (
-                            can.avatar || '👤'
-                          )}
-                        </div>
+                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/80 to-accent/80 flex items-center justify-center text-white text-2xl font-bold shadow-lg relative overflow-hidden shrink-0">
+                        <span className="absolute z-0 uppercase">{(can.name || 'U').charAt(0)}</span>
+                        {can.avatar && (can.avatar.startsWith('http') || can.avatar.startsWith('data:')) && (
+                          <img 
+                            src={can.avatar} 
+                            alt={can.name} 
+                            className="w-full h-full object-cover relative z-10"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-lg truncate">{can.name}</h4>
@@ -750,11 +959,17 @@ export function RecruiterDashboard() {
                     {applications.map((app: any) => (
                       <div key={app.id} className="p-5 rounded-xl border border-border bg-muted/10 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                         <div className="flex gap-4 items-center">
-                          <img 
-                            src={app.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.user?.name || 'A')}&background=random`} 
-                            alt={app.user?.name} 
-                            className="w-12 h-12 rounded-full object-cover border border-border"
-                          />
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/80 to-accent/80 flex items-center justify-center text-white font-bold relative overflow-hidden shrink-0 border border-border">
+                            <span className="absolute z-0 uppercase text-lg">{(app.user?.name || 'U').charAt(0)}</span>
+                            {app.user?.avatar && (
+                              <img 
+                                src={app.user.avatar} 
+                                alt={app.user?.name} 
+                                className="w-full h-full object-cover relative z-10"
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                              />
+                            )}
+                          </div>
                           <div>
                             <h4 className="font-bold">{app.user?.name}</h4>
                             <p className="text-sm text-muted-foreground">{app.user?.title || 'Professional'}</p>
@@ -840,11 +1055,17 @@ export function RecruiterDashboard() {
                       <div key={candidate.id} className="p-5 rounded-xl border border-border bg-card hover:border-primary/50 transition-all flex flex-col sm:flex-row gap-6 justify-between items-start">
                         <div className="flex gap-4">
                           <div className="relative">
-                            <img 
-                              src={candidate.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name || 'C')}&background=random`} 
-                              alt={candidate.name} 
-                              className="w-14 h-14 rounded-full object-cover border-2 border-border"
-                            />
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/80 to-accent/80 flex items-center justify-center text-white font-bold relative overflow-hidden border-2 border-border shrink-0">
+                              <span className="absolute z-0 uppercase text-xl">{(candidate.name || 'C').charAt(0)}</span>
+                              {candidate.avatar && (
+                                <img 
+                                  src={candidate.avatar} 
+                                  alt={candidate.name} 
+                                  className="w-full h-full object-cover relative z-10"
+                                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                />
+                              )}
+                            </div>
                             <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold border-2 border-card">
                               #{index + 1}
                             </div>
@@ -892,6 +1113,16 @@ export function RecruiterDashboard() {
                               </div>
                             )}
                           </div>
+
+                          {candidate.aiReasoning && (
+                            <div className="mt-4 p-4 bg-primary/5 rounded-2xl border border-primary/20 relative animate-in fade-in slide-in-from-bottom-2">
+                              <div className="absolute -top-3 left-4 bg-background px-3 py-0.5 text-xs font-black text-primary flex items-center gap-1.5 border border-primary/20 rounded-full shadow-sm">
+                                <Brain className="w-3.5 h-3.5" /> AI Insight
+                              </div>
+                              <p className="text-sm text-muted-foreground leading-relaxed italic mt-1 font-medium">"{candidate.aiReasoning}"</p>
+                            </div>
+                          )}
+
                         </div>
 
                         <div className="w-full sm:w-auto flex flex-col gap-2">
@@ -927,11 +1158,17 @@ export function RecruiterDashboard() {
               
               <div className="p-6 overflow-y-auto flex-1 space-y-8">
                 <div className="flex items-start gap-6">
-                  <img 
-                    src={selectedCandidate.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedCandidate.name || 'A')}&background=random`} 
-                    alt={selectedCandidate.name} 
-                    className="w-24 h-24 rounded-2xl object-cover border-2 border-primary/20"
-                  />
+                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary/80 to-accent/80 flex items-center justify-center text-white font-bold relative overflow-hidden border-2 border-primary/20 shrink-0 shadow-lg">
+                    <span className="absolute z-0 uppercase text-4xl">{(selectedCandidate.name || 'A').charAt(0)}</span>
+                    {selectedCandidate.avatar && (
+                      <img 
+                        src={selectedCandidate.avatar} 
+                        alt={selectedCandidate.name} 
+                        className="w-full h-full object-cover relative z-10"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    )}
+                  </div>
                   <div>
                     <h3 className="text-2xl font-bold">{selectedCandidate.name}</h3>
                     <p className="text-primary font-medium text-lg mb-2">{selectedCandidate.title || 'Professional'}</p>
@@ -988,6 +1225,269 @@ export function RecruiterDashboard() {
                     </button>
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Settings Modal */}
+        {showSettingsModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+            <div className="w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
+              <div className="p-6 border-b border-border flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold">Profile Settings</h2>
+                  <p className="text-sm text-muted-foreground">Update your personal and company information</p>
+                </div>
+                <button 
+                  onClick={() => setShowSettingsModal(false)}
+                  className="p-2 hover:bg-muted rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-4">
+                {showOtpView ? (
+                  <div className="text-center py-4">
+                    <h3 className="font-bold text-lg mb-2">Verify New Email</h3>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      We've sent a 6-digit code to <span className="font-semibold text-foreground">{editProfileData.email}</span>
+                    </p>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      value={otpInput}
+                      onChange={(e) => {
+                        setOtpInput(e.target.value);
+                        setOtpError('');
+                      }}
+                      className="w-full max-w-[200px] text-center bg-background border border-border rounded-xl px-4 py-3 text-2xl tracking-[0.25em] font-bold focus:outline-none focus:border-primary transition-colors mx-auto block"
+                      placeholder="000000"
+                    />
+                    {otpError && <p className="text-red-500 text-sm mt-2">{otpError}</p>}
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">Full Name</label>
+                      <input
+                        type="text"
+                        value={editProfileData.name}
+                        onChange={(e) => setEditProfileData(prev => ({ ...prev, name: e.target.value }))}
+                        className="w-full bg-background border border-border rounded-xl px-4 py-2 focus:outline-none focus:border-primary transition-colors"
+                        placeholder="John Doe"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">Company Name</label>
+                      <input
+                        type="text"
+                        value={editProfileData.companyName}
+                        onChange={(e) => setEditProfileData(prev => ({ ...prev, companyName: e.target.value }))}
+                        className="w-full bg-background border border-border rounded-xl px-4 py-2 focus:outline-none focus:border-primary transition-colors"
+                        placeholder="Acme Corp"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">Email</label>
+                      <input
+                        type="email"
+                        value={editProfileData.email}
+                        onChange={(e) => setEditProfileData(prev => ({ ...prev, email: e.target.value }))}
+                        className="w-full bg-background border border-border rounded-xl px-4 py-2 focus:outline-none focus:border-primary transition-colors"
+                        placeholder="your.email@company.com"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Changing your email requires OTP verification.</p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="p-6 border-t border-border flex justify-end gap-3 bg-muted/20">
+                <button
+                  onClick={() => {
+                    if (showOtpView) {
+                      setShowOtpView(false);
+                      setOtpInput('');
+                    } else {
+                      setShowSettingsModal(false);
+                    }
+                  }}
+                  className="px-4 py-2 text-muted-foreground hover:text-foreground font-medium transition-colors"
+                >
+                  {showOtpView ? 'Back' : 'Cancel'}
+                </button>
+                <button
+                  onClick={async () => {
+                    if (showOtpView) {
+                      // Verify OTP & Save all changes
+                      if (otpInput.length !== 6) {
+                        setOtpError('Please enter a 6-digit OTP');
+                        return;
+                      }
+                      setIsUpdatingProfile(true);
+                      setOtpError('');
+                      try {
+                        // 1. Verify Email
+                        await api.put('/recruiter/verify-email-update', {
+                          newEmail: editProfileData.email,
+                          otp: otpInput
+                        });
+                        
+                        // 2. Update Profile
+                        await api.put('/recruiter/profile', {
+                          name: editProfileData.name,
+                          companyName: editProfileData.companyName
+                        });
+
+                        // 3. Update local state
+                        const updatedRecruiter = {
+                          ...recruiter,
+                          name: editProfileData.name,
+                          email: editProfileData.email,
+                          employer: {
+                            ...recruiter.employer,
+                            companyName: editProfileData.companyName
+                          }
+                        };
+                        localStorage.setItem('recruiterAuth', JSON.stringify(updatedRecruiter));
+                        setRecruiter(updatedRecruiter);
+                        setShowSettingsModal(false);
+                        alert('Profile and email updated successfully!');
+                      } catch (error: any) {
+                        setOtpError(error.message || 'Invalid OTP or server error');
+                      } finally {
+                        setIsUpdatingProfile(false);
+                      }
+                    } else {
+                      // Standard Save (Check if email changed)
+                      if (!editProfileData.name || !editProfileData.companyName || !editProfileData.email) return;
+                      setIsUpdatingProfile(true);
+                      
+                      try {
+                        if (editProfileData.email !== recruiter.email) {
+                          // Email changed, request OTP
+                          await api.post('/recruiter/request-email-update', { newEmail: editProfileData.email });
+                          setShowOtpView(true);
+                        } else {
+                          // Standard profile update
+                          await api.put('/recruiter/profile', {
+                            name: editProfileData.name,
+                            companyName: editProfileData.companyName
+                          });
+                          
+                          const updatedRecruiter = {
+                            ...recruiter,
+                            name: editProfileData.name,
+                            employer: {
+                              ...recruiter.employer,
+                              companyName: editProfileData.companyName
+                            }
+                          };
+                          localStorage.setItem('recruiterAuth', JSON.stringify(updatedRecruiter));
+                          setRecruiter(updatedRecruiter);
+                          setShowSettingsModal(false);
+                        }
+                      } catch (error: any) {
+                        console.error('Update error:', error);
+                        alert(error.message || 'Failed to update profile');
+                      } finally {
+                        setIsUpdatingProfile(false);
+                      }
+                    }
+                  }}
+                  disabled={isUpdatingProfile || !editProfileData.name || !editProfileData.companyName || !editProfileData.email}
+                  className="px-6 py-2 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50"
+                >
+                  {isUpdatingProfile ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> {showOtpView ? 'Verifying...' : 'Saving...'}</>
+                  ) : (showOtpView ? 'Verify & Save' : 'Save Changes')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Job Preview Modal */}
+        {showBulkPreviewModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-sm overflow-y-auto">
+            <div className="w-full max-w-5xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 my-auto flex flex-col max-h-full">
+              <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-muted/20 sticky top-0 z-10">
+                <div className="flex items-center gap-2 text-primary">
+                  <Eye className="w-5 h-5" />
+                  <h2 className="text-xl font-bold">Bulk Job Preview</h2>
+                </div>
+                <button 
+                  onClick={() => setShowBulkPreviewModal(false)}
+                  className="p-2 hover:bg-muted rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto">
+                <p className="mb-4 text-muted-foreground text-sm">
+                  Please review the <strong>{bulkPreviewJobs.length}</strong> jobs parsed from your Excel file before publishing.
+                </p>
+                <div className="border border-border rounded-xl overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-muted/50 text-muted-foreground font-medium border-b border-border">
+                      <tr>
+                        <th className="px-4 py-3">Title</th>
+                        <th className="px-4 py-3">Location</th>
+                        <th className="px-4 py-3">Type</th>
+                        <th className="px-4 py-3">Experience</th>
+                        <th className="px-4 py-3">Skills Count</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {bulkPreviewJobs.map((job, idx) => (
+                        <tr key={idx} className="hover:bg-muted/20 transition-colors">
+                          <td className="px-4 py-3 font-medium">{job.title}</td>
+                          <td className="px-4 py-3">{job.location}</td>
+                          <td className="px-4 py-3">{job.locationType}</td>
+                          <td className="px-4 py-3">{job.experienceLevel}</td>
+                          <td className="px-4 py-3">{job.skills?.length || 0} skills</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="p-4 sm:p-6 border-t border-border flex justify-end gap-3 bg-muted/20 mt-auto sticky bottom-0 z-10">
+                <button
+                  onClick={() => setShowBulkPreviewModal(false)}
+                  className="px-4 py-2 text-muted-foreground hover:text-foreground font-medium transition-colors"
+                  disabled={isBulkPublishing}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    setIsBulkPublishing(true);
+                    try {
+                      const response = await api.post('/jobs/bulk', { jobs: bulkPreviewJobs });
+                      alert(response.message || `Successfully uploaded ${bulkPreviewJobs.length} jobs!`);
+                      setShowBulkPreviewModal(false);
+                      // Optionally, re-fetch posted jobs here
+                    } catch (error: any) {
+                      console.error('Bulk Publish Error:', error);
+                      alert(error.message || 'Failed to publish bulk jobs');
+                    } finally {
+                      setIsBulkPublishing(false);
+                    }
+                  }}
+                  disabled={isBulkPublishing}
+                  className="px-6 py-2 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary/90 transition-colors flex items-center gap-2"
+                >
+                  {isBulkPublishing ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Publishing...</>
+                  ) : (
+                    <>Publish {bulkPreviewJobs.length} Jobs</>
+                  )}
+                </button>
               </div>
             </div>
           </div>

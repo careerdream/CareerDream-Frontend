@@ -248,6 +248,7 @@ export function RecruiterSignup() {
                 </div>
                 <p className="text-xs text-muted-foreground text-center mt-2">
                   We sent a 6-digit code to {formData.email}
+                  <span className="text-xs text-slate-400 mt-1 block">(Note: Please check your Spam or Junk folder if you don't see it in your Inbox)</span>
                 </p>
               </div>
 

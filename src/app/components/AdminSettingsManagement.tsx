@@ -48,7 +48,7 @@ export function AdminSettingsManagement() {
   const fetchAuditLogs = async () => {
     try {
       const data = await api.get('/admin/settings/audit-log');
-      setAuditLogs(data.logs);
+      setAuditLogs(data.data || data.logs || []);
     } catch(e) {}
   };
 

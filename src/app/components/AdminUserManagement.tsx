@@ -51,7 +51,7 @@ export function AdminUserManagement() {
         ...(search && { search })
       });
       const data = await api.get(`/admin/users?${params}`);
-      setUsers(data.users);
+      setUsers(data.data || data.users || []);
       setTotalPages(data.totalPages);
     } catch (e) {
       console.error(e);
@@ -225,14 +225,14 @@ export function AdminUserManagement() {
                       className="rounded border-slate-300"
                       onChange={(e) => {
                         if (e.target.checked) {
-                          const newIds = users.map(u => u.id).filter(id => !selectedIds.includes(id));
+                          const newIds = (users || []).map(u => u.id).filter(id => !selectedIds.includes(id));
                           setSelectedIds([...selectedIds, ...newIds]);
                         } else {
-                          const pageIds = users.map(u => u.id);
+                          const pageIds = (users || []).map(u => u.id);
                           setSelectedIds(selectedIds.filter(id => !pageIds.includes(id)));
                         }
                       }}
-                      checked={users.length > 0 && users.every(u => selectedIds.includes(u.id))}
+                      checked={(users || []).length > 0 && users.every(u => selectedIds.includes(u.id))}
                     />
                   </th>
                   <th className="p-4 font-medium">User</th>
@@ -247,7 +247,7 @@ export function AdminUserManagement() {
                   <tr><td colSpan={6} className="p-8 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" /></td></tr>
                 ) : users.length === 0 ? (
                   <tr><td colSpan={6} className="p-8 text-center text-slate-500">No users found.</td></tr>
-                ) : users.map((user) => (
+                ) : (users || []).map((user) => (
                   <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/20">
                     <td className="p-4">
                       <input 

@@ -4,7 +4,7 @@ import prisma from '../lib/prisma.js';
 import { verifyToken, verifyAdmin } from '../middleware/auth.js';
 import { cacheMiddleware } from '../utils/cache.js';
 import { formatPaginatedResponse } from '../utils/pagination.js';
-import { generateJobPost } from '../services/aiService.js';
+import { generateJobPost, evaluateCandidatesForJob } from '../services/aiService.js';
 
 const router = express.Router();
 
@@ -119,7 +119,7 @@ router.post('/', verifyToken, async (req, res) => {
     const {
       title, company, location, salary, type, experience, logo, category,
       posted, description, aboutCompany, skills, responsibilities,
-      requirements, niceToHave, benefits, featured, urgent
+      requirements, niceToHave, benefits, featured, urgent, status
     } = req.body;
 
     if (!title || !company || !location || !salary || !type || !experience || !category || !description) {
@@ -141,6 +141,7 @@ router.post('/', verifyToken, async (req, res) => {
         benefits: benefits || [],
         featured: featured || false,
         urgent: urgent || false,
+        status: status || 'active',
         employerId: user.employerId // Link to employer if recruiter
       }
     });
@@ -286,7 +287,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     const {
       title, company, location, salary, type, experience, logo, category,
       description, aboutCompany, skills, responsibilities,
-      requirements, niceToHave, benefits, featured, urgent
+      requirements, niceToHave, benefits, featured, urgent, status
     } = req.body;
 
     const updatedJob = await prisma.job.update({
@@ -304,6 +305,7 @@ router.put('/:id', verifyToken, async (req, res) => {
         benefits: benefits || [],
         featured: featured !== undefined ? featured : job.featured,
         urgent: urgent !== undefined ? urgent : job.urgent,
+        status: status || job.status
       }
     });
 
@@ -311,6 +313,41 @@ router.put('/:id', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Update Job Error:', error);
     res.status(500).json({ message: 'Server error updating job' });
+  }
+});
+
+// @route   PATCH /api/jobs/:id/status
+// @desc    Quickly update a job's status or featured flag
+router.patch('/:id/toggle', verifyToken, async (req, res) => {
+  try {
+    const jobId = parseInt(req.params.id);
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { role: true, employerId: true }
+    });
+
+    const job = await prisma.job.findUnique({ where: { id: jobId } });
+    if (!job) return res.status(404).json({ message: 'Job not found' });
+
+    if (user.role !== 'admin' && job.employerId !== user.employerId) {
+      return res.status(403).json({ message: 'Unauthorized to edit this job' });
+    }
+
+    const { status, featured } = req.body;
+    
+    const updateData = {};
+    if (status !== undefined) updateData.status = status;
+    if (featured !== undefined) updateData.featured = featured;
+
+    const updatedJob = await prisma.job.update({
+      where: { id: jobId },
+      data: updateData
+    });
+
+    res.json({ message: 'Job toggled successfully', job: updatedJob });
+  } catch (error) {
+    console.error('Toggle Job Error:', error);
+    res.status(500).json({ message: 'Server error toggling job' });
   }
 });
 
@@ -539,7 +576,33 @@ router.get('/:id/match', verifyToken, async (req, res) => {
     matchedCandidates = matchedCandidates.filter(c => c.matchPercentage >= 20);
     matchedCandidates.sort((a, b) => b.matchPercentage - a.matchPercentage);
 
-    res.json(matchedCandidates);
+    const topCandidates = matchedCandidates.slice(0, 15);
+
+    // Deep evaluation using True AI Matchmaker
+    try {
+      if (topCandidates.length > 0) {
+        console.log(`Sending ${topCandidates.length} candidates to AI for deep evaluation...`);
+        const aiResults = await evaluateCandidatesForJob(job, topCandidates);
+        
+        topCandidates.forEach(tc => {
+          const aiMatch = aiResults.find(ar => String(ar.candidateId) === String(tc.id));
+          if (aiMatch) {
+             tc.matchPercentage = aiMatch.matchScore;
+             tc.aiReasoning = aiMatch.aiReasoning;
+          } else {
+             tc.aiReasoning = "AI could not determine a specific reasoning.";
+          }
+        });
+        
+        // Re-sort based on AI's semantic scoring
+        topCandidates.sort((a, b) => b.matchPercentage - a.matchPercentage);
+      }
+    } catch (e) {
+       console.error("AI matching failed, falling back to basic string matching", e);
+       // We keep the original basic matched scores if AI fails
+    }
+
+    res.json(topCandidates);
   } catch (error) {
     console.error('Match Candidates Error:', error);
     res.status(500).json({ message: 'Server error matching candidates' });

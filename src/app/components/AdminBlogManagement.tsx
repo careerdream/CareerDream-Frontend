@@ -114,7 +114,7 @@ export function AdminBlogManagement() {
         ...(search && { search })
       });
       const data = await api.get(`/admin/blog?${params}`);
-      setPosts(data.posts);
+      setPosts(data.data || data.posts || []);
       setTotalPages(data.totalPages);
     } catch (e) {
       console.error(e);
@@ -286,14 +286,14 @@ export function AdminBlogManagement() {
                       className="rounded border-slate-300"
                       onChange={(e) => {
                         if (e.target.checked) {
-                          const newIds = posts.map(p => p.id).filter(id => !selectedIds.includes(id));
+                          const newIds = (posts || []).map(p => p.id).filter(id => !selectedIds.includes(id));
                           setSelectedIds([...selectedIds, ...newIds]);
                         } else {
-                          const pageIds = posts.map(p => p.id);
+                          const pageIds = (posts || []).map(p => p.id);
                           setSelectedIds(selectedIds.filter(id => !pageIds.includes(id)));
                         }
                       }}
-                      checked={posts.length > 0 && posts.every(p => selectedIds.includes(p.id))}
+                      checked={(posts || []).length > 0 && posts.every(p => selectedIds.includes(p.id))}
                     />
                   </th>
                   <th className="p-4 font-medium">Post Title</th>
@@ -309,7 +309,7 @@ export function AdminBlogManagement() {
                   <tr><td colSpan={7} className="p-8 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" /></td></tr>
                 ) : posts.length === 0 ? (
                   <tr><td colSpan={7} className="p-8 text-center text-slate-500">No posts found.</td></tr>
-                ) : posts.map((post) => (
+                ) : (posts || []).map((post) => (
                   <tr key={post.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/20">
                     <td className="p-4">
                       <input 

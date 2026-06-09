@@ -107,18 +107,21 @@ export function JobsPage() {
   const activeFilterCount = selectedTypes.size + selectedLevels.size + (selectedCategory !== 'All' ? 1 : 0) + (filterMode !== 'all' ? 1 : 0);
 
   const handleShare = async (job: any) => {
+    const jobUrl = `${window.location.origin}/jobs/${job.id}`;
+    const shareText = `${job.title}\n\n🌐 Job posted on CareerDream.in : ${jobUrl}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`;
+    
     const shareData = {
       title: job.title,
-      text: `Check out this job at ${job.company} on CareerDream!`,
-      url: `${window.location.origin}/jobs/${job.id}`
+      text: shareText,
+      url: jobUrl,
     };
 
     try {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        await navigator.clipboard.writeText(shareData.url);
-        alert('Job link copied to clipboard!');
+        await navigator.clipboard.writeText(shareText);
+        alert('Job details copied to clipboard!');
       }
     } catch (err) {
       console.error('Error sharing:', err);

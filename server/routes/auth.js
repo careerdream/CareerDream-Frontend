@@ -413,8 +413,10 @@ router.post('/forgot-password', async (req, res) => {
     });
 
     // Build reset URL
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+    const frontendUrl = req.headers.origin || process.env.FRONTEND_URL || 'http://localhost:5173';
+    // Remove any trailing slash to avoid double slashes
+    const baseUrl = frontendUrl.endsWith('/') ? frontendUrl.slice(0, -1) : frontendUrl;
+    const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
     // Send email
     try {

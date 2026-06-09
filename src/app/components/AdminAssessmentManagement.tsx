@@ -103,7 +103,7 @@ export function AdminAssessmentManagement() {
         ...(search && { search })
       });
       const data = await api.get(`/admin/assessments?${params}`);
-      setAssessments(data.assessments);
+      setAssessments(data.data || data.assessments || []);
       setTotalPages(data.totalPages);
     } catch (e) {
       console.error(e);
@@ -249,14 +249,14 @@ export function AdminAssessmentManagement() {
                       className="rounded border-slate-300"
                       onChange={(e) => {
                         if (e.target.checked) {
-                          const newIds = assessments.map(a => a.id).filter(id => !selectedIds.includes(id));
+                          const newIds = (assessments || []).map(a => a.id).filter(id => !selectedIds.includes(id));
                           setSelectedIds([...selectedIds, ...newIds]);
                         } else {
-                          const pageIds = assessments.map(a => a.id);
+                          const pageIds = (assessments || []).map(a => a.id);
                           setSelectedIds(selectedIds.filter(id => !pageIds.includes(id)));
                         }
                       }}
-                      checked={assessments.length > 0 && assessments.every(a => selectedIds.includes(a.id))}
+                      checked={(assessments || []).length > 0 && assessments.every(a => selectedIds.includes(a.id))}
                     />
                   </th>
                   <th className="p-4 font-medium">Assessment</th>
@@ -272,7 +272,7 @@ export function AdminAssessmentManagement() {
                   <tr><td colSpan={6} className="p-8 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" /></td></tr>
                 ) : assessments.length === 0 ? (
                   <tr><td colSpan={6} className="p-8 text-center text-slate-500">No assessments found.</td></tr>
-                ) : assessments.map((assessment) => (
+                ) : (assessments || []).map((assessment) => (
                   <tr key={assessment.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/20">
                     <td className="p-4">
                       <input 

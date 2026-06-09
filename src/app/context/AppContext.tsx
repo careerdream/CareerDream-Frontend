@@ -446,9 +446,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       const data = await api.post('/auth/forgot-password', { email });
       return data.message || 'Password reset link sent to your email.';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Forgot password error:', error);
-      return 'Unable to send reset email. Please try again later.';
+      throw new Error(error.response?.data?.message || 'Unable to send reset email. Please try again later.');
     }
   };
 
@@ -456,9 +456,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       const data = await api.post('/auth/reset-password', { token, password });
       return data.message || 'Password reset successfully.';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Reset password error:', error);
-      return 'Reset link is invalid or has expired.';
+      throw new Error(error.response?.data?.message || 'Reset link is invalid or has expired.');
     }
   };
 

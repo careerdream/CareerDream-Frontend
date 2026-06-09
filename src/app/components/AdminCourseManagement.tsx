@@ -40,7 +40,7 @@ export function AdminCourseManagement() {
         ...(search && { search })
       });
       const data = await api.get(`/admin/courses?${params}`);
-      setCourses(data.courses);
+      setCourses(data.data || data.courses || []);
       setTotalPages(data.totalPages);
     } catch (e) {
       console.error(e);
@@ -57,7 +57,7 @@ export function AdminCourseManagement() {
         api.get(`/admin/courses/${id}/analytics`)
       ]);
       setSelectedCourse(course);
-      setStudents(students);
+      setStudents(students || []);
       setAnalytics(analytics);
       setCurrentView('details');
     } catch (e) {
@@ -342,7 +342,7 @@ export function AdminCourseManagement() {
         {/* Enrolled Students Table */}
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="p-4 border-b border-slate-200 dark:border-slate-700">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Enrolled Students ({students.length})</h3>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Enrolled Students ({(students || []).length})</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -356,9 +356,9 @@ export function AdminCourseManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                {students.length === 0 ? (
+                {(students || []).length === 0 ? (
                   <tr><td colSpan={5} className="p-8 text-center text-slate-500">No students enrolled yet.</td></tr>
-                ) : students.map((enrollment) => (
+                ) : (students || []).map((enrollment) => (
                   <tr key={enrollment.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/20">
                     <td className="p-4">
                       <p className="font-semibold">{enrollment.user?.name || 'Unknown'}</p>
@@ -388,7 +388,7 @@ export function AdminCourseManagement() {
     return (
       <div className="max-w-4xl mx-auto space-y-6 pb-20">
         <div className="flex items-center gap-4 mb-6">
-          <Button variant="outline" onClick={() => setCurrentView(isEdit ? 'details' : 'list')}>← Back</Button>
+          <Button variant="outline" onClick={() => setCurrentView(isEdit && analytics ? 'details' : 'list')}>← Back</Button>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{isEdit ? 'Edit Course' : 'Create New Course'}</h1>
         </div>
         
@@ -424,7 +424,7 @@ export function AdminCourseManagement() {
           </div>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-slate-200 dark:border-slate-700">
-             <Button variant="outline" onClick={() => setCurrentView(isEdit ? 'details' : 'list')}>Cancel</Button>
+             <Button variant="outline" onClick={() => setCurrentView(isEdit && analytics ? 'details' : 'list')}>Cancel</Button>
              <Button onClick={() => {
                 // Simulate save and go back
                 setCurrentView('list');

@@ -26,7 +26,13 @@ Required JSON Structure:
   "summary": "A brief 1-2 sentence professional summary",
   "experience": ["Company - Role", "Company - Role"],
   "education": ["Degree - University"],
-  "achievements": ["Key achievement 1", "Key achievement 2"]
+  "achievements": ["Key achievement 1", "Key achievement 2"],
+  "atsScore": 85, 
+  "keywordMatch": 75, 
+  "readinessScore": 80, 
+  "missingSkills": ["List of missing IT skills"],
+  "formatIssues": ["List of formatting issues"],
+  "recommendedCourseKeywords": ["cloud", "devops"] 
 }
 
 Guidelines for extreme speed:
@@ -34,7 +40,8 @@ Guidelines for extreme speed:
 2. Keep experience to max 3 recent roles.
 3. Keep education to max 2 degrees.
 4. Keep achievements to max 3 items.
-5. Return ONLY the JSON object, no markdown blocks or surrounding text.
+5. Provide realistic, critical ATS scores (out of 100).
+6. Return ONLY the JSON object, no markdown blocks or surrounding text.
 
 Resume Text:
 ${resumeText.substring(0, 4000)}
@@ -226,6 +233,9 @@ Write a comprehensive, professional job posting based on this idea.
 Return the result STRICTLY as a JSON object with the following structure:
 {
   "title": "A professional job title (e.g., Senior Full Stack Developer)",
+  "companyName": "The name of the company hiring, if provided",
+  "location": "The location of the job, if provided (e.g., Bengaluru, Remote)",
+  "locationType": "Must be exactly one of: 'Remote', 'On-site', 'Hybrid'",
   "description": "A brief overview of the role (min 200 characters). Do NOT include responsibilities or requirements here.",
   "responsibilities": ["List", "of", "key", "responsibilities"],
   "requirements": ["List", "of", "key", "requirements", "and", "qualifications"],
@@ -233,7 +243,8 @@ Return the result STRICTLY as a JSON object with the following structure:
   "skills": ["Array", "of", "5-8", "relevant", "technical", "skills"],
   "experienceLevel": "Must be exactly one of: 'Fresher', '0-2 years', '2-5 years', '5-10 years', '10+ years'",
   "salaryMin": "Estimated minimum salary in numbers (e.g., 500000)",
-  "salaryMax": "Estimated maximum salary in numbers (e.g., 1500000)"
+  "salaryMax": "Estimated maximum salary in numbers (e.g., 1500000)",
+  "externalUrl": "The direct apply link or company website URL, if provided"
 }
 
 Guidelines:
@@ -276,6 +287,64 @@ Guidelines:
       return parsedData;
     } catch (error) {
       console.warn(`Model ${model} failed for job generation: ${error.message}`);
+      lastError = error;
+    }
+  }
+
+  throw new Error(lastError ? `AI Error: ${lastError.message}` : 'AI models are currently unavailable. Please try again later.');
+}
+
+export async function evaluateCandidatesForJob(job, candidates) {
+  const modelsToTry = [
+    'google/gemini-2.0-flash-lite-preview-02-05:free',
+    'openrouter/free',
+    'openrouter/free'
+  ];
+
+  const prompt = `
+You are an expert technical recruiter matching candidates to a job.
+Job Details:
+Title: ${job.title}
+Skills Required: ${job.skills.join(', ')}
+
+Candidates:
+${candidates.map(c => `ID: ${c.id}\nName: ${c.name}\nSkills: ${(c.skills || []).join(', ')}`).join('\n\n')}
+
+For each candidate, provide a semantic match score (0-100) and a brief 1-2 sentence reasoning on why they are or are not a good fit.
+Return the result STRICTLY as a JSON array of objects with the following structure:
+[
+  {
+    "candidateId": "id-from-input",
+    "matchScore": 85,
+    "aiReasoning": "Strong match due to overlapping skills in React and Node.js. Lacks explicit AWS experience."
+  }
+]
+
+Guidelines:
+1. Return ONLY the JSON array, no markdown blocks.
+2. Be critical and objective in your scoring.
+  `;
+
+  let lastError;
+  for (const model of modelsToTry) {
+    try {
+      console.log(`Trying model: ${model} for candidate evaluation`);
+      const response = await openai.chat.completions.create({
+        model: model,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      let content = response.choices[0].message.content;
+      
+      const firstBracket = content.indexOf('[');
+      const lastBracket = content.lastIndexOf(']');
+      if (firstBracket !== -1 && lastBracket !== -1) {
+        content = content.substring(firstBracket, lastBracket + 1);
+      }
+      
+      return JSON.parse(content);
+    } catch (error) {
+      console.warn(`Model ${model} failed for evaluation: ${error.message}`);
       lastError = error;
     }
   }
