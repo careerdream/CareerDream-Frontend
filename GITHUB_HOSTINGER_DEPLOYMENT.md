@@ -237,6 +237,12 @@ JWT_SECRET=your_super_secret_jwt_key_here_min_32_chars
 # API URLs
 FRONTEND_URL=https://careerdream.in
 
+# Email settings
+SMTP_HOST=smtp.zoho.in
+SMTP_PORT=465
+SMTP_USER=noreply@careerdream.in
+SMTP_PASS=Human1!1
+
 # Optional: Email, Payment, etc. (if used)
 # SENDGRID_API_KEY=your_key
 # STRIPE_SECRET_KEY=your_key

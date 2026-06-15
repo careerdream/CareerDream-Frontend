@@ -3,10 +3,22 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const openai = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPENROUTER_API_KEY || 'sk-or-v1-dummy', // Needs to be in .env
-});
+let openaiInstance = null;
+
+function getOpenAIClient() {
+  if (!openaiInstance) {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey || apiKey === 'sk-or-v1-dummy') {
+      console.error('CRITICAL: OPENROUTER_API_KEY is missing from environment variables.');
+    }
+    
+    openaiInstance = new OpenAI({
+      baseURL: 'https://openrouter.ai/api/v1',
+      apiKey: apiKey || 'sk-or-v1-dummy',
+    });
+  }
+  return openaiInstance;
+}
 
 export async function parseResumeWithAI(resumeText) {
   const modelsToTry = [
@@ -50,6 +62,7 @@ ${resumeText.substring(0, 4000)}
   for (const model of modelsToTry) {
     try {
       console.log(`Trying model: ${model}`);
+      const openai = getOpenAIClient();
       const response = await openai.chat.completions.create({
         model: model,
         messages: [{ role: 'user', content: prompt }],
@@ -186,6 +199,7 @@ Guidelines:
   for (const model of modelsToTry) {
     try {
       console.log(`Trying model: ${model} for blog generation`);
+      const openai = getOpenAIClient();
       const response = await openai.chat.completions.create({
         model: model,
         messages: [{ role: 'user', content: prompt }],
@@ -258,6 +272,7 @@ Guidelines:
   for (const model of modelsToTry) {
     try {
       console.log(`Trying model: ${model} for job generation`);
+      const openai = getOpenAIClient();
       const response = await openai.chat.completions.create({
         model: model,
         messages: [{ role: 'user', content: prompt }],
@@ -329,6 +344,7 @@ Guidelines:
   for (const model of modelsToTry) {
     try {
       console.log(`Trying model: ${model} for candidate evaluation`);
+      const openai = getOpenAIClient();
       const response = await openai.chat.completions.create({
         model: model,
         messages: [{ role: 'user', content: prompt }],

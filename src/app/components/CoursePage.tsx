@@ -28,7 +28,7 @@ export function CoursePage() {
   const [activeLesson, setActiveLesson] = useState<{ moduleId: number; lessonId: number } | null>(null);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
 
-  const totalLessons = course.modules.reduce((sum, m) => sum + m.lessons.length, 0);
+  const totalLessons = course.modules?.reduce((sum, m) => sum + (m.lessons?.length || 0), 0) || 0;
 
   const markComplete = (lessonId: number) => {
     const next = new Set(completedLessons).add(lessonId);
@@ -156,10 +156,10 @@ export function CoursePage() {
             <div className="rounded-2xl border border-border bg-card overflow-hidden">
               <div className="p-6 border-b border-border">
                 <h2 className="text-xl font-bold">Course Curriculum</h2>
-                <p className="text-muted-foreground text-sm mt-1">{course.modules.length} modules • {totalLessons} lessons • {course.duration}</p>
+                <p className="text-muted-foreground text-sm mt-1">{course.modules?.length || 0} modules • {totalLessons} lessons • {course.duration}</p>
               </div>
               <div>
-                {course.modules.map((module, mIdx) => {
+                {course.modules?.map((module, mIdx) => {
                   const isOpen = expandedModule === mIdx;
                   const moduleCompleted = module.lessons.every(l => completedLessons.has(l.id));
                   return (
@@ -180,7 +180,7 @@ export function CoursePage() {
                       {isOpen && (
                         <div className="pb-2">
                           {module.lessons.map(lesson => {
-                            const TypeIcon = typeIcon[lesson.type];
+                            const TypeIcon = typeIcon[lesson.type as keyof typeof typeIcon] || BookOpen;
                             const isDone = completedLessons.has(lesson.id) || lesson.completed;
                             const isActive = activeLesson?.lessonId === lesson.id;
                             return (
@@ -201,7 +201,7 @@ export function CoursePage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className={`text-sm font-medium truncate ${isActive ? 'text-primary' : ''}`}>{lesson.title}</p>
-                                  <p className="text-xs text-muted-foreground capitalize">{lesson.type}</p>
+                                  <p className="text-xs text-muted-foreground capitalize">{lesson.type || 'Reading'}</p>
                                 </div>
                                 <span className="text-xs text-muted-foreground shrink-0">{lesson.duration}</span>
                               </button>
@@ -219,7 +219,7 @@ export function CoursePage() {
             <div className="p-6 rounded-2xl border border-border bg-card">
               <h2 className="text-xl font-bold mb-4">Prerequisites</h2>
               <ul className="space-y-2">
-                {course.prerequisites.map((p, i) => (
+                {course.prerequisites?.map((p, i) => (
                   <li key={i} className="flex items-center gap-2 text-muted-foreground text-sm">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" /> {p}
                   </li>

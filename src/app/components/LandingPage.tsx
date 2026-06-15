@@ -127,14 +127,14 @@ function FeaturedBlogSection() {
   }
 
   return (
-    <section className="py-32 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 border-y border-white/10">
+    <section className="py-16 md:py-32 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 border-y border-white/10">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
           <div className="max-w-2xl text-left">
             <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-4">
               <Sparkles className="w-3 h-3" /> Latest from IT World
             </div>
-            <h2 className="text-5xl md:text-6xl font-black tracking-tighter leading-[0.9] mb-4">Trending Tech Insights.</h2>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] mb-4">Trending Tech Insights.</h2>
             <p className="text-lg text-muted-foreground font-medium">Direct updates from the global and Indian IT landscape. Stay ahead of the curve.</p>
           </div>
           <Link to="/news" className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-xs hover:gap-4 transition-all pb-2 border-b-2 border-primary shrink-0">
@@ -281,8 +281,8 @@ export function LandingPage() {
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
         {/* Background Atmosphere */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[150px] -translate-y-1/2 animate-pulse" />
-          <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-accent/20 rounded-full blur-[120px] translate-y-1/2" />
+          <div className="absolute top-0 left-1/4 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-primary/20 rounded-full blur-[100px] md:blur-[150px] -translate-y-1/2 animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-[250px] h-[250px] md:w-[500px] md:h-[500px] bg-accent/20 rounded-full blur-[80px] md:blur-[120px] translate-y-1/2" />
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
@@ -299,7 +299,7 @@ export function LandingPage() {
 
             <motion.h1 
               variants={itemVariants}
-              className="text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-tighter mb-10"
+              className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-tighter mb-10"
             >
               Architect Your <br />
               <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">
@@ -376,7 +376,7 @@ export function LandingPage() {
       <FeaturedBlogSection />
 
       {/* --- ELITE STATS GRID --- */}
-      <section className="py-24 relative overflow-hidden bg-card/10 border-y border-border/50">
+      <section className="py-16 md:py-24 relative overflow-hidden bg-card/10 border-y border-border/50">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
             {stats.map(({ label, value, icon: Icon, color }) => (
@@ -388,7 +388,7 @@ export function LandingPage() {
                 <div className={`mx-auto w-16 h-16 rounded-2xl bg-${color}/10 flex items-center justify-center text-${color} mb-6 group-hover:bg-${color} group-hover:text-white transition-all duration-500 shadow-xl`}>
                   <Icon className="w-8 h-8" />
                 </div>
-                <div className="text-4xl md:text-5xl font-black tracking-tighter mb-2 tabular-nums whitespace-nowrap">
+                <div className="text-3xl md:text-5xl font-black tracking-tighter mb-2 tabular-nums whitespace-nowrap">
                   <AnimatedCounter end={value} />+
                 </div>
                 <div className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground leading-loose">{label}</div>
@@ -399,11 +399,11 @@ export function LandingPage() {
       </section>
 
       {/* --- TOPOLOGY CATEGORIES --- */}
-      <section className="py-32 bg-white dark:bg-[#030213]">
+      <section className="py-16 md:py-32 bg-white dark:bg-[#030213]">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div className="max-w-xl">
-              <h2 className="text-5xl font-black tracking-tighter mb-4 leading-none">Sector Topologies.</h2>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 leading-none">Sector Topologies.</h2>
               <p className="text-lg text-muted-foreground font-medium">Explore high-density opportunities across the most aggressive growth sectors in tech.</p>
             </div>
             <Link to="/jobs" className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-xs hover:gap-4 transition-all pb-2 border-b-2 border-primary">
@@ -437,14 +437,14 @@ export function LandingPage() {
       </section>
 
       {/* --- FEATURED ROLES: PREMIUM LISTING --- */}
-      <section className="py-32 bg-[#F8FAFC] dark:bg-[#05041a] border-y border-border/50">
+      <section className="py-16 md:py-32 bg-[#F8FAFC] dark:bg-[#05041a] border-y border-border/50">
         <div className="container mx-auto px-6">
           <div className="flex items-end justify-between mb-20">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-4">
                 <Sparkles className="w-3 h-3" /> Handpicked Excellence
               </div>
-              <h2 className="text-6xl font-black tracking-tighter leading-none mb-4">Premium Roles.</h2>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-none mb-4">Premium Roles.</h2>
               <p className="text-lg text-muted-foreground font-medium">Verified opportunities from authorized partners and Tier-1 enterprises.</p>
             </div>
           </div>
@@ -507,10 +507,10 @@ export function LandingPage() {
       </section>
 
       {/* --- HOW IT WORKS: PRECISION WORKFLOW --- */}
-      <section className="py-32 relative overflow-hidden">
+      <section className="py-16 md:py-32 relative overflow-hidden">
         <div className="container mx-auto px-6">
           <div className="text-center mb-24 max-w-2xl mx-auto">
-            <h2 className="text-5xl font-black tracking-tighter mb-6">Execution Pipeline.</h2>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-6">Execution Pipeline.</h2>
             <p className="text-muted-foreground font-medium">A systematic approach to career acceleration, optimized for the highest success velocity.</p>
           </div>
           
@@ -549,11 +549,11 @@ export function LandingPage() {
       </section>
 
       {/* --- TESTIMONIALS: REPUTATION --- */}
-      <section className="py-32 bg-card/10 border-y border-border/50">
+      <section className="py-16 md:py-32 bg-card/10 border-y border-border/50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
              <div className="text-primary font-black uppercase tracking-widest text-xs mb-4">Reputation Matters</div>
-             <h2 className="text-5xl font-black tracking-tighter">Global Community Feedback.</h2>
+             <h2 className="text-4xl md:text-5xl font-black tracking-tighter">Global Community Feedback.</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((t, i) => (
@@ -585,9 +585,9 @@ export function LandingPage() {
 
 
       {/* --- FINAL CONVERSION: THE DECISION --- */}
-      <section className="py-[12rem] relative bg-[#030213] overflow-hidden">
+      <section className="py-20 md:py-[12rem] relative bg-[#030213] overflow-hidden">
         {/* Intense Light Core */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[150px] opacity-60" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[800px] md:h-[800px] bg-primary/20 rounded-full blur-[100px] md:blur-[150px] opacity-60" />
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
 
         <div className="container mx-auto px-6 text-center relative z-10">
@@ -600,7 +600,7 @@ export function LandingPage() {
             <div className="w-24 h-24 mx-auto mb-10 rounded-[2rem] bg-gradient-to-r from-primary to-accent flex items-center justify-center shadow-[0_0_50px_rgba(79,70,229,0.5)]">
               <Rocket className="w-10 h-10 text-white animate-bounce" />
             </div>
-            <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.9]">
+            <h2 className="text-5xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.9]">
               Shift Your <br/>
               Velocity.
             </h2>

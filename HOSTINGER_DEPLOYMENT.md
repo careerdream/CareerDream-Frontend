@@ -74,6 +74,12 @@ File: `server/.env.production`
 DATABASE_URL="mysql://username:password@193.203.184.228:3306/careerdream"
 NODE_ENV="production"
 PORT=8080
+
+# Email settings
+SMTP_HOST=smtp.zoho.in
+SMTP_PORT=465
+SMTP_USER=noreply@careerdream.in
+SMTP_PASS=Human1!1
 ```
 
 **Replace:**
