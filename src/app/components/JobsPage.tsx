@@ -1,10 +1,12 @@
 import { SEO } from "./SEO";
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
-import { Filter, MapPin, DollarSign, Briefcase, Clock, Bookmark, Search, ChevronDown, X, SlidersHorizontal, Loader2, Share2, Check, Users } from 'lucide-react';
+import { Filter, MapPin, DollarSign, Briefcase, Clock, Bookmark, Search, ChevronDown, X, SlidersHorizontal, Loader2, Share2, Check, Users, MessageCircle, Linkedin, Twitter, Facebook, Link as LinkIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { JobType, ExperienceLevel } from '../data/jobs';
+import { JobType, ExperienceLevel, Job } from '../data/jobs';
 import { useApp } from '../context/AppContext';
+import { useData } from '../hooks/useData';
 
 const JOB_TYPES: JobType[] = ['Remote', 'Full-time', 'Contract', 'Government', 'Abroad', 'Internship'];
 const EXP_LEVELS: ExperienceLevel[] = ['Entry Level', 'Mid Level', 'Senior', 'Lead', 'Executive'];
@@ -22,7 +24,9 @@ const difficultyColor: Record<string, string> = {
 
 export function JobsPage() {
   const [searchParams] = useSearchParams();
-  const { savedJobIds, appliedJobIds, toggleSaveJob, jobs, isLoading, isLoggedIn, setUnlockModalOpen } = useApp();
+  const { savedJobIds, appliedJobIds, toggleSaveJob, isLoggedIn, setUnlockModalOpen } = useApp();
+  const { data: fetchedJobs, loading: isLoading } = useData<Job[]>('/jobs');
+  const jobs = fetchedJobs || [];
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
 
   useEffect(() => {
@@ -90,10 +94,12 @@ export function JobsPage() {
         });
     }
     return result;
-  }, [searchQuery, selectedTypes, selectedLevels, selectedCategory, sortBy, filterMode, savedJobIds, appliedJobIds]);
+  }, [jobs, searchQuery, selectedTypes, selectedLevels, selectedCategory, sortBy, filterMode, savedJobIds, appliedJobIds]);
 
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
   const paginated = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+
+  const [shareJob, setShareJob] = useState<Job | null>(null);
 
   const clearFilters = () => {
     setSelectedTypes(new Set());
@@ -106,26 +112,8 @@ export function JobsPage() {
 
   const activeFilterCount = selectedTypes.size + selectedLevels.size + (selectedCategory !== 'All' ? 1 : 0) + (filterMode !== 'all' ? 1 : 0);
 
-  const handleShare = async (job: any) => {
-    const jobUrl = `${window.location.origin}/jobs/${job.id}`;
-    const shareText = `${job.title}\n\n🌐 Job posted on CareerDream.in : ${jobUrl}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`;
-    
-    const shareData = {
-      title: job.title,
-      text: shareText,
-      url: jobUrl,
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareText);
-        alert('Job details copied to clipboard!');
-      }
-    } catch (err) {
-      console.error('Error sharing:', err);
-    }
+  const handleShare = (job: Job) => {
+    setShareJob(job);
   };
 
   if (isLoading) {
@@ -473,6 +461,70 @@ export function JobsPage() {
           </div>
         </div>
       </div>
+
+      {/* Share Modal */}
+      {shareJob && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onClick={() => setShareJob(null)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+          />
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="relative w-full max-w-sm bg-[#0a0a1a] border border-white/10 rounded-3xl p-8 shadow-2xl"
+          >
+            <h3 className="text-xl font-bold mb-6 text-center">Share this Job</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { name: 'WhatsApp', icon: MessageCircle, color: 'hover:text-green-500', url: `https://wa.me/?text=${encodeURIComponent(`${shareJob.title}\n\n🌐 Job posted on CareerDream.in : ${window.location.origin}/jobs/${shareJob.id}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`)}` },
+                { name: 'LinkedIn', icon: Linkedin, color: 'hover:text-blue-600', url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`${window.location.origin}/jobs/${shareJob.id}`)}` },
+                { name: 'Twitter', icon: Twitter, color: 'hover:text-sky-400', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${shareJob.title}\n\n🌐 Job posted on CareerDream.in : ${window.location.origin}/jobs/${shareJob.id}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`)}` },
+                { name: 'Facebook', icon: Facebook, color: 'hover:text-blue-700', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/jobs/${shareJob.id}`)}` },
+              ].map(link => (
+                <a
+                  key={link.name}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex flex-col items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 transition-all ${link.color} text-white`}
+                >
+                  <link.icon className="w-8 h-8" />
+                  <span className="text-xs font-bold uppercase tracking-widest">{link.name}</span>
+                </a>
+              ))}
+              
+              <button
+                onClick={() => {
+                  const skillsText = Array.isArray(shareJob.skills) ? shareJob.skills.join(', ') : shareJob.skills || 'N/A';
+                  const fullText = `*${shareJob.title}*\n🏢 ${shareJob.company}\n📍 ${shareJob.location}\n💰 ${shareJob.salary}\n\n*Requirements:*\n- Experience: ${shareJob.experience}\n- Job Type: ${shareJob.type}\n- Skills: ${skillsText}\n\n*Description:*\n${shareJob.description}\n\n🌐 Apply here: ${window.location.origin}/jobs/${shareJob.id}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`;
+                  navigator.clipboard.writeText(fullText);
+                  toast.success("Full job details copied successfully! Go ahead and paste it on LinkedIn, WhatsApp, or Facebook.");
+                }}
+                className="col-span-2 flex items-center justify-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 text-white hover:opacity-90 transition-all"
+              >
+                <Share2 className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold uppercase tracking-widest">Copy Full Details & Share</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  const shareMsg = `${shareJob.title}\n\n🌐 Job posted on CareerDream.in : ${window.location.origin}/jobs/${shareJob.id}\n\nStay connected with us:\n\n🌐 Website https://www.CareerDream.in\n🎥 YouTube https://lnkd.in/gfwz2Pg6\n📢 WhatsApp Channel https://lnkd.in/g3jVSK3S\n🔗 LinkedIn https://lnkd.in/gFhQEQZm`;
+                  navigator.clipboard.writeText(shareMsg);
+                  toast.success('Link & Socials copied to clipboard!');
+                }}
+                className="col-span-2 flex items-center justify-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-all"
+              >
+                <LinkIcon className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase tracking-widest">Copy Job Link</span>
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -37,7 +37,7 @@ export function ProfilePage() {
     location: user?.location || '',
     phoneCode: initCode,
     phoneNum: initNum,
-    language: user?.language || '',
+    languages: user?.language ? user.language.split(',').map((l: string) => l.trim()).filter(Boolean) : [],
     bio: (user as any)?.bio || '',
     skills: user?.skills || [],
     avatar: user?.avatar || '',
@@ -74,7 +74,7 @@ export function ProfilePage() {
         email: user.email || '',
         title: user.title || '',
         location: user.location || '',
-        language: user.language || '',
+        languages: user.language ? user.language.split(',').map((l: string) => l.trim()).filter(Boolean) : [],
         bio: (user as any).bio || '',
         skills: user.skills || [],
         avatar: user.avatar || '',
@@ -86,7 +86,10 @@ export function ProfilePage() {
         }
       }));
       if (user.title && !ROLES.includes(user.title)) setRolesList(p => Array.from(new Set([...p, user.title])));
-      if (user.language && !LANGUAGES.includes(user.language)) setLanguagesList(p => Array.from(new Set([...p, user.language])));
+      if (user.language) {
+        const userLangs = user.language.split(',').map((l: string) => l.trim()).filter(Boolean);
+        setLanguagesList(p => Array.from(new Set([...p, ...userLangs])));
+      }
     }
   }, [user]);
 
@@ -178,7 +181,9 @@ export function ProfilePage() {
       return;
     }
     setLanguagesList(p => Array.from(new Set([...p, val])));
-    setFormData(p => ({ ...p, language: val }));
+    if (!formData.languages.includes(val)) {
+      setFormData(p => ({ ...p, languages: [...p.languages, val] }));
+    }
     setOthers(p => ({ ...p, language: '' }));
     setError('');
   };
@@ -186,11 +191,6 @@ export function ProfilePage() {
   const removeCustomRole = () => {
     setRolesList(p => p.filter(r => r === formData.title ? false : true));
     setFormData(p => ({ ...p, title: ROLES[0] }));
-  };
-
-  const removeCustomLanguage = () => {
-    setLanguagesList(p => p.filter(l => l === formData.language ? false : true));
-    setFormData(p => ({ ...p, language: LANGUAGES[0] }));
   };
 
   const addSkill = (skillToAdd?: string) => {
@@ -230,7 +230,7 @@ export function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.title === 'Other' || formData.language === 'Other') {
+    if (formData.title === 'Other') {
       setError('Please confirm your custom additions by clicking "Add" before saving.');
       return;
     }
@@ -264,7 +264,7 @@ export function ProfilePage() {
         avatar: formData.avatar,
         skills: formData.skills,
         socials: formData.socials,
-        language: formData.language,
+        language: formData.languages.join(', '),
       };
       
       try {
@@ -569,34 +569,61 @@ export function ProfilePage() {
                     </select>
                   </div>
 
-                  {/* Language Sync with Settings */}
+                  {/* Language Multi-Select */}
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Language</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Languages</label>
                     <div className="flex items-center gap-2">
                       <select
-                        name="language"
-                        value={formData.language}
-                        onChange={handleChange}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val && val !== 'Other' && !formData.languages.includes(val)) {
+                            setFormData(p => ({ ...p, languages: [...p.languages, val] }));
+                          }
+                          e.target.value = ""; // Reset after selection
+                        }}
                         className="w-full px-4 py-3.5 bg-background border border-border rounded-2xl outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none transition-all"
                       >
-                        <option value="" disabled>Select language</option>
-                        {languagesList.map(l => <option key={l} value={l}>{l}</option>)}
+                        <option value="">Select language to add</option>
+                        {languagesList.filter(l => !formData.languages.includes(l)).map(l => <option key={l} value={l}>{l}</option>)}
                         <option value="Other">Other (Specify)</option>
                       </select>
-                      {!LANGUAGES.includes(formData.language) && formData.language !== 'Other' && formData.language !== '' && (
-                        <button type="button" onClick={removeCustomLanguage} className="p-3 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500/20">
-                          <X className="w-5 h-5" />
-                        </button>
-                      )}
                     </div>
-                    <AnimatePresence>
-                      {formData.language === 'Other' && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="flex gap-2 mt-2">
-                          <input type="text" value={others.language} onChange={e => setOthers(p => ({ ...p, language: e.target.value }))} placeholder="Enter language" className="flex-1 px-4 py-2 bg-background border border-border rounded-xl outline-none text-sm" />
-                          <button type="button" onClick={handleAddLanguage} className="px-4 py-2 bg-primary/20 text-primary font-bold rounded-xl text-sm hover:bg-primary/30">Add</button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    
+                    {/* Add Custom Language */}
+                    <div className="flex gap-2 mt-2">
+                      <input 
+                        type="text" 
+                        value={others.language} 
+                        onChange={e => setOthers(p => ({ ...p, language: e.target.value }))} 
+                        placeholder="Or type a custom language" 
+                        className="flex-1 px-4 py-3 bg-background border border-border rounded-xl outline-none text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-all" 
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddLanguage();
+                          }
+                        }}
+                      />
+                      <button type="button" onClick={handleAddLanguage} className="px-6 py-2 bg-primary/10 text-primary font-bold rounded-xl text-sm hover:bg-primary/20 transition-colors">Add</button>
+                    </div>
+
+                    {/* Selected Languages Tags */}
+                    {formData.languages.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-3 p-3 bg-background border border-border rounded-xl">
+                        {formData.languages.map((lang, idx) => (
+                          <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-bold">
+                            {lang}
+                            <button
+                              type="button"
+                              onClick={() => setFormData(p => ({ ...p, languages: p.languages.filter(l => l !== lang) }))}
+                              className="p-0.5 hover:bg-primary/20 rounded-md transition-colors"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2 md:col-span-2">

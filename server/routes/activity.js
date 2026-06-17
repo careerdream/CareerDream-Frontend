@@ -23,19 +23,44 @@ router.post('/', verifyToken, async (req, res) => {
         const targetArticle = await prisma.blogPost.findUnique({ where: { id: parseInt(articleId) } });
         if (!targetArticle) return res.status(404).json({ error: 'Article not found in database' });
 
-        // Since we are moving to aggregate counts in Redis to avoid DB load, 
-        // we'll just increment. If Redis is down, we fallback to DB update.
-        if (redisClient.isReady) {
-          const newCount = await redisClient.incr(`article:likes:${articleId}`);
-          // Note: We don't track 'isLiked' state here because it's purely aggregate
-          result = { liked: true, likeCount: newCount + targetArticle.likesCount };
+        const existingLike = await prisma.articleLike.findUnique({
+          where: {
+            userId_articleId: {
+              userId: userId,
+              articleId: parseInt(articleId)
+            }
+          }
+        });
+
+        if (existingLike) {
+          // Unlike
+          await prisma.articleLike.delete({
+            where: { id: existingLike.id }
+          });
+          const updatedArticle = await prisma.blogPost.update({
+            where: { id: parseInt(articleId) },
+            data: { likesCount: { decrement: 1 } }
+          });
+          if (redisClient.isReady) {
+            await redisClient.decr(`article:likes:${articleId}`);
+          }
+          result = { liked: false, likeCount: updatedArticle.likesCount };
         } else {
-          // Fallback to direct DB update if Redis is unavailable
-          await prisma.blogPost.update({
+          // Like
+          await prisma.articleLike.create({
+            data: {
+              userId: userId,
+              articleId: parseInt(articleId)
+            }
+          });
+          const updatedArticle = await prisma.blogPost.update({
             where: { id: parseInt(articleId) },
             data: { likesCount: { increment: 1 } }
           });
-          result = { liked: true, likeCount: targetArticle.likesCount + 1 };
+          if (redisClient.isReady) {
+            await redisClient.incr(`article:likes:${articleId}`);
+          }
+          result = { liked: true, likeCount: updatedArticle.likesCount };
         }
         break;
 

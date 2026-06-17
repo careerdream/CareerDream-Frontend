@@ -43,6 +43,11 @@ export function AIResumePage() {
             
           if (report.resumeDetails && report.matchResults) {
             setExistingAnalysis(report);
+            setResumeDetails(report.resumeDetails);
+            setMatchResults(report.matchResults);
+            setExtractedSkills(report.resumeDetails.skills || []);
+            setCareerInsights(report.careerInsights || []);
+            setParsed(true);
           }
         }
       } catch (e) {
@@ -270,7 +275,7 @@ export function AIResumePage() {
               <div className="flex-1">
                 <p className="font-bold text-lg">Resume Analyzed Successfully!</p>
                 <p className="text-muted-foreground text-sm">Found <strong>{extractedSkills.length}</strong> skills • Matched against <strong>{jobs.length}</strong> jobs</p>
-                <Link to="/dashboard" className="text-primary font-bold text-sm mt-2 inline-block hover:underline">View Full ATS Insights on Dashboard →</Link>
+                <Link to="/dashboard?tab=ats" className="text-primary font-bold text-sm mt-2 inline-block hover:underline">View Full ATS Insights on Dashboard →</Link>
               </div>
               <button
                 onClick={() => { setParsed(false); setFile(null); setExtractedSkills([]); setResumeDetails(null); }}
@@ -313,7 +318,7 @@ export function AIResumePage() {
                         </div>
                       )}
                       
-                      {resumeDetails.education.length > 0 && (
+                      {Array.isArray(resumeDetails.education) && resumeDetails.education.length > 0 && (
                         <div>
                           <p className="text-xs font-bold uppercase text-muted-foreground mb-2 flex items-center gap-1">
                             <BookOpen className="w-3 h-3" /> Education
@@ -326,7 +331,7 @@ export function AIResumePage() {
                         </div>
                       )}
 
-                      {resumeDetails.experience.length > 0 && (
+                      {Array.isArray(resumeDetails.experience) && resumeDetails.experience.length > 0 && (
                         <div>
                           <p className="text-xs font-bold uppercase text-muted-foreground mb-2 flex items-center gap-1">
                             <Briefcase className="w-3 h-3" /> Experience
@@ -339,7 +344,7 @@ export function AIResumePage() {
                         </div>
                       )}
 
-                      {resumeDetails.achievements.length > 0 && (
+                      {Array.isArray(resumeDetails.achievements) && resumeDetails.achievements.length > 0 && (
                         <div>
                           <p className="text-xs font-bold uppercase text-muted-foreground mb-2 flex items-center gap-1">
                             <Award className="w-3 h-3" /> Achievements

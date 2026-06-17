@@ -215,34 +215,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [state.user, state.savedJobIds, state.appliedJobIds, state.enrolledCourseIds, state.courseProgress, state.testResults, state.resumeSkills, state.isLoggedIn, state.notifications]);
 
   useEffect(() => {
-    const fetchAPI = async () => {
-      try {
-        const [jobsData, coursesData, assessmentsData] = await Promise.all([
-          api.get('/jobs'),
-          api.get('/courses'),
-          api.get('/assessments')
-        ]);
-        
-        const extractData = (res: any) => Array.isArray(res) ? res : (res?.data || []);
-        setState(prev => ({ 
-          ...prev, 
-          jobs: extractData(jobsData), 
-          courses: extractData(coursesData), 
-          assessments: extractData(assessmentsData),
-          isLoading: false
-        }));
-      } catch (error) {
-        console.error('Failed to fetch from backend', error);
-        setState(prev => ({ 
-          ...prev, 
-          jobs: [], 
-          courses: [], 
-          assessments: [],
-          isLoading: false 
-        }));
-      }
-    };
-    fetchAPI();
+    // Only set loading to false after auth check finishes (or immediately if not waiting for auth state)
+    // Global AppContext now only tracks Auth and global preferences.
+    // Heavy data (jobs, courses, assessments) is fetched at the component level.
+    setState(prev => ({ 
+      ...prev, 
+      isLoading: false 
+    }));
   }, []);
 
   // Auto-generate notifications for jobs and news
@@ -342,19 +321,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
       console.warn('Failed to fetch profile after login, using basic data');
     }
 
+    // Safely extract from either root (meData) or nested user object (login/verify responses)
+    const sourceData = userData.name ? userData : (userData.user || {});
+
     const user: User = {
-      id: String(userData.id),
-      name: userData.name || (userData.email ? userData.email.split('@')[0] : 'User'),
-      email: userData.email || '',
-      avatar: userData.avatar || '👤',
-      role: (userData.role || 'user') as 'user' | 'admin',
-      skills: userData.skills || [],
-      experience: userData.experience || '',
-      location: userData.location || '',
-      title: userData.title || 'IT Professional',
-      resumeUploaded: userData.resumeUploaded || false,
-      profileCompletion: userData.profileCompletion || 30,
-      joinedDate: userData.createdAt ? new Date(userData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'Recently',
+      id: String(userData.id || sourceData.id),
+      name: userData.name || sourceData.name || (sourceData.email ? sourceData.email.split('@')[0] : 'User'),
+      email: userData.email || sourceData.email || '',
+      avatar: userData.avatar || sourceData.avatar || '👤',
+      role: (userData.role || sourceData.role || 'user') as 'user' | 'admin',
+      skills: userData.skills || sourceData.skills || [],
+      experience: userData.experience || sourceData.experience || '',
+      location: userData.location || sourceData.location || '',
+      title: userData.title || sourceData.title || 'IT Professional',
+      resumeUploaded: userData.resumeUploaded || sourceData.resumeUploaded || false,
+      profileCompletion: userData.profileCompletion || sourceData.profileCompletion || 30,
+      joinedDate: (userData.createdAt || sourceData.createdAt) ? new Date(userData.createdAt || sourceData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'Recently',
     };
 
     setState(prev => ({ 

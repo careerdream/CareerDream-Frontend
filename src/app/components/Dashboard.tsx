@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { 
   Briefcase, BookOpen, Award, Target, ChevronRight, 
   Clock, Brain, CheckCircle, Loader2, 
@@ -68,6 +68,9 @@ const itemVariants = {
 };
 
 export function Dashboard() {
+  const [searchParams] = useSearchParams();
+  const initialTab = (searchParams.get('tab') as 'overview' | 'ats') || 'overview';
+
   const { 
     user, isLoggedIn, isAdmin, appliedJobIds, 
     enrolledCourseIds, courseProgress, testResults, 
@@ -75,7 +78,7 @@ export function Dashboard() {
     getGlobalRanking, getSkillScores
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'ats'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'ats'>(initialTab);
   const [atsData, setAtsData] = useState<any>(null);
   const [atsLoading, setAtsLoading] = useState(false);
 

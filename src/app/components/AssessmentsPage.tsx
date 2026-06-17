@@ -3,8 +3,9 @@ import { SEO } from "./SEO";
 import { Link } from 'react-router';
 import { Trophy, Target, Clock, TrendingUp, Star, Users, CheckCircle, Lock, Loader2 } from 'lucide-react';
 
-import { assessments } from '../data/assessments';
+import { Assessment, assessments as staticAssessments } from '../data/assessments';
 import { useApp } from '../context/AppContext';
+import { useData } from '../hooks/useData';
 
 const initialLeaderboard = [
   { rank: 1, name: 'Arjun Mehta', score: 98, tests: 15, badge: '🏆', country: '🇮🇳' },
@@ -15,7 +16,9 @@ const initialLeaderboard = [
 ];
 
 export function AssessmentsPage() {
-  const { testResults, assessments: apiAssessments, isLoading: isAppLoading, isLoggedIn, setUnlockModalOpen } = useApp();
+  const { testResults, isLoggedIn, setUnlockModalOpen } = useApp();
+  const { data: fetchedAssessments, loading: isAppLoading } = useData<Assessment[]>('/assessments');
+  const apiAssessments = fetchedAssessments || [];
   const [leaderboard, setLeaderboard] = useState(initialLeaderboard);
 
   useEffect(() => {
@@ -66,7 +69,7 @@ export function AssessmentsPage() {
   }
 
   // Use API assessments if available, else fallback
-  const displayAssessments = apiAssessments.length > 0 ? apiAssessments : assessments;
+  const displayAssessments = apiAssessments.length > 0 ? apiAssessments : staticAssessments;
 
   return (
     <div className="min-h-screen bg-background">
@@ -179,7 +182,7 @@ export function AssessmentsPage() {
                 <h2 className="text-2xl font-bold mb-5">My Results</h2>
                 <div className="space-y-4">
                   {testResults.map((result, i) => {
-                    const assessment = assessments.find(a => a.id === result.assessmentId);
+                    const assessment = displayAssessments.find(a => a.id === result.assessmentId);
                     return (
                       <div key={i} className="p-5 rounded-2xl border border-border bg-card flex items-center gap-5">
                         <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-2xl shrink-0">

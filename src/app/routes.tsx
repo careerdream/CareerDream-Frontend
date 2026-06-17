@@ -50,7 +50,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: LandingPage },
       { path: "pricing", Component: PricingPage },
-      { path: "playground", element: <ProtectedRoute><PlaygroundPage /></ProtectedRoute> },
+      { path: "playground", Component: PlaygroundPage },
       { path: "playground/:slug", element: <ProtectedRoute><CodingWorkspace /></ProtectedRoute> },
       { path: "about", Component: AboutPage },
       { path: "privacy-policy", Component: PrivacyPolicyPage },

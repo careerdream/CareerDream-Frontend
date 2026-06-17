@@ -3,12 +3,16 @@ import { MapPin, Briefcase, DollarSign, Clock, Building, Users, TrendingUp, Book
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { useData } from '../hooks/useData';
+import { Job } from '../data/jobs';
 import { getWatermark, formatShareMessage } from '../utils/watermark';
 import { toast } from 'sonner';
 
 export function JobDetailPage() {
   const { id } = useParams();
-  const { user, savedJobIds, toggleSaveJob, applyToJob, appliedJobIds, jobs, isLoading, isLoggedIn, setUnlockModalOpen } = useApp();
+  const { user, savedJobIds, toggleSaveJob, applyToJob, appliedJobIds, isLoggedIn, setUnlockModalOpen } = useApp();
+  const { data: fetchedJobs, loading: isLoading } = useData<Job[]>('/jobs');
+  const jobs = fetchedJobs || [];
   const [showApply, setShowApply] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);

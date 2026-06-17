@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { Search, Star, Clock, Award, TrendingUp, BookOpen, Play, ChevronRight, Filter, Users, Loader2, Trophy, CheckCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useData } from '../hooks/useData';
+import { Course } from '../data/courses';
 
 const CATEGORIES = ['All', 'AI/ML', 'Cloud', 'Full Stack', 'Data Science', 'DevOps', 'Cybersecurity', 'Data Engineering', 'Mobile', 'UI/UX', 'Backend', 'Frontend'];
 const LEVELS = ['All', 'Beginner', 'Intermediate', 'Advanced'];
@@ -25,7 +27,9 @@ export function LearningHub() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [level, setLevel] = useState('All');
-  const { enrolledCourseIds, enrollInCourse, courseProgress, courses, isLoading, isLoggedIn, setUnlockModalOpen } = useApp();
+  const { enrolledCourseIds, enrollInCourse, courseProgress, isLoggedIn, setUnlockModalOpen } = useApp();
+  const { data: fetchedCourses, loading: isLoading } = useData<Course[]>('/courses');
+  const courses = fetchedCourses || [];
 
   const handleProtectedClick = (e: React.MouseEvent) => {
     if (!isLoggedIn) {

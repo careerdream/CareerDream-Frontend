@@ -11,6 +11,7 @@ import { securityHeaders } from './middleware/securityHeaders.js';
 import { verifyToken, verifyAdmin } from './middleware/auth.js';
 import { setupLogger } from './utils/logger.js';
 import { startLikesSyncService } from './services/likesSync.js';
+import compression from 'compression';
 
 // Setup environment-based logging first
 setupLogger();
@@ -31,12 +32,16 @@ const app = express();
 // Security Headers — must be applied first, before all other middleware
 app.use(securityHeaders);
 
+// Compress responses
+app.use(compression());
+
 // Middleware - CORS configuration
 const allowedOrigins = [
   'https://careerdream.in',
   'https://www.careerdream.in',
   'https://api.careerdream.in',
   'http://localhost:5173',
+  'http://localhost:4173',
   'http://localhost:3000'
 ];
 
@@ -45,7 +50,10 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.careerdream.in')) {
+    // Allow local network access (e.g. 192.168.* or 10.0.*) for mobile testing
+    const isLocalNetwork = /^http:\/\/(192\.168|10\.0|172\.(1[6-9]|2[0-9]|3[0-1]))\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.careerdream.in') || isLocalNetwork) {
       callback(null, true);
     } else {
       console.warn(`Origin ${origin} not allowed by CORS`);
@@ -216,6 +224,16 @@ app.get('*', (req, res) => {
 
 // Start the background likes sync service (flushes every 5 minutes)
 startLikesSyncService();
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('[Global Error]', err.stack);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Internal Server Error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
+});
 
 // Start Server
 const PORT = process.env.PORT || 5000;

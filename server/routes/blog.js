@@ -2,7 +2,7 @@ import express from 'express';
 import nodemailer from 'nodemailer';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
-import { cacheMiddleware } from '../utils/cache.js';
+import { cacheMiddleware, clearCache } from '../utils/cache.js';
 import { formatPaginatedResponse } from '../utils/pagination.js';
 import { notifySubscribers } from '../services/emailService.js';
 import { aiLimiter } from '../middleware/rateLimiter.js';
@@ -122,10 +122,15 @@ router.get('/posts/:id', cacheMiddleware(60), async (req, res) => {
       try {
         const token = req.header('Authorization').split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'careerdream_secret_key');
-        // Note: For this implementation, we removed individual user tracking,
-        // so we just return the aggregate likesCount.
-        // If we need user tracking, we would check Redis sets here.
-        isLiked = false; 
+        const existingLike = await prisma.articleLike.findUnique({
+          where: {
+            userId_articleId: {
+              userId: decoded.id,
+              articleId: parseInt(req.params.id)
+            }
+          }
+        });
+        isLiked = !!existingLike;
       } catch (e) {
         // Token invalid or expired, ignore isLiked
       }
@@ -209,6 +214,8 @@ router.post('/posts', verifyToken, async (req, res) => {
     // Notify subscribers
     notifySubscribers(title, `https://careerdream.in/news/${post.id}`, excerpt);
 
+    clearCache('/api/blog/posts');
+
     res.status(201).json(post);
   } catch (error) {
     console.error('Error creating blog post:', error);
@@ -258,6 +265,8 @@ router.put('/posts/:id', verifyToken, async (req, res) => {
       },
     });
 
+    clearCache('/api/blog/posts');
+
     res.json(updatedPost);
   } catch (error) {
     console.error('Error updating blog post:', error);
@@ -288,6 +297,8 @@ router.delete('/posts/:id', verifyToken, async (req, res) => {
     await prisma.blogPost.delete({
       where: { id: postId },
     });
+
+    clearCache('/api/blog/posts');
 
     res.json({ message: 'Blog post deleted successfully' });
   } catch (error) {

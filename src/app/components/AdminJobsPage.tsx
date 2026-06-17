@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useData } from '../hooks/useData';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -33,7 +34,9 @@ interface JobFormData {
 }
 
 export function AdminJobsPage() {
-  const { isAdmin, jobs } = useApp();
+  const { isAdmin } = useApp();
+  const { data: fetchedJobs } = useData<Job[]>('/jobs');
+  const jobs = fetchedJobs || [];
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [skillInput, setSkillInput] = useState('');

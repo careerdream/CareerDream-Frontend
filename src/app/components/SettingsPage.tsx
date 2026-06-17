@@ -80,9 +80,9 @@ export function SettingsPage() {
     email: user?.email || '',
     jobRole: user?.title || ROLES[0],
     location: user?.location || '',
-    language: user?.language || LANGUAGES[0],
     phoneCode: initCode,
     phoneNum: initNum,
+    languages: user?.language ? user.language.split(',').map((l: string) => l.trim()).filter(Boolean) : [],
     skills: user?.skills || [],
   });
 
@@ -167,19 +167,16 @@ export function SettingsPage() {
     const val = others.language.trim();
     if (!isValidInput(val)) { showError("Please enter a valid, meaningful language."); return; }
     setLanguagesList(p => Array.from(new Set([...p, val])));
-    setAccountForm(p => ({ ...p, language: val }));
+    if (!accountForm.languages.includes(val)) {
+      setAccountForm(p => ({ ...p, languages: [...p.languages, val] }));
+    }
     setOthers(p => ({ ...p, language: '' }));
-    showSuccess("Language added and selected.");
+    showSuccess("Language added.");
   };
 
   const removeCustomRole = () => {
     setRolesList(p => p.filter(r => r === accountForm.jobRole ? false : true));
     setAccountForm(p => ({ ...p, jobRole: ROLES[0] }));
-  };
-
-  const removeCustomLanguage = () => {
-    setLanguagesList(p => p.filter(l => l === accountForm.language ? false : true));
-    setAccountForm(p => ({ ...p, language: LANGUAGES[0] }));
   };
 
   const addSkill = (skillToAdd?: string) => {
@@ -223,7 +220,7 @@ export function SettingsPage() {
     const fullPhone = accountForm.phoneNum ? accountForm.phoneCode + accountForm.phoneNum.replace(/\s+/g, '') : '';
     const pErr = validatePhone(fullPhone);
 
-    if (accountForm.jobRole === 'Other' || accountForm.language === 'Other') {
+    if (accountForm.jobRole === 'Other') {
       showError('Please confirm your custom additions by clicking "Add" before saving.');
       return;
     }
@@ -242,7 +239,7 @@ export function SettingsPage() {
         title: accountForm.jobRole,
         location: accountForm.location,
         phone: fullPhone,
-        language: accountForm.language,
+        language: accountForm.languages.join(', '),
         skills: accountForm.skills,
       };
 
@@ -375,27 +372,60 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Language</label>
-                <div className="flex items-center gap-2">
-                  <select value={accountForm.language} onChange={e => setAccountForm(p => ({ ...p, language: e.target.value }))} className="w-full px-4 py-3.5 bg-background border border-border rounded-2xl outline-none focus:border-primary appearance-none transition-all">
-                    {languagesList.map(l => <option key={l} value={l}>{l}</option>)}
-                    <option value="Other">Other (Specify)</option>
-                  </select>
-                  {!LANGUAGES.includes(accountForm.language) && accountForm.language !== 'Other' && (
-                    <button type="button" onClick={removeCustomLanguage} className="p-3 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500/20">
-                      <X className="w-5 h-5" />
-                    </button>
+                  <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Languages</label>
+                  <div className="flex items-center gap-2">
+                    <select
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val && val !== 'Other' && !accountForm.languages.includes(val)) {
+                          setAccountForm(p => ({ ...p, languages: [...p.languages, val] }));
+                        }
+                        e.target.value = "";
+                      }}
+                      className="w-full px-4 py-3.5 bg-background border border-border rounded-2xl outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none transition-all"
+                    >
+                      <option value="">Select language to add</option>
+                      {languagesList.filter(l => !accountForm.languages.includes(l)).map(l => <option key={l} value={l}>{l}</option>)}
+                      <option value="Other">Other (Specify)</option>
+                    </select>
+                  </div>
+                  
+                  {/* Add Custom Language */}
+                  <div className="flex gap-2 mt-2">
+                    <input 
+                      type="text" 
+                      value={others.language} 
+                      onChange={e => setOthers(p => ({ ...p, language: e.target.value }))} 
+                      placeholder="Or type a custom language" 
+                      className="flex-1 px-4 py-3 bg-background border border-border rounded-xl outline-none text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-all" 
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddLanguage();
+                        }
+                      }}
+                    />
+                    <button type="button" onClick={handleAddLanguage} className="px-6 py-2 bg-primary/10 text-primary font-bold rounded-xl text-sm hover:bg-primary/20 transition-colors">Add</button>
+                  </div>
+
+                  {/* Selected Languages Tags */}
+                  {accountForm.languages.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3 p-3 bg-background border border-border rounded-xl">
+                      {accountForm.languages.map((lang, idx) => (
+                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-bold">
+                          {lang}
+                          <button
+                            type="button"
+                            onClick={() => setAccountForm(p => ({ ...p, languages: p.languages.filter(l => l !== lang) }))}
+                            className="p-0.5 hover:bg-primary/20 rounded-md transition-colors"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-                <AnimatePresence>
-                  {accountForm.language === 'Other' && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="flex gap-2 mt-2">
-                      <input type="text" value={others.language} onChange={e => setOthers(p => ({ ...p, language: e.target.value }))} placeholder="Enter language" className="flex-1 px-4 py-2 bg-background border border-border rounded-xl outline-none text-sm" />
-                      <button type="button" onClick={handleAddLanguage} className="px-4 py-2 bg-primary/20 text-primary font-bold rounded-xl text-sm hover:bg-primary/30">Add</button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
             </div>
 
             <div className="border-t border-border pt-6 mt-6">

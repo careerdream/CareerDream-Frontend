@@ -4,9 +4,10 @@
  */
 
 const getBaseUrl = () => {
-  // If production, use the environment variable or fallback to subdomain
+  // If production, use the environment variable or fallback to relative '/api'
+  // Using relative path allows the frontend to be served seamlessly by the Express backend
   if (import.meta.env.PROD) {
-    return import.meta.env.VITE_API_BASE_URL || 'https://api.careerdream.in/api';
+    return import.meta.env.VITE_API_BASE_URL || '/api';
   }
 
   return '/api';

@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router';
 import { Trophy, Medal, Crown, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { useData } from '../hooks/useData';
+import { Assessment } from '../data/assessments';
 import { api } from '../utils/api';
 
 interface LeaderboardEntry {
@@ -23,7 +25,9 @@ const RANK_STYLES = [
 export function LeaderboardPage() {
   const { id } = useParams();
   const assessmentId = Number(id);
-  const { assessments, user: currentUser } = useApp();
+  const { user: currentUser } = useApp();
+  const { data: fetchedAssessments } = useData<Assessment[]>('/assessments');
+  const assessments = fetchedAssessments || [];
   const assessment = assessments.find(a => a.id === assessmentId) ?? null;
 
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);

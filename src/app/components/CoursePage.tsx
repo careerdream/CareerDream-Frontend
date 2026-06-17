@@ -2,10 +2,18 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { ArrowLeft, Play, CheckCircle, Lock, Star, Users, Clock, Award, BookOpen, ChevronDown, ChevronUp, Download, Loader2, ExternalLink, Youtube } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useData } from '../hooks/useData';
+import { Course } from '../data/courses';
 
 export function CoursePage() {
   const { id } = useParams();
-  const { enrolledCourseIds, enrollInCourse, courseProgress, updateCourseProgress, courses, isLoading } = useApp();
+  const { enrolledCourseIds, enrollInCourse, courseProgress, updateCourseProgress } = useApp();
+  const { data: fetchedCourses, loading: isLoading } = useData<Course[]>('/courses');
+  const courses = fetchedCourses || [];
+
+  const [expandedModule, setExpandedModule] = useState<number | null>(0);
+  const [activeLesson, setActiveLesson] = useState<{ moduleId: number; lessonId: number } | null>(null);
+  const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
 
   if (isLoading || courses.length === 0) {
     return (
@@ -23,10 +31,6 @@ export function CoursePage() {
 
   const isEnrolled = enrolledCourseIds.includes(course.id);
   const progress = courseProgress[course.id] ?? 0;
-
-  const [expandedModule, setExpandedModule] = useState<number | null>(0);
-  const [activeLesson, setActiveLesson] = useState<{ moduleId: number; lessonId: number } | null>(null);
-  const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
 
   const totalLessons = course.modules?.reduce((sum, m) => sum + (m.lessons?.length || 0), 0) || 0;
 

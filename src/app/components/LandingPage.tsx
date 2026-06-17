@@ -10,6 +10,9 @@ import {
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { useData } from '../hooks/useData';
+import { Job } from '../data/jobs';
+import { Course } from '../data/courses';
 import { api } from '../utils/api';
 import { SocialMediaBanner } from './SocialMediaBanner';
 
@@ -244,7 +247,11 @@ function FeaturedBlogSection() {
 
 export function LandingPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const { jobs, courses, isLoading } = useApp();
+  const { isLoggedIn, setUnlockModalOpen } = useApp();
+  const { data: fetchedJobs, loading: isLoadingJobs } = useData<Job[]>('/jobs');
+  const { data: fetchedCourses } = useData<Course[]>('/courses');
+  const jobs = fetchedJobs || [];
+  const courses = fetchedCourses || [];
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -256,27 +263,12 @@ export function LandingPage() {
   const { scrollYProgress } = useScroll();
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#030213]">
-      <SEO title="CareerDream | Best IT Jobs & Learning Platform for Freshers" description="CareerDream.in - The ultimate career platform for IT freshers in India. Find verified jobs, internships, free courses, and skill assessments to land your dream IT role." keywords="IT Jobs India, Freshers Jobs, Software Engineer Internships, Free Coding Courses, Skill Assessments, Resume Screening, CareerDream" />
-         <div className="relative">
-            <motion.div 
-               animate={{ rotate: 360 }}
-               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-               className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full" 
-            />
-            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-primary animate-pulse" />
-         </div>
-      </div>
-    );
-  }
-
   const featuredJobs = jobs.filter(j => j.featured).slice(0, 3);
   const featuredCourses = courses.filter(c => c.bestseller || c.rating >= 4.8).slice(0, 3);
 
   return (
     <div className="bg-white dark:bg-[#030213] selection:bg-primary/30 scroll-smooth">
+      <SEO title="CareerDream | Best IT Jobs & Learning Platform for Freshers" description="CareerDream.in - The ultimate career platform for IT freshers in India. Find verified jobs, internships, free courses, and skill assessments to land your dream IT role." keywords="IT Jobs India, Freshers Jobs, Software Engineer Internships, Free Coding Courses, Skill Assessments, Resume Screening, CareerDream" />
       {/* --- HERO SECTION: HIGH IMPACT --- */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
         {/* Background Atmosphere */}
@@ -450,52 +442,68 @@ export function LandingPage() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {featuredJobs.map((job, idx) => (
-              <motion.div 
-                key={job.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <Link
-                  to={`/jobs/${job.id}`}
-                  className="group flex flex-col h-full p-8 rounded-[3rem] border border-border bg-white dark:bg-card hover:border-primary shadow-md hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] transition-all duration-500"
+            {isLoadingJobs ? (
+              Array(3).fill(0).map((_, idx) => (
+                <div key={idx} className="h-72 p-8 rounded-[3rem] border border-border bg-card animate-pulse">
+                  <div className="w-16 h-16 rounded-[1.5rem] bg-muted mb-8" />
+                  <div className="w-3/4 h-8 bg-muted rounded mb-2" />
+                  <div className="w-1/2 h-4 bg-muted rounded mb-6" />
+                  <div className="flex gap-2 mb-8 mt-auto">
+                    <div className="w-16 h-6 bg-muted rounded-lg" />
+                    <div className="w-16 h-6 bg-muted rounded-lg" />
+                  </div>
+                </div>
+              ))
+            ) : featuredJobs.length > 0 ? (
+              featuredJobs.map((job, idx) => (
+                <motion.div 
+                  key={job.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
                 >
-                  <div className="flex items-start justify-between mb-8">
-                    <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-primary to-accent flex items-center justify-center text-3xl shadow-lg ring-4 ring-primary/5">
-                      {job.logo}
+                  <Link
+                    to={`/jobs/${job.id}`}
+                    className="group flex flex-col h-full p-8 rounded-[3rem] border border-border bg-white dark:bg-card hover:border-primary shadow-md hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] transition-all duration-500"
+                  >
+                    <div className="flex items-start justify-between mb-8">
+                      <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-primary to-accent flex items-center justify-center text-3xl shadow-lg ring-4 ring-primary/5">
+                        {job.logo}
+                      </div>
+                      <div className="flex flex-col gap-2">
+                         <span className="inline-block px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full bg-primary/10 text-primary">Priority Agent</span>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                       <span className="inline-block px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full bg-primary/10 text-primary">Priority Agent</span>
+                    
+                    <h3 className="font-black text-2xl tracking-tight mb-2 group-hover:text-primary transition-colors">{job.title}</h3>
+                    <div className="text-sm font-bold text-muted-foreground mb-6 flex items-center gap-2">
+                      {job.company} <span className="w-1 h-1 rounded-full bg-border" /> {job.location}
                     </div>
-                  </div>
-                  
-                  <h3 className="font-black text-2xl tracking-tight mb-2 group-hover:text-primary transition-colors">{job.title}</h3>
-                  <div className="text-sm font-bold text-muted-foreground mb-6 flex items-center gap-2">
-                    {job.company} <span className="w-1 h-1 rounded-full bg-border" /> {job.location}
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-2 mb-8 mt-auto">
-                    {job.skills.slice(0, 3).map(skill => (
-                      <span key={skill} className="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg bg-muted text-muted-foreground group-hover:bg-primary/5 group-hover:text-primary transition-colors">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+                    
+                    <div className="flex flex-wrap gap-2 mb-8 mt-auto">
+                      {job.skills.slice(0, 3).map(skill => (
+                        <span key={skill} className="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg bg-muted text-muted-foreground group-hover:bg-primary/5 group-hover:text-primary transition-colors">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
 
-                  <div className="flex items-center justify-between pt-6 border-t border-border">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Package</span>
-                      <span className="text-lg font-black text-foreground">{job.salary}</span>
+                    <div className="flex items-center justify-between pt-6 border-t border-border">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Package</span>
+                        <span className="text-lg font-black text-foreground">{job.salary}</span>
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shadow-md">
+                          <ArrowRight className="w-5 h-5 font-bold" />
+                      </div>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shadow-md">
-                        <ArrowRight className="w-5 h-5 font-bold" />
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-10 text-muted-foreground font-medium">No featured roles available right now.</div>
+            )}
           </div>
           
           <div className="mt-20 text-center">
